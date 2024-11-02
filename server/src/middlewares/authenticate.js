@@ -9,7 +9,7 @@ const authenticate = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const blacklistedToken = await prisma.blacklist.findUnique({
       where: { token },
     });
@@ -21,7 +21,7 @@ const authenticate = async (req, res, next) => {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: decoded.id },
     });
     if (!user) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
