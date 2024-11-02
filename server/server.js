@@ -13,13 +13,14 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 require("dotenv").config();
-const port = process.env.port;
+const port = process.env.PORT || 3000;
 
 const routes = require("./src/routes/index");
 
 app.use(
   cors({
     origin: "http://localhost:5173",
+    credentials: true,
   })
 );
 app.use(express.json());

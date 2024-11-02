@@ -5,6 +5,7 @@ import AboutDetails from "../components/HomeComponents/AboutDetails";
 import ServicesDetails from "../components/HomeComponents/ServicesDetails";
 import ContactDetails from "../components/HomeComponents/ContactDetails";
 import LoginPage from "../pages/Auth/LoginPage";
+import DashboardPage from "../pages/DashboardPages/DashboardPage";
 
 const AppRoutes = () => {
   return (
@@ -13,7 +14,8 @@ const AppRoutes = () => {
       <Route path="/about-details" element={<AboutDetails />} />
       <Route path="/services-details" element={<ServicesDetails />} />
       <Route path="/contact-details" element={<ContactDetails />} />
-      <Route path="/login" element={<LoginPage />} />{" "}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="dashboard" element={<DashboardPage />} />
     </Routes>
   );
 };

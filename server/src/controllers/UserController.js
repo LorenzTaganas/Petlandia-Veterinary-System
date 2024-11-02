@@ -1,9 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const prisma = require("../database/db");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 exports.signup = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, contactNo } = req.body;
+
+  if (!firstName || !lastName || !email || !password || !contactNo) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -14,6 +19,7 @@ exports.signup = async (req, res) => {
         lastName,
         email,
         password: hashedPassword,
+        contactNo,
         role: "Client",
       },
     });
@@ -21,6 +27,9 @@ exports.signup = async (req, res) => {
       .status(201)
       .json({ message: "User created successfully.", user: newUser });
   } catch (error) {
+    if (error.code === "P2002") {
+      return res.status(400).json({ message: "Email already exists." });
+    }
     res.status(400).json({ message: "Error creating user.", error });
   }
 };

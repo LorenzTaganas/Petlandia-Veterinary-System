@@ -2,12 +2,23 @@ import React from "react";
 import { Link } from "react-router-dom";
 import placeholderImage from "../../assets/placeholder.png";
 import HomeHeader from "../../components/NavigationComponents/HomeHeader";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import markerIcon from "../../assets/mapmarker.png";
 
 const HomePage = () => {
+  const customMarkerIcon = L.icon({
+    iconUrl: markerIcon,
+    iconSize: [100, 100],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+  });
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <HomeHeader />
-      <main>
+      <main className="flex-grow">
         <section className="flex items-center h-[calc(100vh-64px)] bg-gray-400">
           <div className="w-1/2 p-8">
             <h2 className="text-2xl font-bold">Home</h2>
@@ -81,7 +92,35 @@ const HomePage = () => {
             </Link>
           </div>
         </section>
+
+        <section className="h-96">
+          <h2 className="text-2xl font-bold text-center">Our Location</h2>
+          <div className="w-full h-full relative">
+            <MapContainer
+              center={[14.8345, 120.9675]}
+              zoom={13}
+              className="w-full h-full"
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              />
+              <Marker position={[14.8345, 120.9675]} icon={customMarkerIcon}>
+                <Popup>Malolos, Bulacan</Popup>
+              </Marker>
+            </MapContainer>
+          </div>
+        </section>
       </main>
+
+      <footer className="bg-gray-600 text-white py-4 mt-8">
+        <div className="container mx-auto text-center">
+          <p>
+            &copy; {new Date().getFullYear()} Petlandia Veterinary. All rights
+            reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
