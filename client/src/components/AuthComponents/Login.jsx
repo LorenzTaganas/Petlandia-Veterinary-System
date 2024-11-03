@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import axiosInstance from "../../utils/axiosInstanceUtil";
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState("");
@@ -17,48 +17,22 @@ const Login = ({ onSwitch }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/login",
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      const { accessToken, refreshToken } = response.data;
-      setMessage(response.data.message);
-      navigate("/dashboard");
-    } catch (error) {
-      setMessage(error.response?.data?.message || "Login failed.");
-    }
-  };
-
-  const refreshAccessToken = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/refresh-token",
-        {},
-        { withCredentials: true }
-      );
+      const response = await axiosInstance.post("/login", {
+        email,
+        password,
+      });
       const { accessToken } = response.data;
       Cookies.set("accessToken", accessToken, {
         httpOnly: true,
         secure: false,
         sameSite: "None",
       });
+      setMessage(response.data.message);
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Failed to refresh access token:", error);
+      setMessage(error.response?.data?.message || "Login failed.");
     }
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshAccessToken();
-    }, 15 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstanceUtil";
 
 const DashboardPage = () => {
   const [data, setData] = useState(null);
@@ -10,9 +10,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/dashboard", {
-          withCredentials: true,
-        });
+        const response = await axiosInstance.get("/dashboard");
         setData(response.data);
       } catch (err) {
         setError(
@@ -22,15 +20,11 @@ const DashboardPage = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        "http://localhost:3000/logout",
-        {},
-        { withCredentials: true }
-      );
+      await axiosInstance.post("/logout", {});
       setData(null);
       setError(null);
       navigate("/");
