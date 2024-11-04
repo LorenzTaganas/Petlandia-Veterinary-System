@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axiosInstance from "../../utils/axiosInstanceUtil";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState("");
