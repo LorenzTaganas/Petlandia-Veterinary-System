@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -15,11 +15,26 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import placeholder from "../../assets/placeholder.png";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../services/axiosInstance";
+import { getUserProfile, getFullName } from "../../services/userService";
 
 const MainSidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userData = await getUserProfile();
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const handleProfileClick = () => console.log("Profile Clicked");
@@ -85,7 +100,12 @@ const MainSidebar = () => {
           fontSize="large"
           style={{ height: "48px", width: "48px" }}
         />
-        {isOpen && <span className="text-gray-700 ml-4 text-lg">Guest</span>}
+        {isOpen && (
+          <span className="text-gray-700 ml-4 text-lg">
+            {user ? getFullName(user) : "Guest"}{" "}
+            {/* Display full name or "Guest" */}
+          </span>
+        )}
         {isOpen && (
           <NotificationsIcon
             className="ml-auto text-gray-700 cursor-pointer"

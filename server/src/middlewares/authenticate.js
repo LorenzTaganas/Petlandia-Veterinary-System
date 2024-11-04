@@ -22,12 +22,19 @@ const authenticate = async (req, res, next) => {
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
+      select: { id: true, role: true, firstName: true, lastName: true },
     });
+
     if (!user) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
     }
 
-    req.user = { id: user.id, role: user.role };
+    req.user = {
+      id: user.id,
+      role: user.role,
+      fullName: `${user.firstName} ${user.lastName}`,
+    };
+
     next();
   } catch (error) {
     return res.status(403).json({ message: "Forbidden: Invalid token" });

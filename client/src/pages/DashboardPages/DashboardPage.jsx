@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../services/axiosInstance";
 import MainSidebar from "../../components/NavigationComponents/MainSidebar";
 
 const DashboardPage = () => {

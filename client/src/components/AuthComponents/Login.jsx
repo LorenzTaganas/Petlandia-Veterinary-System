@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../services/axiosInstance";
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState("");
@@ -24,7 +24,7 @@ const Login = ({ onSwitch }) => {
       const { accessToken } = response.data;
       Cookies.set("accessToken", accessToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "None",
       });
       setMessage(response.data.message);
