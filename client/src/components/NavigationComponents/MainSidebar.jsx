@@ -14,6 +14,8 @@ import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import GroupIcon from "@mui/icons-material/Group";
 import placeholder from "../../assets/placeholder.png";
 import axiosInstance from "../../services/axiosInstance";
 import { getUserProfile, getFullName } from "../../services/userService";
@@ -42,14 +44,6 @@ const MainSidebar = () => {
     event.stopPropagation();
     console.log("Notification Clicked");
   };
-  const handleDashboardClick = () => console.log("Dashboard Clicked");
-  const handleMedicalHistoryClick = () =>
-    console.log("Medical History Clicked");
-  const handlePaymentHistoryClick = () =>
-    console.log("Payment History Clicked");
-  const handleReportsClick = () => console.log("Reports Clicked");
-  const handleRequestsClick = () => console.log("Requests Clicked");
-  const handleScheduledClick = () => console.log("Scheduled Clicked");
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/logout", {});
@@ -64,6 +58,83 @@ const MainSidebar = () => {
 
   const handleReturnHome = () => {
     navigate("/");
+  };
+
+  const renderSidebarItems = () => {
+    const items = [
+      {
+        icon: <DashboardIcon />,
+        label: "Dashboard",
+        onClick: () => console.log("Dashboard Clicked"),
+      },
+      {
+        icon: <AppointmentIcon />,
+        label: "Appointment",
+        onClick: () => console.log("Appointment Requests Clicked"),
+        roles: ["Client", "Admin"],
+        subItems: [
+          {
+            label: "Requests",
+            icon: <PendingActionsIcon />,
+            onClick: () => console.log("Requests Clicked"),
+          },
+          {
+            label: "Scheduled",
+            icon: <EventAvailableIcon />,
+            onClick: () => console.log("Scheduled Clicked"),
+          },
+        ],
+      },
+      {
+        icon: <MedicalHistoryIcon />,
+        label: "Medical History",
+        onClick: () => console.log("Medical History Clicked"),
+      },
+      {
+        icon: <PaymentHistoryIcon />,
+        label: "Payment History",
+        onClick: () => console.log("Payment History Clicked"),
+      },
+      {
+        icon: <ReportIcon />,
+        label: "Reports",
+        onClick: () => console.log("Reports Clicked"),
+        roles: ["Doctor", "Admin"],
+      },
+      {
+        icon: <VideoLibraryIcon />,
+        label: "Pet Grooming",
+        onClick: () => console.log("Pet Grooming Clicked"),
+      },
+      {
+        icon: <GroupIcon />,
+        label: "Account Management",
+        onClick: () => console.log("Account Management Clicked"),
+        roles: ["Admin"],
+      },
+      {
+        icon: <EventAvailableIcon />,
+        label: "Scheduled Appointment",
+        onClick: () => console.log("Scheduled Appointment Clicked"),
+        roles: ["Doctor"],
+      },
+    ];
+
+    return items.map((item, index) => {
+      if (item.roles) {
+        if (!item.roles.includes(user?.role)) return null;
+      }
+      return (
+        <SidebarItem
+          key={index}
+          icon={item.icon}
+          label={item.label}
+          isOpen={isOpen}
+          onClick={item.onClick}
+          subItems={item.subItems}
+        />
+      );
+    });
   };
 
   return (
@@ -102,8 +173,7 @@ const MainSidebar = () => {
         />
         {isOpen && (
           <span className="text-gray-700 ml-4 text-lg">
-            {user ? getFullName(user) : "Guest"}{" "}
-            {/* Display full name or "Guest" */}
+            {getFullName(user)}{" "}
           </span>
         )}
         {isOpen && (
@@ -114,47 +184,7 @@ const MainSidebar = () => {
         )}
       </div>
       <nav className="flex flex-col mt-4 space-y-2 flex-grow">
-        <SidebarItem
-          icon={<DashboardIcon />}
-          label="Dashboard"
-          isOpen={isOpen}
-          onClick={handleDashboardClick}
-        />
-        <SidebarItem
-          icon={<AppointmentIcon />}
-          label="Appointment"
-          isOpen={isOpen}
-          subItems={[
-            {
-              label: "Requests",
-              icon: <PendingActionsIcon />,
-              onClick: handleRequestsClick,
-            },
-            {
-              label: "Scheduled",
-              icon: <EventAvailableIcon />,
-              onClick: handleScheduledClick,
-            },
-          ]}
-        />
-        <SidebarItem
-          icon={<MedicalHistoryIcon />}
-          label="Medical History"
-          isOpen={isOpen}
-          onClick={handleMedicalHistoryClick}
-        />
-        <SidebarItem
-          icon={<PaymentHistoryIcon />}
-          label="Payment History"
-          isOpen={isOpen}
-          onClick={handlePaymentHistoryClick}
-        />
-        <SidebarItem
-          icon={<ReportIcon />}
-          label="Reports"
-          isOpen={isOpen}
-          onClick={handleReportsClick}
-        />
+        {renderSidebarItems()}
       </nav>
       <div className="mt-auto space-y-2 mb-4">
         <SidebarItem

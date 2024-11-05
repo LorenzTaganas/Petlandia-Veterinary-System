@@ -23,9 +23,10 @@ const Login = ({ onSwitch }) => {
       });
       const { accessToken } = response.data;
       Cookies.set("accessToken", accessToken, {
-        httpOnly: true,
+        httpOnly: false,
         secure: true,
         sameSite: "None",
+        path: "/",
       });
       setMessage(response.data.message);
       navigate("/dashboard");

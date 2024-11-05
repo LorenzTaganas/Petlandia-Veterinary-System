@@ -7,7 +7,7 @@ exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
-    return res.status(401).json({ message: "Refresh token is required." });
+    return res.status(401).json({ message: "Invalid Credentials." });
   }
 
   try {
@@ -24,7 +24,7 @@ exports.refreshToken = async (req, res) => {
     }
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(404).json({ message: "Invalid Credentials." });
     }
 
     const accessToken = jwt.sign(
@@ -34,9 +34,10 @@ exports.refreshToken = async (req, res) => {
     );
 
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: "None",
+      path: "/",
     });
 
     res
@@ -83,7 +84,7 @@ exports.login = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(404).json({ message: "User not found." });
+    if (!user) return res.status(404).json({ message: "Invalid credentials." });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -99,14 +100,16 @@ exports.login = async (req, res) => {
     });
 
     res.cookie("accessToken", accessToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: "None",
+      path: "/",
     });
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
       sameSite: "None",
+      path: "/",
     });
 
     res.status(200).json({ message: "Login successful.", user });

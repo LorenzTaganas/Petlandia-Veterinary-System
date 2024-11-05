@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import placeholderImage from "../../assets/placeholder.png";
+import Cookies from "js-cookie";
 
 const HomeHeader = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get("accessToken");
+    setIsAuthenticated(!!token);
+  }, []);
+
   return (
     <header className="flex justify-between items-center p-4 text-black">
       <div className="flex items-center">
@@ -33,9 +41,9 @@ const HomeHeader = () => {
         </ul>
       </nav>
       <div className="flex items-center">
-        <Link to="/login">
+        <Link to={isAuthenticated ? "/dashboard" : "/login"}>
           <button className="bg-blue-500 text-white px-4 py-2 rounded">
-            Book Now
+            {isAuthenticated ? "Go to Dashboard" : "Book Now"}
           </button>
         </Link>
       </div>

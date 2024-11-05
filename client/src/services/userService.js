@@ -3,7 +3,12 @@ import axiosInstance from "./axiosInstance";
 export const getUserProfile = async () => {
   try {
     const response = await axiosInstance.get("/profile");
-    return response.data;
+    return {
+      ...response.data,
+      isAdmin: response.data.role === "Admin",
+      isDoctor: response.data.role === "Doctor",
+      isClient: response.data.role === "Client",
+    };
   } catch (error) {
     console.error("Error fetching user profile:", error);
     throw error;
