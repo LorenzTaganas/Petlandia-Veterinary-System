@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Tooltip from "@mui/material/Tooltip";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -20,7 +21,7 @@ import placeholder from "../../assets/placeholder.png";
 import axiosInstance from "../../services/axiosInstance";
 import { getUserProfile, getFullName } from "../../services/userService";
 
-const MainSidebar = () => {
+const MainSidebar = ({ setActiveComponent }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const MainSidebar = () => {
   }, []);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-  const handleProfileClick = () => console.log("Profile Clicked");
+  const handleProfileClick = () => setActiveComponent("Profile");
   const handleNotificationClick = (event) => {
     event.stopPropagation();
     console.log("Notification Clicked");
@@ -65,65 +66,63 @@ const MainSidebar = () => {
       {
         icon: <DashboardIcon />,
         label: "Dashboard",
-        onClick: () => console.log("Dashboard Clicked"),
+        onClick: () => setActiveComponent("Dashboard"),
+      },
+      {
+        icon: <EventAvailableIcon />,
+        label: "Scheduled Appointment",
+        onClick: () => setActiveComponent("ScheduledAppointments"),
+        roles: ["Staff"],
       },
       {
         icon: <AppointmentIcon />,
         label: "Appointment",
-        onClick: () => console.log("Appointment Requests Clicked"),
+        onClick: () => setActiveComponent("AppointmentRequests"),
         roles: ["Client", "Admin"],
         subItems: [
           {
             label: "Requests",
             icon: <PendingActionsIcon />,
-            onClick: () => console.log("Requests Clicked"),
+            onClick: () => setActiveComponent("AppointmentRequests"),
           },
           {
             label: "Scheduled",
             icon: <EventAvailableIcon />,
-            onClick: () => console.log("Scheduled Clicked"),
+            onClick: () => setActiveComponent("ScheduledAppointments"),
           },
         ],
       },
       {
         icon: <MedicalHistoryIcon />,
         label: "Medical History",
-        onClick: () => console.log("Medical History Clicked"),
+        onClick: () => setActiveComponent("MedicalHistory"),
       },
       {
         icon: <PaymentHistoryIcon />,
         label: "Payment History",
-        onClick: () => console.log("Payment History Clicked"),
+        onClick: () => setActiveComponent("PaymentHistory"),
       },
       {
         icon: <ReportIcon />,
         label: "Reports",
-        onClick: () => console.log("Reports Clicked"),
-        roles: ["Doctor", "Admin"],
+        onClick: () => setActiveComponent("Reports"),
+        roles: ["Staff", "Admin"],
       },
       {
         icon: <VideoLibraryIcon />,
         label: "Pet Grooming",
-        onClick: () => console.log("Pet Grooming Clicked"),
+        onClick: () => setActiveComponent("PetGrooming"),
       },
       {
         icon: <GroupIcon />,
         label: "Account Management",
-        onClick: () => console.log("Account Management Clicked"),
+        onClick: () => setActiveComponent("AccountManagement"),
         roles: ["Admin"],
-      },
-      {
-        icon: <EventAvailableIcon />,
-        label: "Scheduled Appointment",
-        onClick: () => console.log("Scheduled Appointment Clicked"),
-        roles: ["Doctor"],
       },
     ];
 
     return items.map((item, index) => {
-      if (item.roles) {
-        if (!item.roles.includes(user?.role)) return null;
-      }
+      if (item.roles && !item.roles.includes(user?.role)) return null;
       return (
         <SidebarItem
           key={index}
@@ -167,20 +166,24 @@ const MainSidebar = () => {
         } hover:bg-gray-200 cursor-pointer`}
         onClick={handleProfileClick}
       >
-        <AccountCircleIcon
-          fontSize="large"
-          style={{ height: "48px", width: "48px" }}
-        />
+        <Tooltip title="Profile" disableHoverListener={isOpen}>
+          <AccountCircleIcon
+            fontSize="large"
+            style={{ height: "48px", width: "48px" }}
+          />
+        </Tooltip>
         {isOpen && (
           <span className="text-gray-700 ml-4 text-lg">
             {getFullName(user)}{" "}
           </span>
         )}
         {isOpen && (
-          <NotificationsIcon
-            className="ml-auto text-gray-700 cursor-pointer"
-            onClick={handleNotificationClick}
-          />
+          <Tooltip title="Notifications" disableHoverListener={isOpen}>
+            <NotificationsIcon
+              className="ml-auto text-gray-700 cursor-pointer"
+              onClick={handleNotificationClick}
+            />
+          </Tooltip>
         )}
       </div>
       <nav className="flex flex-col mt-4 space-y-2 flex-grow">
@@ -211,35 +214,42 @@ const SidebarItem = ({ icon, label, isOpen, subItems, onClick, textColor }) => {
 
   return (
     <div>
-      <div
-        className={`flex items-center p-2 hover:bg-gray-200 cursor-pointer ${
-          !isOpen ? "justify-center" : "pl-6 pr-4"
-        }`}
-        onClick={subItems ? toggleSubmenu : onClick}
-      >
-        {icon}
-        {isOpen && (
-          <span className={`ml-4 text-gray-700 flex-grow ${textColor}`}>
-            {label}
-          </span>
-        )}
-        {isOpen && subItems && (
-          <span className="text-gray-500">
-            {isSubmenuOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-          </span>
-        )}
-      </div>
+      <Tooltip title={label} disableHoverListener={isOpen}>
+        <div
+          className={`flex items-center p-2 hover:bg-gray-200 cursor-pointer ${
+            !isOpen ? "justify-center" : "pl-6 pr-4"
+          }`}
+          onClick={subItems ? toggleSubmenu : onClick}
+        >
+          {icon}
+          {isOpen && (
+            <span className={`ml-4 text-gray-700 flex-grow ${textColor}`}>
+              {label}
+            </span>
+          )}
+          {isOpen && subItems && (
+            <span className="text-gray-500">
+              {isSubmenuOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+            </span>
+          )}
+        </div>
+      </Tooltip>
       {isOpen && isSubmenuOpen && subItems && (
-        <div className="pl-10">
+        <div className="ml-8 flex flex-col space-y-1">
           {subItems.map((subItem, index) => (
-            <div
+            <Tooltip
               key={index}
-              className="flex items-center p-2 text-gray-500 hover:bg-gray-200 hover:text-gray-700 cursor-pointer"
-              onClick={subItem.onClick}
+              title={subItem.label}
+              disableHoverListener={isOpen}
             >
-              {subItem.icon}
-              <span className="ml-4">{subItem.label}</span>
-            </div>
+              <div
+                className="flex items-center p-2 hover:bg-gray-300 cursor-pointer"
+                onClick={subItem.onClick}
+              >
+                {subItem.icon}
+                <span className="ml-4 text-gray-700">{subItem.label}</span>
+              </div>
+            </Tooltip>
           ))}
         </div>
       )}

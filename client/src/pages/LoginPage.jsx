@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import placeholderImage from "../../assets/placeholder.png";
-import Login from "../../components/AuthComponents/Login";
-import Signup from "../../components/AuthComponents/Signup";
+import placeholderImage from "../assets/placeholder.png";
+import Login from "../components/AuthComponents/Login";
+import Signup from "../components/AuthComponents/Signup";
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);

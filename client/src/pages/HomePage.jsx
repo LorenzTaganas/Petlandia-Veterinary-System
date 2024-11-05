@@ -1,11 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import placeholderImage from "../../assets/placeholder.png";
-import HomeHeader from "../../components/NavigationComponents/HomeHeader";
+import placeholderImage from "../assets/placeholder.png";
+import markerIcon from "../assets/mapmarker.png";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import markerIcon from "../../assets/mapmarker.png";
 
 const HomePage = () => {
   const customMarkerIcon = L.icon({
@@ -17,7 +16,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <HomeHeader />
       <main className="flex-grow">
         <section className="flex items-center h-[calc(100vh-64px)] bg-gray-400">
           <div className="w-1/2 p-8">

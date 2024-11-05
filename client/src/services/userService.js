@@ -6,7 +6,7 @@ export const getUserProfile = async () => {
     return {
       ...response.data,
       isAdmin: response.data.role === "Admin",
-      isDoctor: response.data.role === "Doctor",
+      isStaff: response.data.role === "Staff",
       isClient: response.data.role === "Client",
     };
   } catch (error) {
