@@ -2,28 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import MenuIcon from "@mui/icons-material/Menu";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AppointmentIcon from "@mui/icons-material/CalendarToday";
 import MedicalHistoryIcon from "@mui/icons-material/MedicalServices";
 import PaymentHistoryIcon from "@mui/icons-material/Payment";
 import ReportIcon from "@mui/icons-material/Assessment";
 import HomeIcon from "@mui/icons-material/Home";
-import LogoutIcon from "@mui/icons-material/Logout";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import GroupIcon from "@mui/icons-material/Group";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ChevronDownIcon from "@mui/icons-material/ExpandMore";
 import placeholder from "../../assets/placeholder.png";
-import axiosInstance from "../../services/axiosInstance";
 import { getUserProfile, getFullName } from "../../services/userService";
 
-const MainSidebar = ({ setActiveComponent }) => {
+const MainSidebar = ({ setActiveComponent, activeComponent }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [user, setUser] = useState(null);
+  const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,30 +33,15 @@ const MainSidebar = ({ setActiveComponent }) => {
         console.error("Failed to fetch user profile:", error);
       }
     };
-
     fetchUserProfile();
   }, []);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-  const handleProfileClick = () => setActiveComponent("Profile");
-  const handleNotificationClick = (event) => {
-    event.stopPropagation();
-    console.log("Notification Clicked");
-  };
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/logout", {});
-      navigate("/");
-    } catch (err) {
-      console.error(
-        "Logout error:",
-        err.response ? err.response.data.message : "Error logging out"
-      );
-    }
-  };
 
-  const handleReturnHome = () => {
-    navigate("/");
+  const handleReturnHome = () => navigate("/");
+
+  const handleItemClick = (label) => {
+    setActiveComponent(label);
   };
 
   const renderSidebarItems = () => {
@@ -66,57 +49,58 @@ const MainSidebar = ({ setActiveComponent }) => {
       {
         icon: <DashboardIcon />,
         label: "Dashboard",
-        onClick: () => setActiveComponent("Dashboard"),
+        onClick: () => handleItemClick("Dashboard"),
       },
       {
         icon: <EventAvailableIcon />,
         label: "Scheduled Appointment",
-        onClick: () => setActiveComponent("ScheduledAppointments"),
+        onClick: () => handleItemClick("ScheduledAppointments"),
         roles: ["Staff"],
       },
       {
         icon: <AppointmentIcon />,
         label: "Appointment",
-        onClick: () => setActiveComponent("AppointmentRequests"),
+        onClick: () => setIsAppointmentOpen(!isAppointmentOpen),
         roles: ["Client", "Admin"],
         subItems: [
           {
             label: "Requests",
             icon: <PendingActionsIcon />,
-            onClick: () => setActiveComponent("AppointmentRequests"),
+            onClick: () => handleItemClick("AppointmentRequests"),
           },
           {
             label: "Scheduled",
             icon: <EventAvailableIcon />,
-            onClick: () => setActiveComponent("ScheduledAppointments"),
+            onClick: () => handleItemClick("AppointmentSchedule"),
           },
         ],
+        isOpen: isAppointmentOpen,
       },
       {
         icon: <MedicalHistoryIcon />,
         label: "Medical History",
-        onClick: () => setActiveComponent("MedicalHistory"),
+        onClick: () => handleItemClick("MedicalHistory"),
       },
       {
         icon: <PaymentHistoryIcon />,
         label: "Payment History",
-        onClick: () => setActiveComponent("PaymentHistory"),
+        onClick: () => handleItemClick("PaymentHistory"),
       },
       {
         icon: <ReportIcon />,
         label: "Reports",
-        onClick: () => setActiveComponent("Reports"),
+        onClick: () => handleItemClick("Reports"),
         roles: ["Staff", "Admin"],
       },
       {
         icon: <VideoLibraryIcon />,
         label: "Pet Grooming",
-        onClick: () => setActiveComponent("PetGrooming"),
+        onClick: () => handleItemClick("PetGrooming"),
       },
       {
         icon: <GroupIcon />,
         label: "Account Management",
-        onClick: () => setActiveComponent("AccountManagement"),
+        onClick: () => handleItemClick("AccountManagement"),
         roles: ["Admin"],
       },
     ];
@@ -131,123 +115,109 @@ const MainSidebar = ({ setActiveComponent }) => {
           isOpen={isOpen}
           onClick={item.onClick}
           subItems={item.subItems}
+          isOpenNested={item.isOpen}
+          toggleNested={item.onClick}
+          isAppointment={item.label === "Appointment"}
+          isAppointmentOpen={isAppointmentOpen}
         />
       );
     });
   };
 
   return (
-    <div
-      className={`flex flex-col h-screen bg-gray-100 ${
-        isOpen ? "w-64" : "w-20"
-      } transition-width duration-300`}
-    >
+    <div className="flex flex-col h-screen bg-[#CCC7FF]">
       <div
-        className={`flex items-center ${
-          isOpen ? "justify-between" : "justify-center"
-        } p-4`}
+        className={`flex flex-col h-screen bg-[#CCC7FF] ${
+          isOpen ? "w-64" : "w-20"
+        } transition-width duration-300`}
       >
-        {isOpen && (
-          <div className="flex justify-center flex-grow">
-            <img src={placeholder} alt="Logo" className="h-8" />
-          </div>
-        )}
-        <button
-          onClick={toggleSidebar}
-          className={`text-black ${!isOpen ? "mx-auto" : ""}`}
-        >
-          <MenuIcon fontSize="large" />
-        </button>
-      </div>
-      <hr className="border-gray-300 my-2" />
-      <div
-        className={`flex items-center p-4 ${
-          !isOpen ? "justify-center" : "pl-4"
-        } hover:bg-gray-200 cursor-pointer`}
-        onClick={handleProfileClick}
-      >
-        <Tooltip title="Profile" disableHoverListener={isOpen}>
-          <AccountCircleIcon
-            fontSize="large"
-            style={{ height: "48px", width: "48px" }}
+        <div className="flex items-center justify-between p-4">
+          {isOpen && (
+            <div className="flex justify-center flex-grow">
+              <img src={placeholder} alt="Logo" className="h-8" />
+            </div>
+          )}
+          <button
+            onClick={toggleSidebar}
+            className={`text-black ${!isOpen ? "mx-auto" : ""}`}
+          >
+            <MenuIcon fontSize="large" />
+          </button>
+        </div>
+        <hr className="border-gray-300 my-2" />
+        <nav className="flex flex-col mt-4 space-y-2 flex-grow">
+          {renderSidebarItems()}
+        </nav>
+        <div className="mt-auto space-y-2 mb-4">
+          <SidebarItem
+            icon={<HomeIcon />}
+            label="Return Home"
+            isOpen={isOpen}
+            onClick={handleReturnHome}
           />
-        </Tooltip>
-        {isOpen && (
-          <span className="text-gray-700 ml-4 text-lg">
-            {getFullName(user)}{" "}
-          </span>
-        )}
-        {isOpen && (
-          <Tooltip title="Notifications" disableHoverListener={isOpen}>
-            <NotificationsIcon
-              className="ml-auto text-gray-700 cursor-pointer"
-              onClick={handleNotificationClick}
-            />
-          </Tooltip>
-        )}
-      </div>
-      <nav className="flex flex-col mt-4 space-y-2 flex-grow">
-        {renderSidebarItems()}
-      </nav>
-      <div className="mt-auto space-y-2 mb-4">
-        <SidebarItem
-          icon={<HomeIcon />}
-          label="Return Home"
-          isOpen={isOpen}
-          onClick={handleReturnHome}
-        />
-        <SidebarItem
-          icon={<LogoutIcon className="text-red-500" />}
-          label="Logout"
-          isOpen={isOpen}
-          textColor="text-red-500"
-          onClick={handleLogout}
-        />
+        </div>
       </div>
     </div>
   );
 };
 
-const SidebarItem = ({ icon, label, isOpen, subItems, onClick, textColor }) => {
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const toggleSubmenu = () => setIsSubmenuOpen(!isSubmenuOpen);
-
+const SidebarItem = ({
+  icon,
+  label,
+  isOpen,
+  subItems,
+  isOpenNested,
+  toggleNested,
+  onClick,
+  isAppointment,
+  isAppointmentOpen,
+}) => {
   return (
     <div>
-      <Tooltip title={label} disableHoverListener={isOpen}>
+      <Tooltip
+        title={!isOpen ? label : ""}
+        disableHoverListener={isOpen}
+        placement="right"
+      >
         <div
           className={`flex items-center p-2 hover:bg-gray-200 cursor-pointer ${
             !isOpen ? "justify-center" : "pl-6 pr-4"
           }`}
-          onClick={subItems ? toggleSubmenu : onClick}
+          onClick={subItems ? toggleNested : onClick}
         >
           {icon}
-          {isOpen && (
-            <span className={`ml-4 text-gray-700 flex-grow ${textColor}`}>
-              {label}
-            </span>
+          {isOpen && <span className="ml-4 text-gray-700">{label}</span>}
+          {isAppointment && subItems && isOpen && (
+            <div className="ml-auto">
+              {isAppointmentOpen ? (
+                <ChevronDownIcon className="text-black" />
+              ) : (
+                <ChevronRightIcon className="text-black" />
+              )}
+            </div>
           )}
-          {isOpen && subItems && (
-            <span className="text-gray-500">
-              {isSubmenuOpen ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-            </span>
+          {subItems && isOpen && !isAppointment && (
+            <ExpandMoreIcon className="ml-auto text-black" />
           )}
         </div>
       </Tooltip>
-      {isOpen && isSubmenuOpen && subItems && (
-        <div className="ml-8 flex flex-col space-y-1">
+      {subItems && isOpenNested && (
+        <div className="ml-10 space-y-2">
           {subItems.map((subItem, index) => (
             <Tooltip
               key={index}
-              title={subItem.label}
+              title={isOpen ? "" : subItem.label}
               disableHoverListener={isOpen}
+              placement="right"
             >
               <div
                 className="flex items-center p-2 hover:bg-gray-300 cursor-pointer"
                 onClick={subItem.onClick}
               >
                 {subItem.icon}
-                <span className="ml-4 text-gray-700">{subItem.label}</span>
+                {isOpen && (
+                  <span className="ml-4 text-gray-700">{subItem.label}</span>
+                )}
               </div>
             </Tooltip>
           ))}
