@@ -1,5 +1,5 @@
 Main Page
-![Petlandia- Dashboard](https://github.com/user-attachments/assets/2b3c52fb-25b1-4f35-a96e-1f0e40adbd00)
+![Petlandia- Dashboard](https://github.com/user-attachments/assets/172ae787-307c-46f9-b651-f37875d1d989)
 
 Home Page
 ![Petlandia- Home](https://github.com/user-attachments/assets/946350c4-c50e-4a8a-ab7d-620879c9438f)
