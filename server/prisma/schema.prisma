@@ -25,7 +25,6 @@ model User {
   updatedAt   DateTime @updatedAt
 }
 
-
 model Blacklist {
   id           Int      @id @default(autoincrement())
   token        String   @unique

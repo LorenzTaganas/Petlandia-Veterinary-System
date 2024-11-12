@@ -2,10 +2,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const db = require("./src/database/db");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
+
+// const db = require("./src/database/db");
 
 const http = require("http");
 const { WebSocketServer } = require("ws");
