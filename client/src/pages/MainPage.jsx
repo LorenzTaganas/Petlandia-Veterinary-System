@@ -50,14 +50,16 @@ const MainPage = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       <MainSidebar setActiveComponent={setActiveComponent} />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <MainHeader
           setActiveComponent={setActiveComponent}
           activeComponent={formatComponentName(activeComponent)}
         />
-        <div className="flex-grow p-4">{renderActiveComponent()}</div>
+        <div className="flex-grow overflow-y-auto p-4">
+          {renderActiveComponent()}
+        </div>
       </div>
     </div>
   );

@@ -155,6 +155,42 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  const userId = req.user.id;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match." });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(403).json({ message: "Incorrect current password." });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Server error.", error });
+  }
+};
+
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -176,6 +212,31 @@ exports.getUserProfile = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found." });
 
     res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error.", error });
+  }
+};
+
+exports.updateUserProfile = async (req, res) => {
+  const { firstName, lastName, email, contactNo } = req.body;
+  const userId = req.user.id;
+
+  if (!firstName || !lastName || !email || !contactNo) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName,
+        lastName,
+        email,
+        contactNo,
+      },
+    });
+
+    res.status(200).json({ message: "Profile updated successfully.", user });
   } catch (error) {
     res.status(500).json({ message: "Server error.", error });
   }

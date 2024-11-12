@@ -74,8 +74,16 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
           onClick={handleUserSectionClick}
         >
           <div className="flex items-center border border-[#968AFF] rounded-md px-4 py-2">
-            <AccountCircleIcon fontSize="large" />
-            {fullName && <span className="ml-2">{fullName}</span>}
+            <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+              <span className="text-sm font-bold text-white">
+                {user
+                  ? (
+                      user.firstName.charAt(0) + user.lastName.charAt(0)
+                    ).toUpperCase()
+                  : "U"}
+              </span>
+            </div>
+            {fullName && <span className="ml-2 text-sm">{fullName}</span>}
           </div>
 
           {isDropdownOpen && (

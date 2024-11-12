@@ -11,6 +11,8 @@ router.post("/logout", userController.logout);
 router.get("/users", authenticate, userController.getAllUsers);
 router.get("/users/:id", authenticate, userController.getUserById);
 router.get("/profile", authenticate, userController.getUserProfile);
+router.put("change-password", authenticate, userController.changePassword);
+router.put("/update-profile", authenticate, userController.updateUserProfile);
 
 // Testing purposes only, soon to be deleted xD
 router.get("/dashboard", authenticate, (req, res) => {
