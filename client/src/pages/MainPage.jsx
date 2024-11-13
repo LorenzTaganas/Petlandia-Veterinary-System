@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import MainSidebar from "../components/NavigationComponents/MainSidebar";
 import MainHeader from "../components/NavigationComponents/MainHeader";
-import AccountManagement from "../components/MainComponents/AccountManagement";
 import AppointmentRequests from "../components/MainComponents/AppointmentRequests";
 import Dashboard from "../components/MainComponents/Dashboard";
 import MedicalHistory from "../components/MainComponents/MedicalHistory";
@@ -11,6 +10,10 @@ import Profile from "../components/MainComponents/Profile";
 import Reports from "../components/MainComponents/Reports";
 import AppointmentSchedule from "../components/MainComponents/AppointmentSchedule";
 import ChangePassword from "../components/MainComponents/ChangePassword";
+import AdminAccounts from "../components/MainComponents/AdminAccounts";
+import StaffAccounts from "../components/MainComponents/StaffAccounts";
+import ClientAccounts from "../components/MainComponents/ClientAccounts";
+// import AccountManagement from "../components/MainComponents/AccountManagement";
 
 const MainPage = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");
@@ -42,8 +45,14 @@ const MainPage = () => {
         return <ChangePassword />;
       case "PetGrooming":
         return <PetGrooming />;
-      case "AccountManagement":
-        return <AccountManagement />;
+      case "AdminAccounts":
+        return <AdminAccounts />;
+      case "StaffAccounts":
+        return <StaffAccounts />;
+      case "ClientAccounts":
+        return <ClientAccounts />;
+      // case "AccountManagement":
+      //   return <AccountManagement />;
       default:
         return <Dashboard />;
     }

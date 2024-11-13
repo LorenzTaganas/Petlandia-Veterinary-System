@@ -12,16 +12,19 @@ import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 import GroupIcon from "@mui/icons-material/Group";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import PersonIcon from "@mui/icons-material/Person";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronDownIcon from "@mui/icons-material/ExpandMore";
 import placeholder from "../../assets/placeholder.png";
-import { getUserProfile, getFullName } from "../../services/userService";
+import { getUserProfile } from "../../services/userService";
 
-const MainSidebar = ({ setActiveComponent, activeComponent }) => {
+const MainSidebar = ({ setActiveComponent }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [user, setUser] = useState(null);
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
+  const [isAccountManagementOpen, setIsAccountManagementOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,8 +103,26 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
       {
         icon: <GroupIcon />,
         label: "Account Management",
-        onClick: () => handleItemClick("AccountManagement"),
+        onClick: () => setIsAccountManagementOpen(!isAccountManagementOpen),
         roles: ["Admin"],
+        subItems: [
+          {
+            label: "Admin Accounts",
+            icon: <AdminPanelSettingsIcon />,
+            onClick: () => handleItemClick("AdminAccounts"),
+          },
+          {
+            label: "Staff Accounts",
+            icon: <PersonAddIcon />,
+            onClick: () => handleItemClick("StaffAccounts"),
+          },
+          {
+            label: "Client Accounts",
+            icon: <PersonIcon />,
+            onClick: () => handleItemClick("ClientAccounts"),
+          },
+        ],
+        isOpen: isAccountManagementOpen,
       },
     ];
 
@@ -128,7 +149,7 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
     <div className="flex flex-col h-screen bg-[#CCC7FF]">
       <div
         className={`flex flex-col h-screen bg-[#CCC7FF] ${
-          isOpen ? "w-64" : "w-20"
+          isOpen ? "w-72" : "w-20"
         } transition-width duration-300`}
       >
         <div className="flex items-center justify-between p-4">
@@ -197,7 +218,13 @@ const SidebarItem = ({
             </div>
           )}
           {subItems && isOpen && !isAppointment && (
-            <ExpandMoreIcon className="ml-auto text-black" />
+            <div className="ml-auto">
+              {isOpenNested ? (
+                <ChevronDownIcon className="text-black" />
+              ) : (
+                <ChevronRightIcon className="text-black" />
+              )}
+            </div>
           )}
         </div>
       </Tooltip>

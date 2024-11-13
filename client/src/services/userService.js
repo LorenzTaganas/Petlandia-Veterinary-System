@@ -30,3 +30,13 @@ const toTitleCase = (str) => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 };
+
+export const getUsersByRole = async (role) => {
+  try {
+    const response = await axiosInstance.get(`/users/role/${role}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users by role:", error);
+    throw error;
+  }
+};

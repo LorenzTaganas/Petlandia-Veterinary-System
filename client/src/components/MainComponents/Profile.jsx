@@ -53,7 +53,7 @@ const Profile = () => {
     ) {
       try {
         await axiosInstance.put("/update-profile", updatedUser);
-        setUser(updatedUser);
+        setUser({ ...updatedUser, role: user.role });
         setEditable(false);
       } catch (error) {
         console.error("Error saving profile:", error);
@@ -132,22 +132,21 @@ const Profile = () => {
             />
           </div>
         </div>
-
         <div className="flex justify-end mt-6">
-          <button
-            onClick={handleEditClick}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mr-4"
-          >
-            {editable ? "Cancel" : "Edit"}
-          </button>
-          {editable && (
+          {editable ? (
             <button
-              onClick={handleSave}
-              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+              onClick={handleEditClick}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 mr-4"
             >
-              Save
+              Cancel
             </button>
-          )}
+          ) : null}
+          <button
+            onClick={editable ? handleSave : handleEditClick}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            {editable ? "Save" : "Edit"}
+          </button>
         </div>
       </div>
     </div>
