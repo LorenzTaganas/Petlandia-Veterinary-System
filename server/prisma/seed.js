@@ -23,7 +23,7 @@ async function main() {
         password:
           "$2a$10$alQ3HCF2iiAYT2gSOIJNxeeS.PwuUt6AXzIE83kXOLPukNeaoaRra",
         contactNo: "1234567891",
-        role: "Admin",
+        role: "Staff",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

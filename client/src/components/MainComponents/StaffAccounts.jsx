@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../services/axiosInstance";
 import { getFullName } from "../../services/userService";
 import { IconButton, Tooltip } from "@mui/material";
+import { Edit, Check, Clear, Add, Lock } from "@mui/icons-material";
 import {
-  VisibilityOff,
-  Visibility,
-  Edit,
-  Check,
-  Clear,
-  Add,
-  Lock,
-} from "@mui/icons-material";
+  updateAccount,
+  toggleAccountStatus,
+  changeAccountPassword,
+  getStaffs,
+  addStaffAccount,
+} from "../../services/accountService";
+import AddStaffModal from "../modals/AddStaffModal";
+import ChangePasswordModal from "../modals/ChangePasswordModal";
+import EditStaffModal from "../modals/EditStaffModal";
 
 const StaffAccounts = () => {
   const [staffs, setStaffs] = useState([]);
@@ -36,17 +37,14 @@ const StaffAccounts = () => {
 
   const fetchStaffs = async () => {
     setLoading(true);
-    const response = await axiosInstance.get("/users/role/Staff");
-    setStaffs(response.data);
+    const data = await getStaffs();
+    setStaffs(data);
     setLoading(false);
   };
 
-  const handleToggleUserStatus = async (id, isActive) => {
+  const handleToggleAccountStatus = async (id, isActive) => {
     try {
-      await axiosInstance.put("/admin/account-status", {
-        id,
-        isActive,
-      });
+      await toggleAccountStatus(id, isActive);
       setStaffs((prevStaffs) =>
         prevStaffs.map((staff) =>
           staff.id === id ? { ...staff, isActive: !staff.isActive } : staff
@@ -57,21 +55,10 @@ const StaffAccounts = () => {
     }
   };
 
-  const handleEditUser = (staff) => {
-    setSelectedStaff({ ...staff });
-    setOpenEditModal(true);
-  };
-
-  const handleSaveUser = async () => {
+  const handleUpdateAccount = async () => {
     if (!selectedStaff) return;
     try {
-      await axiosInstance.put("/admin/update-account", {
-        id: selectedStaff.id,
-        firstName: selectedStaff.firstName,
-        lastName: selectedStaff.lastName,
-        email: selectedStaff.email,
-        contactNo: selectedStaff.contactNo,
-      });
+      await updateAccount(selectedStaff);
       setStaffs((prevStaffs) =>
         prevStaffs.map((staff) =>
           staff.id === selectedStaff.id ? { ...selectedStaff } : staff
@@ -83,36 +70,40 @@ const StaffAccounts = () => {
     }
   };
 
-  const handleChangePassword = async () => {
+  const handleChangeAccountPassword = async () => {
     if (newPassword === confirmPassword) {
       try {
-        const response = await axiosInstance.put("/admin/account-password", {
-          id: selectedStaff.id,
-          newPassword,
-        });
-        if (response.status === 200) {
-          setOpenPasswordModal(false);
-          setNewPassword("");
-          setConfirmPassword("");
-        }
+        await changeAccountPassword(selectedStaff.id, newPassword);
+        setOpenPasswordModal(false);
+        setNewPassword("");
+        setConfirmPassword("");
       } catch (error) {
         console.error("Error changing password:", error);
       }
-    } else {
     }
   };
 
-  const handleCloseModal = () => {
-    setOpenEditModal(false);
-    setOpenPasswordModal(false);
-    setOpenAddStaffModal(false);
-    setNewPassword("");
-    setConfirmPassword("");
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setContactNo("");
-    setPassword("");
+  const handleAddStaffAccount = async () => {
+    try {
+      await addStaffAccount(firstName, lastName, email, contactNo, password);
+      setOpenAddStaffModal(false);
+      fetchStaffs();
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setContactNo("");
+      setPassword("");
+      setConfirmPassword("");
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+    } catch (error) {
+      console.error("Error adding staff:", error);
+    }
+  };
+
+  const handleEditUser = (staff) => {
+    setSelectedStaff({ ...staff });
+    setOpenEditModal(true);
   };
 
   const handleOpenPasswordModal = (staff) => {
@@ -122,25 +113,23 @@ const StaffAccounts = () => {
     setConfirmPassword("");
   };
 
-  const handleAddStaff = async () => {
-    try {
-      await axiosInstance.post("/admin/create-staff", {
-        firstName,
-        lastName,
-        email,
-        contactNo,
-        password,
-      });
-      setOpenAddStaffModal(false);
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setContactNo("");
-      setPassword("");
-      fetchStaffs();
-    } catch (error) {
-      console.error("Error adding staff:", error);
-    }
+  const handleCloseModal = () => {
+    setOpenEditModal(false);
+    setOpenPasswordModal(false);
+    setOpenAddStaffModal(false);
+    setNewPassword("");
+    setConfirmPassword("");
+    setPassword("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setShowNewPassword(false);
+    setConfirmPassword("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setContactNo("");
   };
 
   return (
@@ -204,7 +193,7 @@ const StaffAccounts = () => {
                       >
                         <IconButton
                           onClick={() =>
-                            handleToggleUserStatus(staff.id, staff.isActive)
+                            handleToggleAccountStatus(staff.id, staff.isActive)
                           }
                           style={{
                             backgroundColor: staff.isActive ? "green" : "red",
@@ -229,277 +218,50 @@ const StaffAccounts = () => {
         </div>
       )}
 
-      {openEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-[32rem]">
-            <h2 className="text-xl font-semibold mb-4">Edit User</h2>
-            <div className="flex space-x-4">
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  First Name *
-                </label>
-                <input
-                  type="text"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={selectedStaff?.firstName || ""}
-                  onChange={(e) =>
-                    setSelectedStaff({
-                      ...selectedStaff,
-                      firstName: e.target.value,
-                    })
-                  }
-                  placeholder="First Name"
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Last Name *
-                </label>
-                <input
-                  type="text"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={selectedStaff?.lastName || ""}
-                  onChange={(e) =>
-                    setSelectedStaff({
-                      ...selectedStaff,
-                      lastName: e.target.value,
-                    })
-                  }
-                  placeholder="Last Name"
-                />
-              </div>
-            </div>
-            <div className="flex space-x-4">
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={selectedStaff?.email || ""}
-                  onChange={(e) =>
-                    setSelectedStaff({
-                      ...selectedStaff,
-                      email: e.target.value,
-                    })
-                  }
-                  placeholder="Email"
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Contact Number *
-                </label>
-                <input
-                  type="text"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={selectedStaff?.contactNo || ""}
-                  onChange={(e) =>
-                    setSelectedStaff({
-                      ...selectedStaff,
-                      contactNo: e.target.value,
-                    })
-                  }
-                  placeholder="Contact Number"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-4 mt-4">
-              <button
-                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-                onClick={handleCloseModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                onClick={handleSaveUser}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <EditStaffModal
+        open={openEditModal}
+        onClose={handleCloseModal}
+        selectedStaff={selectedStaff}
+        setSelectedStaff={setSelectedStaff}
+        onSave={handleUpdateAccount}
+      />
 
-      {openPasswordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-1">
-                New Password *
-              </label>
-              <div className="relative">
-                <input
-                  type={showNewPassword ? "text" : "password"}
-                  className="w-full p-2 border rounded"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="New Password"
-                />
-                <div
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                  {showNewPassword ? <Visibility /> : <VisibilityOff />}
-                </div>
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium mb-1">
-                Confirm Password *
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="w-full p-2 border rounded"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm Password"
-                />
-                <div
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-4 mt-4">
-              <button
-                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-                onClick={handleCloseModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                onClick={handleChangePassword}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ChangePasswordModal
+        open={openPasswordModal}
+        onClose={handleCloseModal}
+        selectedStaff={selectedStaff}
+        newPassword={newPassword}
+        setNewPassword={setNewPassword}
+        confirmPassword={confirmPassword}
+        setConfirmPassword={setConfirmPassword}
+        showNewPassword={showNewPassword}
+        setShowNewPassword={setShowNewPassword}
+        showConfirmPassword={showConfirmPassword}
+        setShowConfirmPassword={setShowConfirmPassword}
+        onSave={handleChangeAccountPassword}
+      />
 
-      {openAddStaffModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-[32rem]">
-            <h2 className="text-xl font-semibold mb-4">Add Staff</h2>
-            <div className="flex space-x-4">
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  First Name *
-                </label>
-                <input
-                  type="text"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="First Name"
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Last Name *
-                </label>
-                <input
-                  type="text"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Last Name"
-                />
-              </div>
-            </div>
-            <div className="flex space-x-4">
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
-                />
-              </div>
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Contact Number *
-                </label>
-                <input
-                  type="text"
-                  className="w-full mb-4 p-2 border rounded"
-                  value={contactNo}
-                  onChange={(e) => setContactNo(e.target.value)}
-                  placeholder="Contact Number"
-                />
-              </div>
-            </div>
-            <div className="flex space-x-4">
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Password *
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    className="w-full mb-4 p-2 border rounded"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                  />
-                  <div
-                    className="absolute top-1/3 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </div>
-                </div>
-              </div>
-              <div className="w-1/2">
-                <label className="block text-gray-700 font-medium mb-1">
-                  Confirm Password *
-                </label>
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    className="w-full mb-4 p-2 border rounded"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm Password"
-                  />
-                  <div
-                    className="absolute top-1/3 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end mt-4 space-x-4">
-              <button
-                className="bg-gray-500 text-white py-2 px-4 rounded"
-                onClick={handleCloseModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 text-white py-2 px-4 rounded"
-                onClick={handleAddStaff}
-              >
-                Add Staff
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AddStaffModal
+        open={openAddStaffModal}
+        onClose={handleCloseModal}
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        email={email}
+        setEmail={setEmail}
+        contactNo={contactNo}
+        setContactNo={setContactNo}
+        password={password}
+        setPassword={setPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        confirmPassword={confirmPassword}
+        showConfirmPassword={showConfirmPassword}
+        setShowConfirmPassword={setShowConfirmPassword}
+        setConfirmPassword={setConfirmPassword}
+        onAddStaff={handleAddStaffAccount}
+      />
     </div>
   );
 };

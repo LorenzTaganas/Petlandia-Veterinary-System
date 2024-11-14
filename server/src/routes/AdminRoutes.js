@@ -17,6 +17,7 @@ router.put(
   authenticate,
   adminController.updateAccountProfile
 );
+// router.put("/update-staff", adminController.updateStaffAccount);
 router.put(
   "/account-status",
   authenticate,
