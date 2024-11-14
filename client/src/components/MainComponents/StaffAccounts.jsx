@@ -160,59 +160,75 @@ const StaffAccounts = () => {
               </tr>
             </thead>
             <tbody>
-              {staffs.map((staff, index) => (
-                <tr
-                  key={staff.id}
-                  className={`${
-                    index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                  } shadow-md`}
-                >
-                  <td className="px-4 py-3 text-center rounded-l-lg">
-                    {getFullName(staff)}
-                  </td>
-                  <td className="px-4 py-3 text-center">{staff.email}</td>
-                  <td className="px-4 py-3 text-center">{staff.contactNo}</td>
-                  <td className="px-2 py-3 text-center rounded-r-lg">
-                    <div className="flex justify-center gap-1.5">
-                      <Tooltip title="Edit User">
-                        <IconButton onClick={() => handleEditUser(staff)}>
-                          <Edit />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Change Password">
-                        <IconButton
-                          onClick={() => handleOpenPasswordModal(staff)}
-                        >
-                          <Lock />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip
-                        title={staff.isActive ? "Disable User" : "Enable User"}
-                      >
-                        <IconButton
-                          onClick={() =>
-                            handleToggleAccountStatus(staff.id, staff.isActive)
-                          }
-                          style={{
-                            backgroundColor: staff.isActive ? "green" : "red",
-                            borderRadius: "50%",
-                            color: "white",
-                            padding: "4px",
-                            width: "1.8rem",
-                            height: "1.8rem",
-                            marginTop: "0.3rem",
-                            marginInline: "0.5rem",
-                          }}
-                        >
-                          {staff.isActive ? <Check /> : <Clear />}
-                        </IconButton>
-                      </Tooltip>
-                    </div>
+              {staffs.length === 0 ? (
+                <tr className="bg-gray-100">
+                  <td
+                    colSpan="4"
+                    className="px-4 py-3 text-center text-lg font-semibold text-gray-500 rounded-l-lg rounded-r-lg"
+                  >
+                    No Data Available
                   </td>
                 </tr>
-              ))}
+              ) : (
+                staffs.map((staff, index) => (
+                  <tr
+                    key={staff.id}
+                    className={`${
+                      index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                    } shadow-md`}
+                  >
+                    <td className="px-4 py-3 text-center rounded-l-lg">
+                      {getFullName(staff)}
+                    </td>
+                    <td className="px-4 py-3 text-center">{staff.email}</td>
+                    <td className="px-4 py-3 text-center">{staff.contactNo}</td>
+                    <td className="px-2 py-3 text-center rounded-r-lg">
+                      <div className="flex justify-center gap-1.5">
+                        <Tooltip title="Edit User">
+                          <IconButton onClick={() => handleEditUser(staff)}>
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Change Password">
+                          <IconButton
+                            onClick={() => handleOpenPasswordModal(staff)}
+                          >
+                            <Lock />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip
+                          title={
+                            staff.isActive ? "Disable User" : "Enable User"
+                          }
+                        >
+                          <IconButton
+                            onClick={() =>
+                              handleToggleAccountStatus(
+                                staff.id,
+                                staff.isActive
+                              )
+                            }
+                            style={{
+                              backgroundColor: staff.isActive ? "green" : "red",
+                              borderRadius: "50%",
+                              color: "white",
+                              padding: "4px",
+                              width: "1.8rem",
+                              height: "1.8rem",
+                              marginTop: "0.3rem",
+                              marginInline: "0.5rem",
+                            }}
+                          >
+                            {staff.isActive ? <Check /> : <Clear />}
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -287,10 +287,16 @@ exports.updateUserProfile = async (req, res) => {
 
 exports.getUsersByRole = async (req, res) => {
   const { role } = req.params;
+  const currentUserId = req.user.id;
 
   try {
     const users = await prisma.user.findMany({
-      where: { role },
+      where: {
+        role,
+        id: {
+          not: currentUserId,
+        },
+      },
     });
     res.status(200).json(users);
   } catch (error) {

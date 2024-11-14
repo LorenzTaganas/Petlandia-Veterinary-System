@@ -160,59 +160,75 @@ const AdminAccounts = () => {
               </tr>
             </thead>
             <tbody>
-              {admins.map((admin, index) => (
-                <tr
-                  key={admin.id}
-                  className={`${
-                    index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                  } shadow-md`}
-                >
-                  <td className="px-4 py-3 text-center rounded-l-lg">
-                    {getFullName(admin)}
-                  </td>
-                  <td className="px-4 py-3 text-center">{admin.email}</td>
-                  <td className="px-4 py-3 text-center">{admin.contactNo}</td>
-                  <td className="px-2 py-3 text-center rounded-r-lg">
-                    <div className="flex justify-center gap-1.5">
-                      <Tooltip title="Edit User">
-                        <IconButton onClick={() => handleEditUser(admin)}>
-                          <Edit />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Change Password">
-                        <IconButton
-                          onClick={() => handleOpenPasswordModal(admin)}
-                        >
-                          <Lock />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip
-                        title={admin.isActive ? "Disable User" : "Enable User"}
-                      >
-                        <IconButton
-                          onClick={() =>
-                            handleToggleAccountStatus(admin.id, admin.isActive)
-                          }
-                          style={{
-                            backgroundColor: admin.isActive ? "green" : "red",
-                            borderRadius: "50%",
-                            color: "white",
-                            padding: "4px",
-                            width: "1.8rem",
-                            height: "1.8rem",
-                            marginTop: "0.3rem",
-                            marginInline: "0.5rem",
-                          }}
-                        >
-                          {admin.isActive ? <Check /> : <Clear />}
-                        </IconButton>
-                      </Tooltip>
-                    </div>
+              {admins.length === 0 ? (
+                <tr className="bg-gray-100">
+                  <td
+                    colSpan="4"
+                    className="px-4 py-3 text-center text-lg font-semibold text-gray-500 rounded-l-lg rounded-r-lg"
+                  >
+                    No Data Available
                   </td>
                 </tr>
-              ))}
+              ) : (
+                admins.map((admin, index) => (
+                  <tr
+                    key={admin.id}
+                    className={`${
+                      index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                    } shadow-md`}
+                  >
+                    <td className="px-4 py-3 text-center rounded-l-lg">
+                      {getFullName(admin)}
+                    </td>
+                    <td className="px-4 py-3 text-center">{admin.email}</td>
+                    <td className="px-4 py-3 text-center">{admin.contactNo}</td>
+                    <td className="px-2 py-3 text-center rounded-r-lg">
+                      <div className="flex justify-center gap-1.5">
+                        <Tooltip title="Edit User">
+                          <IconButton onClick={() => handleEditUser(admin)}>
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Change Password">
+                          <IconButton
+                            onClick={() => handleOpenPasswordModal(admin)}
+                          >
+                            <Lock />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip
+                          title={
+                            admin.isActive ? "Disable User" : "Enable User"
+                          }
+                        >
+                          <IconButton
+                            onClick={() =>
+                              handleToggleAccountStatus(
+                                admin.id,
+                                admin.isActive
+                              )
+                            }
+                            style={{
+                              backgroundColor: admin.isActive ? "green" : "red",
+                              borderRadius: "50%",
+                              color: "white",
+                              padding: "4px",
+                              width: "1.8rem",
+                              height: "1.8rem",
+                              marginTop: "0.3rem",
+                              marginInline: "0.5rem",
+                            }}
+                          >
+                            {admin.isActive ? <Check /> : <Clear />}
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
