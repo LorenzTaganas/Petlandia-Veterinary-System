@@ -53,6 +53,7 @@ const MainSidebar = ({ setActiveComponent }) => {
         icon: <DashboardIcon />,
         label: "Dashboard",
         onClick: () => handleItemClick("Dashboard"),
+        roles: ["Staff", "Admin"],
       },
       {
         icon: <EventAvailableIcon />,

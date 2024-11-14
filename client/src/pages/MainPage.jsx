@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainSidebar from "../components/NavigationComponents/MainSidebar";
 import MainHeader from "../components/NavigationComponents/MainHeader";
 import AppointmentRequests from "../components/MainComponents/AppointmentRequests";
@@ -13,10 +13,30 @@ import ChangePassword from "../components/MainComponents/ChangePassword";
 import AdminAccounts from "../components/MainComponents/AdminAccounts";
 import StaffAccounts from "../components/MainComponents/StaffAccounts";
 import ClientAccounts from "../components/MainComponents/ClientAccounts";
-// import AccountManagement from "../components/MainComponents/AccountManagement";
+import { getUserProfile } from "../services/userService";
 
 const MainPage = () => {
   const [activeComponent, setActiveComponent] = useState("Dashboard");
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        setUserRole(profile.role);
+        if (profile.role === "Client") {
+          setActiveComponent("AppointmentRequests");
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user profile", error);
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const formatComponentName = (componentName) => {
     return componentName
@@ -26,6 +46,10 @@ const MainPage = () => {
   };
 
   const renderActiveComponent = () => {
+    if (loading) {
+      return <div className="text-center">Loading...</div>;
+    }
+
     switch (activeComponent) {
       case "Dashboard":
         return <Dashboard />;
@@ -51,8 +75,6 @@ const MainPage = () => {
         return <StaffAccounts />;
       case "ClientAccounts":
         return <ClientAccounts />;
-      // case "AccountManagement":
-      //   return <AccountManagement />;
       default:
         return <Dashboard />;
     }
@@ -60,7 +82,10 @@ const MainPage = () => {
 
   return (
     <div className="flex h-screen">
-      <MainSidebar setActiveComponent={setActiveComponent} />
+      <MainSidebar
+        setActiveComponent={setActiveComponent}
+        userRole={userRole}
+      />
       <div className="flex-1 flex flex-col overflow-hidden">
         <MainHeader
           setActiveComponent={setActiveComponent}
