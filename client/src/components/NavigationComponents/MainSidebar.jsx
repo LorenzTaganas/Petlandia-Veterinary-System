@@ -4,7 +4,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AppointmentIcon from "@mui/icons-material/CalendarToday";
-import MedicalHistoryIcon from "@mui/icons-material/MedicalServices";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
 import PaymentHistoryIcon from "@mui/icons-material/Payment";
 import ReportIcon from "@mui/icons-material/Assessment";
 import HomeIcon from "@mui/icons-material/Home";
@@ -81,9 +81,9 @@ const MainSidebar = ({ setActiveComponent }) => {
         isOpen: isAppointmentOpen,
       },
       {
-        icon: <MedicalHistoryIcon />,
-        label: "Medical History",
-        onClick: () => handleItemClick("MedicalHistory"),
+        icon: <WorkHistoryIcon />,
+        label: "Appointment History",
+        onClick: () => handleItemClick("AppointmentHistory"),
       },
       {
         icon: <PaymentHistoryIcon />,

@@ -1,7 +1,6 @@
 const express = require("express");
-const medicalController = require("../controllers/MedicalController");
+const petGroomingController = require("../controllers/PetGroomingController");
 const authenticate = require("../middlewares/authenticate");
-
 const router = express.Router();
 
 module.exports = router;

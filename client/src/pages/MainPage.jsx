@@ -3,7 +3,7 @@ import MainSidebar from "../components/NavigationComponents/MainSidebar";
 import MainHeader from "../components/NavigationComponents/MainHeader";
 import AppointmentRequests from "../components/MainComponents/AppointmentRequests";
 import Dashboard from "../components/MainComponents/Dashboard";
-import MedicalHistory from "../components/MainComponents/MedicalHistory";
+import AppointmentHistory from "../components/MainComponents/AppointmentHistory";
 import PaymentHistory from "../components/MainComponents/PaymentHistory";
 import PetGrooming from "../components/MainComponents/PetGrooming";
 import Profile from "../components/MainComponents/Profile";
@@ -57,8 +57,8 @@ const MainPage = () => {
         return <AppointmentRequests />;
       case "AppointmentSchedule":
         return <AppointmentSchedule />;
-      case "MedicalHistory":
-        return <MedicalHistory />;
+      case "AppointmentHistory":
+        return <AppointmentHistory />;
       case "PaymentHistory":
         return <PaymentHistory />;
       case "Reports":
