@@ -9,9 +9,9 @@ import {
   getAdmins,
   addAdminAccount,
 } from "../../services/accountService";
-import AddAdminModal from "../modals/AddAdminModal";
-import ChangePasswordModal from "../modals/ChangePasswordModal";
-import EditAdminModal from "../modals/EditAdminModal";
+import AddAdminModal from "../modals/AccountModals/AddAdminModal";
+import ChangePasswordModal from "../modals/AccountModals/ChangePasswordModal";
+import EditAdminModal from "../modals/AccountModals/EditAdminModal";
 
 const AdminAccounts = () => {
   const [admins, setAdmins] = useState([]);

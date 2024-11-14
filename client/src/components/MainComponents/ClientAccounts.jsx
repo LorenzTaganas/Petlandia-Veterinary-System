@@ -9,9 +9,9 @@ import {
   getClients,
   addClientAccount,
 } from "../../services/accountService";
-import AddClientModal from "../modals/AddClientModal";
-import ChangePasswordModal from "../modals/ChangePasswordModal";
-import EditClientModal from "../modals/EditClientModal";
+import AddClientModal from "../modals/AccountModals/AddClientModal";
+import ChangePasswordModal from "../modals/AccountModals/ChangePasswordModal";
+import EditClientModal from "../modals/AccountModals/EditClientModal";
 
 const ClientAccounts = () => {
   const [clients, setClients] = useState([]);

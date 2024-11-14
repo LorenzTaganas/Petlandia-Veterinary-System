@@ -9,9 +9,9 @@ import {
   getStaffs,
   addStaffAccount,
 } from "../../services/accountService";
-import AddStaffModal from "../modals/AddStaffModal";
-import ChangePasswordModal from "../modals/ChangePasswordModal";
-import EditStaffModal from "../modals/EditStaffModal";
+import AddStaffModal from "../modals/AccountModals/AddStaffModal";
+import ChangePasswordModal from "../modals/AccountModals/ChangePasswordModal";
+import EditStaffModal from "../modals/AccountModals/EditStaffModal";
 
 const StaffAccounts = () => {
   const [staffs, setStaffs] = useState([]);
