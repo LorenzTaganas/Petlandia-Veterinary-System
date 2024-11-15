@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import LockIcon from "@mui/icons-material/Lock";
-import PersonIcon from "@mui/icons-material/Person";
+import { Notifications, ExitToApp, Lock, Person } from "@mui/icons-material";
 import { getUserProfile, getFullName } from "../../services/userService";
 import axiosInstance from "../../services/axiosInstance";
 
@@ -64,7 +60,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       </div>
       <div className="flex items-center space-x-2">
         <Tooltip title="Notifications" placement="right">
-          <NotificationsIcon
+          <Notifications
             className="text-black cursor-pointer"
             onClick={handleNotificationClick}
           />
@@ -95,21 +91,21 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
                 onClick={handleProfileClick}
                 className="w-full text-gray-700 flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-md"
               >
-                <PersonIcon />
+                <Person />
                 <span>View Profile</span>
               </button>
               <button
                 onClick={handleChangePasswordClick}
                 className="w-full text-gray-700 flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-md"
               >
-                <LockIcon />
+                <Lock />
                 <span>Change Password</span>
               </button>
               <button
                 onClick={handleLogout}
                 className="w-full text-red-500 flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-md"
               >
-                <ExitToAppIcon />
+                <ExitToApp />
                 <span>Logout</span>
               </button>
             </div>

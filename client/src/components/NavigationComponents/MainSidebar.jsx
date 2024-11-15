@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
-import MenuIcon from "@mui/icons-material/Menu";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AppointmentIcon from "@mui/icons-material/CalendarToday";
-import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
-import PaymentHistoryIcon from "@mui/icons-material/Payment";
-import ReportIcon from "@mui/icons-material/Assessment";
-import HomeIcon from "@mui/icons-material/Home";
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
-import GroupIcon from "@mui/icons-material/Group";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import PersonIcon from "@mui/icons-material/Person";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronDownIcon from "@mui/icons-material/ExpandMore";
+import {
+  Menu as MenuIcon,
+  Dashboard as DashboardIcon,
+  CalendarToday as AppointmentIcon,
+  WorkHistory as WorkHistoryIcon,
+  Payment as PaymentHistoryIcon,
+  Assessment as ReportIcon,
+  Home as HomeIcon,
+  PendingActions as PendingActionsIcon,
+  EventAvailable as EventAvailableIcon,
+  VideoLibrary as VideoLibraryIcon,
+  Group as GroupIcon,
+  PersonAdd as PersonAddIcon,
+  AdminPanelSettings as AdminPanelSettingsIcon,
+  Person as PersonIcon,
+  ChevronRight as ChevronRightIcon,
+  ExpandMore as ChevronDownIcon,
+} from "@mui/icons-material";
+
 import placeholder from "../../assets/placeholder.png";
 import { getUserProfile } from "../../services/userService";
 

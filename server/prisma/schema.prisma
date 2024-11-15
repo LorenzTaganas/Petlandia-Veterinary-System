@@ -14,16 +14,75 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String   @unique
-  password    String
-  contactNo   String   @unique
-  role        String   @default("Client") 
-  isActive    Boolean  @default(true)  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    Int                   @id @default(autoincrement())
+  firstName             String
+  lastName              String
+  email                 String                @unique
+  password              String
+  contactNo             String                @unique
+  role                  String                @default("Client") 
+  isActive              Boolean               @default(true)  
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  pets                  Pet[]
+  appointmentRequests   AppointmentRequest[]  @relation("UserAppointments")
+  preferredAppointments AppointmentRequest[]  @relation("PreferredVet")      
+  assignedAppointments  AppointmentSchedule[] @relation("AssignedAppointments")
+  adminActions          AppointmentRequest[]  @relation("AdminActions")     
+  ownerAppointments     AppointmentSchedule[] @relation("OwnerAppointments") 
+}
+
+model Pet {
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  type                 String
+  breed                String?             
+  age                  Int?                
+  weight               Float?               
+  owner                User                  @relation(fields: [ownerId], references: [id])
+  ownerId              Int
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  appointmentRequests  AppointmentRequest[]
+  appointmentSchedules AppointmentSchedule[] 
+}
+
+model AppointmentRequest {
+  id                Int      @id @default(autoincrement())
+  requestedAt       DateTime @default(now())
+  appointmentDate   DateTime
+  appointmentType   String 
+  preferredVetId    Int?
+  preferredVet      User?    @relation("PreferredVet", fields: [preferredVetId], references: [id])
+  pet               Pet      @relation(fields: [petId], references: [id])
+  petId             Int
+  ownerId           Int
+  owner             User     @relation("UserAppointments", fields: [ownerId], references: [id])
+  reason            String
+  additionalComments String?
+  status            String   @default("Pending") 
+  remark            String?
+  rescheduleDate    DateTime?
+  declinedAt        DateTime?
+  adminId           Int?
+  admin             User?    @relation("AdminActions", fields: [adminId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AppointmentSchedule {
+  id                Int      @id @default(autoincrement())
+  appointmentDate   DateTime
+  appointmentType   String   
+  assignedVet       User     @relation("AssignedAppointments", fields: [assignedVetId], references: [id])
+  assignedVetId     Int
+  pet               Pet      @relation(fields: [petId], references: [id])
+  petId             Int
+  owner             User     @relation("OwnerAppointments", fields: [ownerId], references: [id])
+  ownerId           Int
+  approvedAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Blacklist {
@@ -31,4 +90,3 @@ model Blacklist {
   token        String   @unique
   loggedOutAt  DateTime @default(now())
 }
-
