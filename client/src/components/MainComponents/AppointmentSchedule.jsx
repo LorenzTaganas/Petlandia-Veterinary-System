@@ -1,38 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { IconButton, Tooltip } from "@mui/material";
-import {
-  Add,
-  Check,
-  Clear,
-  Delete,
-  Visibility,
-  Edit,
-} from "@mui/icons-material";
+import { Visibility } from "@mui/icons-material";
+import { getAppointmentSchedules } from "../../services/appointmentScheduleService";
 
 const AppointmentSchedule = () => {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      ownerName: "John Doe",
-      appointmentDate: "2024-11-15 2:00 PM",
-      appointmentType: "Checkup",
-      assignedStaff: "Staff Name",
-      petName: "Doggy",
-      petType: "Dog",
-      petBreed: "Labrador",
-    },
-    {
-      id: 2,
-      ownerName: "Jane Smith",
-      appointmentDate: "2024-11-15 2:00 PM",
-      appointmentType: "Grooming",
-      assignedStaff: "Staff Name",
-      petName: "Catsilog",
-      petType: "Cat",
-      petBreed: "Persian",
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointmentSchedules = async () => {
+      try {
+        const data = await getAppointmentSchedules();
+        setRequests(data);
+      } catch (error) {
+        console.error("Error fetching appointment schedules:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointmentSchedules();
+  }, []);
 
   return (
     <div className="p-4">
@@ -67,13 +55,13 @@ const AppointmentSchedule = () => {
                   } shadow-md`}
                 >
                   <td className="px-4 py-3 text-center rounded-l-lg">
-                    {request.ownerName}
+                    {request.owner?.firstName} {request.owner?.lastName}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {request.appointmentDate.split(" ").map((part, idx) => (
+                    {request.appointmentDate?.split(" ").map((part, idx) => (
                       <span key={idx}>
                         {part}
-                        {idx === 0 && <br />}{" "}
+                        {idx === 0 && <br />}
                       </span>
                     ))}
                   </td>
@@ -81,11 +69,20 @@ const AppointmentSchedule = () => {
                     {request.appointmentType}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {request.assignedStaff}
+                    {request.assignedVet
+                      ? `${request.assignedVet.firstName} ${request.assignedVet.lastName}`
+                      : "Not assigned"}
                   </td>
-                  <td className="px-4 py-3 text-center">{request.petName}</td>
-                  <td className="px-4 py-3 text-center">{request.petType}</td>
-                  <td className="px-4 py-3 text-center">{request.petBreed}</td>
+
+                  <td className="px-4 py-3 text-center">
+                    {request.pet?.name || "No pet"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {request.pet?.type || "Unknown"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {request.pet?.breed || "Unknown"}
+                  </td>
                   <td className="px-2 py-3 text-center rounded-r-lg">
                     <div className="flex flex-col justify-center gap-1.5">
                       <div className="flex justify-center gap-1.5 mt-1">

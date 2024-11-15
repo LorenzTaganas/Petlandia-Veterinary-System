@@ -9,31 +9,27 @@ import {
   Edit,
   Comment,
 } from "@mui/icons-material";
+import { getAllAppointmentRequests } from "../../services/appointmentRequestService";
 
 const AppointmentRequests = () => {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      ownerName: "John Doe",
-      requestedAt: "2024-11-14 10:00 AM",
-      appointmentDate: "2024-11-15 2:00 PM",
-      appointmentType: "Checkup",
-      petType: "Dog",
-      petBreed: "Labrador",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      ownerName: "Jane Smith",
-      requestedAt: "2024-11-13 9:30 AM",
-      appointmentDate: "2024-11-14 11:00 AM",
-      appointmentType: "Grooming",
-      petType: "Cat",
-      petBreed: "Persian",
-      status: "Pending",
-    },
-  ]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAppointmentRequests = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllAppointmentRequests();
+        setRequests(data);
+      } catch (error) {
+        console.error("Error fetching appointment requests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointmentRequests();
+  }, []);
 
   return (
     <div className="p-4">
@@ -72,7 +68,7 @@ const AppointmentRequests = () => {
                   } shadow-md`}
                 >
                   <td className="px-4 py-3 text-center rounded-l-lg">
-                    {request.ownerName}
+                    {request.owner?.firstName} {request.owner?.lastName}
                   </td>
                   <td className="px-4 py-3 text-center">
                     {request.requestedAt.split(" ").map((part, idx) => (
@@ -93,8 +89,8 @@ const AppointmentRequests = () => {
                   <td className="px-4 py-3 text-center">
                     {request.appointmentType}
                   </td>
-                  <td className="px-4 py-3 text-center">{request.petType}</td>
-                  <td className="px-4 py-3 text-center">{request.petBreed}</td>
+                  <td className="px-4 py-3 text-center">{request.pet.type}</td>
+                  <td className="px-4 py-3 text-center">{request.pet.breed}</td>
                   <td className="px-4 py-3 text-center">{request.status}</td>
                   <td className="px-2 py-3 text-center rounded-r-lg">
                     <div className="flex flex-col justify-center gap-0.5">
