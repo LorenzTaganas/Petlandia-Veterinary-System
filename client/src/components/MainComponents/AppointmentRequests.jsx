@@ -7,27 +7,33 @@ import {
 } from "../../services/appointmentRequestService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import AddAppointmentRequestModal from "../modals/AppointmentRequestsModals/AddAppointmentRequestModal";
+import ViewAppointmentRequestModal from "../modals/AppointmentRequestsModals/ViewAppointmentRequestModal";
 
 const AppointmentRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openAddRequestModal, setOpenAddRequestModal] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+
+  const fetchAppointmentRequests = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllAppointmentRequests();
+      setRequests(data);
+    } catch (error) {
+      console.error("Error fetching appointment requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchAppointmentRequests = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllAppointmentRequests();
-        setRequests(data);
-      } catch (error) {
-        console.error("Error fetching appointment requests:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointmentRequests();
   }, []);
+
+  const refreshData = () => {
+    fetchAppointmentRequests();
+  };
 
   const handleAddAppointmentRequest = async (newAppointment) => {
     try {
@@ -49,6 +55,10 @@ const AppointmentRequests = () => {
     } catch (error) {
       console.error("Error creating appointment request:", error);
     }
+  };
+
+  const handleViewDetailsClick = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
   };
 
   return (
@@ -121,7 +131,9 @@ const AppointmentRequests = () => {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="View All Details">
-                          <IconButton>
+                          <IconButton
+                            onClick={() => handleViewDetailsClick(request.id)}
+                          >
                             <Visibility />
                           </IconButton>
                         </Tooltip>
@@ -143,6 +155,12 @@ const AppointmentRequests = () => {
         open={openAddRequestModal}
         onClose={() => setOpenAddRequestModal(false)}
         onSave={handleAddAppointmentRequest}
+      />
+      <ViewAppointmentRequestModal
+        appointmentId={selectedAppointmentId}
+        isVisible={!!selectedAppointmentId}
+        onClose={() => setSelectedAppointmentId(null)}
+        refreshData={refreshData}
       />
     </div>
   );

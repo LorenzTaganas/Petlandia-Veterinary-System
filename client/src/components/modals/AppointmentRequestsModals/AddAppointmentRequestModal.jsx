@@ -1,13 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  Button,
-  TextField,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-} from "@mui/material";
 import { getUsersByRole } from "../../../services/userService";
 
 const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
@@ -89,7 +80,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
   return (
     open && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-lg w-[32rem]">
+        <div className="bg-white p-6 rounded-lg w-[32rem] h-[80vh] overflow-auto">
           <h2 className="text-xl font-semibold mb-4">
             Add Appointment Request
           </h2>
@@ -115,7 +106,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
                 onChange={(e) => setAppointmentType(e.target.value)}
               >
                 <option value="" disabled>
-                  Select One...
+                  Select Type...
                 </option>{" "}
                 <option value="Checkup">Checkup</option>
                 <option value="Treatment">Treatment</option>
@@ -128,20 +119,20 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
               <label className="block text-gray-700 font-medium mb-1">
                 Preferred Veterinarian *
               </label>
-              <FormControl fullWidth variant="outlined" className="mb-4">
-                <InputLabel>Veterinarian</InputLabel>
-                <Select
-                  value={preferredVetId}
-                  onChange={(e) => setPreferredVetId(e.target.value)}
-                  label="Veterinarian"
-                >
-                  {staffMembers.map((staff) => (
-                    <MenuItem key={staff.id} value={staff.id}>
-                      {staff.firstName} {staff.lastName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <select
+                className="w-full mb-4 p-2 border rounded"
+                value={preferredVetId}
+                onChange={(e) => setPreferredVetId(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select Veterinarian...
+                </option>
+                {staffMembers.map((staff) => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.firstName} {staff.lastName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
@@ -208,7 +199,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
               />
             </div>
           </div>
-          <div className="mb-4">
+          <div>
             <label className="block text-gray-700 font-medium mb-1">
               Reason for Appointment *
             </label>

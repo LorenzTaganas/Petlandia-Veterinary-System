@@ -40,7 +40,7 @@ exports.createAppointmentRequest = async (req, res) => {
       data: {
         appointmentDate: new Date(appointmentDate),
         appointmentType,
-        preferredVetId,
+        preferredVetId: parseInt(preferredVetId),
         petId: pet.id,
         ownerId: req.user.id,
         reason,
@@ -161,9 +161,9 @@ exports.editAppointmentRequest = async (req, res) => {
     appointmentDate,
     appointmentType,
     preferredVetId,
-    petId,
     reason,
     additionalComments,
+    pet,
   } = req.body;
 
   try {
@@ -173,11 +173,24 @@ exports.editAppointmentRequest = async (req, res) => {
         appointmentDate,
         appointmentType,
         preferredVetId,
-        petId,
         reason,
         additionalComments,
       },
     });
+
+    if (pet && pet.id) {
+      await prisma.pet.update({
+        where: { id: pet.id },
+        data: {
+          name: pet.name,
+          type: pet.type,
+          breed: pet.breed,
+          age: parseInt(pet.age, 10),
+          weight: parseFloat(pet.weight),
+        },
+      });
+    }
+
     res.status(200).json(updatedRequest);
   } catch (error) {
     console.error(error);
@@ -189,13 +202,19 @@ exports.deleteAppointmentRequest = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deletedAppointmentRequest = await prisma.appointmentRequest.delete({
+    await prisma.appointmentRequest.delete({
       where: { id: Number(id) },
     });
-    res.status(200).json({
-      message: "Appointment request deleted successfully",
-      deletedAppointmentRequest,
-    });
+    const updatedAppointmentRequests = await prisma.appointmentRequest.findMany(
+      {
+        include: {
+          pet: true,
+          owner: true,
+          preferredVet: true,
+        },
+      }
+    );
+    res.status(200).json(updatedAppointmentRequests);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete appointment request." });
