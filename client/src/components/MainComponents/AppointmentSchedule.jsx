@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import { getAppointmentSchedules } from "../../services/appointmentScheduleService";
+import DateTimeDisplay from "../helpers/DateTimeDisplay";
 
 const AppointmentSchedule = () => {
   const [requests, setRequests] = useState([]);
@@ -58,12 +59,7 @@ const AppointmentSchedule = () => {
                     {request.owner?.firstName} {request.owner?.lastName}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {request.appointmentDate?.split(" ").map((part, idx) => (
-                      <span key={idx}>
-                        {part}
-                        {idx === 0 && <br />}
-                      </span>
-                    ))}
+                    <DateTimeDisplay date={request.appointmentDate} />
                   </td>
                   <td className="px-4 py-3 text-center">
                     {request.appointmentType}

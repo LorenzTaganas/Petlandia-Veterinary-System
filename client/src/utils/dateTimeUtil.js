@@ -1,15 +1,36 @@
-const { format } = require("date-fns");
+const timeZone = "Asia/Manila";
 
-exports.formatDate = (date) => {
-  return format(new Date(date), "yyyy-MM-dd HH:mm:ss", {
-    timeZone: "Asia/Manila",
+export const formatDate = (date) => {
+  const formatter = new Intl.DateTimeFormat("en-PH", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone,
   });
+  const formattedDate = formatter.format(new Date(date));
+
+  const [datePart, timePart] = formattedDate.split(", ");
+  return { date: datePart, time: timePart };
 };
 
-exports.formatDateForInput = (date) => {
-  return format(new Date(date), "yyyy-MM-dd", { timeZone: "Asia/Manila" });
+export const formatDateForInput = (date) => {
+  const formatter = new Intl.DateTimeFormat("en-PH", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone,
+  });
+  return formatter.format(new Date(date));
 };
 
-exports.formatTimeForInput = (date) => {
-  return format(new Date(date), "hh:mm aa", { timeZone: "Asia/Manila" });
+export const formatTimeForInput = (date) => {
+  const formatter = new Intl.DateTimeFormat("en-PH", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone,
+  });
+  return formatter.format(new Date(date));
 };

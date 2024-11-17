@@ -10,6 +10,7 @@ import {
   Comment,
 } from "@mui/icons-material";
 import { getAllAppointmentRequests } from "../../services/appointmentRequestService";
+import DateTimeDisplay from "../helpers/DateTimeDisplay";
 
 const AppointmentRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -71,20 +72,10 @@ const AppointmentRequests = () => {
                     {request.owner?.firstName} {request.owner?.lastName}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {request.requestedAt.split(" ").map((part, idx) => (
-                      <span key={idx}>
-                        {part}
-                        {idx === 0 && <br />}{" "}
-                      </span>
-                    ))}
+                    <DateTimeDisplay date={request.requestedAt} />
                   </td>
                   <td className="px-4 py-3 text-center">
-                    {request.appointmentDate.split(" ").map((part, idx) => (
-                      <span key={idx}>
-                        {part}
-                        {idx === 0 && <br />}{" "}
-                      </span>
-                    ))}
+                    <DateTimeDisplay date={request.appointmentDate} />
                   </td>
                   <td className="px-4 py-3 text-center">
                     {request.appointmentType}
