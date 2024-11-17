@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip, Button } from "@mui/material";
+import { Add, Check, Clear, Visibility, Comment } from "@mui/icons-material";
 import {
-  Add,
-  Check,
-  Clear,
-  Delete,
-  Visibility,
-  Edit,
-  Comment,
-} from "@mui/icons-material";
-import { getAllAppointmentRequests } from "../../services/appointmentRequestService";
+  getAllAppointmentRequests,
+  createAppointmentRequest,
+} from "../../services/appointmentRequestService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
+import AddAppointmentRequestModal from "../modals/AppointmentRequestsModals/AddAppointmentRequestModal";
 
 const AppointmentRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [openAddRequestModal, setOpenAddRequestModal] = useState(false);
 
   useEffect(() => {
     const fetchAppointmentRequests = async () => {
@@ -32,11 +29,36 @@ const AppointmentRequests = () => {
     fetchAppointmentRequests();
   }, []);
 
+  const handleAddAppointmentRequest = async (newAppointment) => {
+    try {
+      const response = await createAppointmentRequest(
+        newAppointment.appointmentDate,
+        newAppointment.appointmentType,
+        newAppointment.preferredVetId,
+        newAppointment.petDetails.name,
+        newAppointment.petDetails.type,
+        newAppointment.petDetails.breed,
+        newAppointment.petDetails.age,
+        newAppointment.petDetails.weight,
+        newAppointment.reason,
+        newAppointment.additionalComments
+      );
+
+      setRequests((prevRequests) => [...prevRequests, response]);
+      setOpenAddRequestModal(false);
+    } catch (error) {
+      console.error("Error creating appointment request:", error);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Appointment Requests</h2>
-        <button className="bg-blue-500 text-white py-2 px-4 rounded flex items-center">
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded flex items-center"
+          onClick={() => setOpenAddRequestModal(true)}
+        >
           <Add className="mr-2" />
           Add Appointment
         </button>
@@ -81,7 +103,9 @@ const AppointmentRequests = () => {
                     {request.appointmentType}
                   </td>
                   <td className="px-4 py-3 text-center">{request.pet.type}</td>
-                  <td className="px-4 py-3 text-center">{request.pet.breed}</td>
+                  <td className="px-4 py-3 text-center">
+                    {request.pet?.breed || "(unknown)"}
+                  </td>
                   <td className="px-4 py-3 text-center">{request.status}</td>
                   <td className="px-2 py-3 text-center rounded-r-lg">
                     <div className="flex flex-col justify-center gap-0.5">
@@ -115,6 +139,11 @@ const AppointmentRequests = () => {
           </table>
         </div>
       )}
+      <AddAppointmentRequestModal
+        open={openAddRequestModal}
+        onClose={() => setOpenAddRequestModal(false)}
+        onSave={handleAddAppointmentRequest}
+      />
     </div>
   );
 };

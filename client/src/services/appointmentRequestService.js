@@ -17,11 +17,13 @@ export const createAppointmentRequest = async (
       appointmentDate,
       appointmentType,
       preferredVetId,
-      petName,
-      petType,
-      petBreed,
-      petAge,
-      petWeight,
+      petDetails: {
+        name: petName,
+        type: petType,
+        breed: petBreed,
+        age: petAge,
+        weight: petWeight,
+      },
       reason,
       additionalComments,
     });

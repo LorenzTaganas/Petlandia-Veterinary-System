@@ -11,34 +11,54 @@ exports.createAppointmentRequest = async (req, res) => {
     additionalComments,
   } = req.body;
 
+  if (!petDetails || !petDetails.name || !petDetails.type) {
+    return res
+      .status(400)
+      .json({ error: "Pet details are incomplete or missing." });
+  }
+
+  const age = Number(petDetails.age);
+  const weight = Number(petDetails.weight);
+
+  if (isNaN(age) || isNaN(weight)) {
+    return res.status(400).json({ error: "Pet age or weight is invalid." });
+  }
+
   try {
-    const newPet = await prisma.pet.create({
+    const pet = await prisma.pet.create({
       data: {
         name: petDetails.name,
         type: petDetails.type,
-        breed: petDetails.breed || null,
-        age: petDetails.age || null,
-        weight: petDetails.weight || null,
+        breed: petDetails.breed,
+        age,
+        weight,
         ownerId: req.user.id,
       },
     });
 
-    const newAppointmentRequest = await prisma.appointmentRequest.create({
+    const appointmentRequest = await prisma.appointmentRequest.create({
       data: {
-        appointmentDate,
+        appointmentDate: new Date(appointmentDate),
         appointmentType,
         preferredVetId,
-        petId: newPet.id,
+        petId: pet.id,
+        ownerId: req.user.id,
         reason,
         additionalComments,
-        status: "Pending",
+      },
+      include: {
+        pet: true,
+        owner: true,
+        preferredVet: true,
       },
     });
 
-    res.status(201).json(newAppointmentRequest);
+    return res.status(201).json(appointmentRequest);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to create appointment request." });
+    console.error("Error creating appointment request:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to create appointment request." });
   }
 };
 

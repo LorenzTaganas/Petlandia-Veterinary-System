@@ -41,7 +41,6 @@ async function main() {
     ],
   });
 
-  // Create pets
   await prisma.pet.createMany({
     data: [
       {
