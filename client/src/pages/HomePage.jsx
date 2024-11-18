@@ -95,7 +95,7 @@ const HomePage = () => {
           <h2 className="text-2xl font-bold text-center">Our Location</h2>
           <div className="w-full h-full relative">
             <MapContainer
-              center={[14.8345, 120.9675]}
+              center={[14.8793539, 120.8259689]}
               zoom={13}
               className="w-full h-full"
             >
@@ -103,7 +103,10 @@ const HomePage = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               />
-              <Marker position={[14.8345, 120.9675]} icon={customMarkerIcon}>
+              <Marker
+                position={[14.8793539, 120.8259689]}
+                icon={customMarkerIcon}
+              >
                 <Popup>Malolos, Bulacan</Popup>
               </Marker>
             </MapContainer>
