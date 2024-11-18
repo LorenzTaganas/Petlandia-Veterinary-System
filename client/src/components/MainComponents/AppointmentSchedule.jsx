@@ -6,9 +6,9 @@ import {
   DomainVerificationTwoTone,
 } from "@mui/icons-material";
 import { getAppointmentSchedules } from "../../services/appointmentScheduleService";
-import { getAppointmentRequestDetails } from "../../services/appointmentRequestService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import { getUserProfile } from "../../services/userService";
+import ViewAppointmentScheduleModal from "../modals/AppointmentScheduleModals/ViewAppointmentScheduleModal";
 import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
 
 const AppointmentSchedule = () => {
@@ -17,6 +17,7 @@ const AppointmentSchedule = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
 
   const fetchAppointmentSchedules = async () => {
     setLoading(true);
@@ -28,6 +29,10 @@ const AppointmentSchedule = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshData = () => {
+    fetchAppointmentSchedules();
   };
 
   const fetchUserProfile = async () => {
@@ -55,6 +60,14 @@ const AppointmentSchedule = () => {
       );
     }
     return [];
+  };
+
+  const handleViewDetailsClick = (appointmentId) => {
+    const selectedSchedule = requests.find(
+      (request) => request.id === appointmentId
+    );
+
+    setSelectedAppointmentId(selectedSchedule.id);
   };
 
   const handleRemarkClick = (appointmentId) => {
@@ -141,7 +154,9 @@ const AppointmentSchedule = () => {
                       <div className="flex flex-col justify-center gap-1.5">
                         <div className="flex justify-center gap-1.5 mt-1">
                           <Tooltip title="View All Details">
-                            <IconButton>
+                            <IconButton
+                              onClick={() => handleViewDetailsClick(request.id)}
+                            >
                               <Visibility />
                             </IconButton>
                           </Tooltip>
@@ -171,6 +186,12 @@ const AppointmentSchedule = () => {
           </table>
         </div>
       )}
+      <ViewAppointmentScheduleModal
+        appointmentId={selectedAppointmentId}
+        isVisible={!!selectedAppointmentId}
+        onClose={() => setSelectedAppointmentId(null)}
+        refreshData={refreshData}
+      />
       {isRemarkModalOpen && (
         <RemarkModal remark={selectedRemark} onClose={closeRemarkModal} />
       )}

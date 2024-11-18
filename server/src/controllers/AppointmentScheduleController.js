@@ -8,7 +8,7 @@ exports.getAppointmentSchedule = async (req, res) => {
         pet: {
           appointmentRequests: {
             some: {
-              status: "Approved", // Filter by approved appointment requests
+              status: "Approved",
             },
           },
         },
@@ -21,10 +21,10 @@ exports.getAppointmentSchedule = async (req, res) => {
           include: {
             appointmentRequests: {
               where: {
-                status: "Approved", // Filter by the approved request
+                status: "Approved",
               },
               select: {
-                remark: true, // Include the remark field from AppointmentRequest
+                remark: true,
               },
             },
           },
@@ -32,9 +32,7 @@ exports.getAppointmentSchedule = async (req, res) => {
       },
     });
 
-    // Map the remark from the appointmentRequests relation into the appointmentSchedule object
     const result = appointmentSchedules.map((schedule) => {
-      // Fetch the remark from the first approved appointment request related to this pet
       const remark =
         schedule.pet.appointmentRequests.length > 0
           ? schedule.pet.appointmentRequests[0].remark
@@ -56,9 +54,6 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
     const appointmentSchedule = await prisma.appointmentSchedule.findUnique({
       where: { id: Number(id) },
       include: {
-        pet: true,
-        owner: true,
-        assignedVet: true,
         pet: {
           include: {
             appointmentRequests: {
@@ -66,11 +61,15 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
                 status: "Approved",
               },
               select: {
+                reason: true,
+                additionalComments: true,
                 remark: true,
               },
             },
           },
         },
+        owner: true,
+        assignedVet: true,
       },
     });
 
@@ -78,14 +77,23 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
       return res.status(404).json({ error: "Appointment schedule not found." });
     }
 
-    // Extract remark
-    const remark =
+    const appointmentRequest =
       appointmentSchedule.pet.appointmentRequests.length > 0
-        ? appointmentSchedule.pet.appointmentRequests[0].remark
+        ? appointmentSchedule.pet.appointmentRequests[0]
         : null;
 
-    // Include the remark in the result
-    res.status(200).json({ ...appointmentSchedule, remark });
+    const reason = appointmentRequest ? appointmentRequest.reason : null;
+    const additionalComments = appointmentRequest
+      ? appointmentRequest.additionalComments
+      : null;
+    const remark = appointmentRequest ? appointmentRequest.remark : null;
+
+    res.status(200).json({
+      ...appointmentSchedule,
+      reason,
+      additionalComments,
+      remark,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to retrieve appointment schedule." });
