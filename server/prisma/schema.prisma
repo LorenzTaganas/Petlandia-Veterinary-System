@@ -24,13 +24,16 @@ model User {
   isActive              Boolean               @default(true)  
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
-  pets                  Pet[]
+  pets                  Pet[]              
   appointmentRequests   AppointmentRequest[]  @relation("UserAppointments")
   preferredAppointments AppointmentRequest[]  @relation("PreferredVet")      
   assignedAppointments  AppointmentSchedule[] @relation("AssignedAppointments")
   adminActions          AppointmentRequest[]  @relation("AdminActions")     
   ownerAppointments     AppointmentSchedule[] @relation("OwnerAppointments") 
+  approvedAppointments  AppointmentRequest[]  @relation("ApprovedBy")
+  declinedAppointments  AppointmentRequest[]  @relation("DeclinedBy")
 }
+
 
 model Pet {
   id                   Int                   @id @default(autoincrement())
@@ -64,10 +67,15 @@ model AppointmentRequest {
   remark            String?
   rescheduleDate    DateTime?
   declinedAt        DateTime?
+  declinedBy        Int?   
+  approvedAt        DateTime? 
+  approvedBy        Int?    
   adminId           Int?
   admin             User?    @relation("AdminActions", fields: [adminId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  approvedByUser    User?    @relation("ApprovedBy", fields: [approvedBy], references: [id])
+  declinedByUser    User?    @relation("DeclinedBy", fields: [declinedBy], references: [id])
 }
 
 model AppointmentSchedule {

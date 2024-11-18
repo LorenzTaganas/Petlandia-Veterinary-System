@@ -15,7 +15,7 @@ const EditStaffModal = ({
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                First Name *
+                First Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -32,7 +32,7 @@ const EditStaffModal = ({
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Last Name *
+                Last Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -51,7 +51,7 @@ const EditStaffModal = ({
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Email *
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -68,7 +68,7 @@ const EditStaffModal = ({
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Contact Number *
+                Contact Number <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"

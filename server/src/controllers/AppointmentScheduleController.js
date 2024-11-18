@@ -4,6 +4,15 @@ const prisma = new PrismaClient();
 exports.getAppointmentSchedule = async (req, res) => {
   try {
     const appointmentSchedules = await prisma.appointmentSchedule.findMany({
+      where: {
+        pet: {
+          appointmentRequests: {
+            some: {
+              status: "Approved",
+            },
+          },
+        },
+      },
       include: {
         pet: true,
         owner: true,

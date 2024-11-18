@@ -41,29 +41,43 @@ async function main() {
     ],
   });
 
-  await prisma.pet.createMany({
-    data: [
-      {
-        name: "Buddy",
-        type: "Dog",
-        breed: "Golden Retriever",
-        age: 3,
-        weight: 25.5,
-        ownerId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        name: "Mittens",
-        type: "Cat",
-        breed: "Siamese",
-        age: 2,
-        weight: 4.3,
-        ownerId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
+  const buddy = await prisma.pet.create({
+    data: {
+      name: "Buddy",
+      type: "Dog",
+      breed: "Golden Retriever",
+      age: 3,
+      weight: 25.5,
+      ownerId: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  const mittens = await prisma.pet.create({
+    data: {
+      name: "Mittens",
+      type: "Cat",
+      breed: "Siamese",
+      age: 2,
+      weight: 4.3,
+      ownerId: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  const max = await prisma.pet.create({
+    data: {
+      name: "Max",
+      type: "Dog",
+      breed: "Bulldog",
+      age: 4,
+      weight: 30.0,
+      ownerId: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   });
 
   await prisma.appointmentRequest.createMany({
@@ -72,7 +86,7 @@ async function main() {
         appointmentDate: new Date("2024-11-15T15:30:00.000Z"),
         appointmentType: "Checkup",
         preferredVetId: 2,
-        petId: 1,
+        petId: buddy.id,
         ownerId: 3,
         reason: "Routine checkup",
         additionalComments: "No additional comments.",
@@ -84,11 +98,29 @@ async function main() {
         appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
         appointmentType: "Treatment",
         preferredVetId: 2,
-        petId: 2,
+        petId: mittens.id,
         ownerId: 3,
         reason: "Vomiting for 2 days",
         additionalComments: "Concern about dehydration.",
-        status: "Pending",
+        status: "Approved",
+        remark: "Approved for treatment. Please monitor the hydration.",
+        approvedAt: new Date(),
+        approvedBy: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        appointmentDate: new Date("2024-11-17T10:00:00.000Z"),
+        appointmentType: "Grooming",
+        preferredVetId: 2,
+        petId: max.id,
+        ownerId: 3,
+        reason: "Routine grooming",
+        additionalComments: "Needs to be trimmed.",
+        status: "Declined",
+        remark: "Declined due to unavailable slots. Please reschedule.",
+        declinedAt: new Date(),
+        declinedBy: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -98,20 +130,10 @@ async function main() {
   await prisma.appointmentSchedule.createMany({
     data: [
       {
-        appointmentDate: new Date("2024-11-15T15:30:00.000Z"),
-        appointmentType: "Checkup",
-        assignedVetId: 2,
-        petId: 1,
-        ownerId: 3,
-        approvedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
         appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
         appointmentType: "Treatment",
         assignedVetId: 2,
-        petId: 2,
+        petId: mittens.id,
         ownerId: 3,
         approvedAt: new Date(),
         createdAt: new Date(),

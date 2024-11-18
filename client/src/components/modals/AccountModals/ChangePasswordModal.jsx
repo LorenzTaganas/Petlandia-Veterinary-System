@@ -29,7 +29,7 @@ const ChangePasswordModal = ({
           <h2 className="text-xl font-semibold mb-4">Change Password</h2>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-1">
-              New Password *
+              New Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -49,7 +49,7 @@ const ChangePasswordModal = ({
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-1">
-              Confirm Password *
+              Confirm Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input

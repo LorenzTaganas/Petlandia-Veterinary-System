@@ -87,7 +87,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Appointment Date & Time *
+                Appointment Date & Time <span className="text-red-500">*</span>
               </label>
               <input
                 type="datetime-local"
@@ -98,7 +98,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Appointment Type *
+                Appointment Type <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full mb-4 p-2 border rounded"
@@ -117,7 +117,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Preferred Veterinarian *
+                Preferred Veterinarian <span className="text-red-500">*</span>
               </label>
               <select
                 className="w-full mb-4 p-2 border rounded"
@@ -136,7 +136,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Pet Name *
+                Pet Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -150,7 +150,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Pet Type *
+                Pet Type <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -201,7 +201,7 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Reason for Appointment *
+              Reason for Appointment <span className="text-red-500">*</span>
             </label>
             <textarea
               className="w-full mb-4 p-2 border rounded"

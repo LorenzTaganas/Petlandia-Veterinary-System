@@ -38,7 +38,7 @@ const AddClientModal = ({
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                First Name *
+                First Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -50,7 +50,7 @@ const AddClientModal = ({
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Last Name *
+                Last Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -64,7 +64,7 @@ const AddClientModal = ({
           <div className="flex space-x-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Email *
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -76,7 +76,7 @@ const AddClientModal = ({
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Contact Number *
+                Contact Number <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -90,7 +90,7 @@ const AddClientModal = ({
           <div className="flex space-x-4 mb-4">
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Password *
+                Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <input
@@ -110,7 +110,7 @@ const AddClientModal = ({
             </div>
             <div className="w-1/2">
               <label className="block text-gray-700 font-medium mb-1">
-                Confirm Password *
+                Confirm Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <input

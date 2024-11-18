@@ -6,13 +6,17 @@ import {
   DomainVerificationTwoTone,
 } from "@mui/icons-material";
 import { getAppointmentSchedules } from "../../services/appointmentScheduleService";
+import { getAppointmentRequestDetails } from "../../services/appointmentRequestService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import { getUserProfile } from "../../services/userService";
+import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
 
 const AppointmentSchedule = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
+  const [selectedRemark, setSelectedRemark] = useState(null);
+  const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
 
   const fetchAppointmentSchedules = async () => {
     setLoading(true);
@@ -51,6 +55,21 @@ const AppointmentSchedule = () => {
       );
     }
     return [];
+  };
+
+  const handleRemarkClick = async (appointmentId) => {
+    try {
+      const response = await getAppointmentRequestDetails(appointmentId);
+      setSelectedRemark(response.remark);
+      setIsRemarkModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching appointment details:", error);
+    }
+  };
+
+  const closeRemarkModal = () => {
+    setIsRemarkModalOpen(false);
+    setSelectedRemark(null);
   };
 
   return (
@@ -126,11 +145,15 @@ const AppointmentSchedule = () => {
                               <Visibility />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Admin's Remark">
-                            <IconButton>
-                              <Comment />
-                            </IconButton>
-                          </Tooltip>
+                          {request.id && (
+                            <Tooltip title="Admin's Remark">
+                              <IconButton
+                                onClick={() => handleRemarkClick(request.id)}
+                              >
+                                <Comment />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                           {(userProfile?.isStaff || userProfile?.isAdmin) && (
                             <Tooltip title="Accomplishment Form">
                               <IconButton color="primary">
@@ -147,6 +170,9 @@ const AppointmentSchedule = () => {
             </tbody>
           </table>
         </div>
+      )}
+      {isRemarkModalOpen && (
+        <RemarkModal remark={selectedRemark} onClose={closeRemarkModal} />
       )}
     </div>
   );

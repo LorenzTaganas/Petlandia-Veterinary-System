@@ -9,11 +9,15 @@ import {
 } from "@mui/icons-material";
 import {
   getAllAppointmentRequests,
+  getAppointmentRequestDetails,
   createAppointmentRequest,
 } from "../../services/appointmentRequestService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import AddAppointmentRequestModal from "../modals/AppointmentRequestsModals/AddAppointmentRequestModal";
 import ViewAppointmentRequestModal from "../modals/AppointmentRequestsModals/ViewAppointmentRequestModal";
+import ApproveRequestModal from "../modals/AppointmentRequestsModals/ApproveRequestModal";
+import DeclineRequestModal from "../modals/AppointmentRequestsModals/DeclineRequestModal";
+import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
 import { getUserProfile, getFullName } from "../../services/userService";
 
 const AppointmentRequests = () => {
@@ -22,6 +26,12 @@ const AppointmentRequests = () => {
   const [openAddRequestModal, setOpenAddRequestModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
+  const [selectedAppointmentRequest, setSelectedAppointmentRequest] =
+    useState(null);
+  const [openApproveModal, setOpenApproveModal] = useState(false);
+  const [openDeclineModal, setOpenDeclineModal] = useState(false);
+  const [selectedRemark, setSelectedRemark] = useState(null);
+  const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
 
   const fetchAppointmentRequests = async () => {
     setLoading(true);
@@ -85,6 +95,31 @@ const AppointmentRequests = () => {
       return requests.filter((request) => request.owner?.id === userProfile.id);
     }
     return [];
+  };
+
+  const handleApproveRequest = (request) => {
+    setSelectedAppointmentRequest(request);
+    setOpenApproveModal(true);
+  };
+
+  const handleDeclineRequest = (request) => {
+    setSelectedAppointmentRequest(request);
+    setOpenDeclineModal(true);
+  };
+
+  const handleRemarkClick = async (appointmentId) => {
+    try {
+      const response = await getAppointmentRequestDetails(appointmentId);
+      setSelectedRemark(response.remark);
+      setIsRemarkModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching appointment details:", error);
+    }
+  };
+
+  const closeRemarkModal = () => {
+    setIsRemarkModalOpen(false);
+    setSelectedRemark(null);
   };
 
   return (
@@ -176,17 +211,28 @@ const AppointmentRequests = () => {
                             request.status !== "Declined" && (
                               <>
                                 <Tooltip title="Accept Appointment">
-                                  <IconButton color="success">
+                                  <IconButton
+                                    color="success"
+                                    onClick={() =>
+                                      handleApproveRequest(request)
+                                    }
+                                  >
                                     <CheckCircle />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Decline Appointment">
-                                  <IconButton color="error">
+                                  <IconButton
+                                    color="error"
+                                    onClick={() =>
+                                      handleDeclineRequest(request)
+                                    }
+                                  >
                                     <Cancel />
                                   </IconButton>
                                 </Tooltip>
                               </>
                             )}
+
                           <Tooltip title="View All Details">
                             <IconButton
                               onClick={() => handleViewDetailsClick(request.id)}
@@ -194,11 +240,16 @@ const AppointmentRequests = () => {
                               <Visibility />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="Admin's Remark">
-                            <IconButton>
-                              <Comment />
-                            </IconButton>
-                          </Tooltip>
+
+                          {request.status !== "Pending" && (
+                            <Tooltip title="Admin's Remark">
+                              <IconButton
+                                onClick={() => handleRemarkClick(request.id)}
+                              >
+                                <Comment />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -220,6 +271,23 @@ const AppointmentRequests = () => {
         onClose={() => setSelectedAppointmentId(null)}
         refreshData={refreshData}
       />
+      {openApproveModal && (
+        <ApproveRequestModal
+          appointmentRequest={selectedAppointmentRequest}
+          onClose={() => setOpenApproveModal(false)}
+          refreshData={refreshData}
+        />
+      )}
+      {openDeclineModal && (
+        <DeclineRequestModal
+          appointmentRequest={selectedAppointmentRequest}
+          onClose={() => setOpenDeclineModal(false)}
+          refreshData={refreshData}
+        />
+      )}
+      {isRemarkModalOpen && (
+        <RemarkModal remark={selectedRemark} onClose={closeRemarkModal} />
+      )}
     </div>
   );
 };

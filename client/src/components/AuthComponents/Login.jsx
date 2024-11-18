@@ -44,7 +44,7 @@ const Login = ({ onSwitch }) => {
       <p className="text-gray-700 mb-6">Hi, Welcome to Petlandia!</p>
       <div className="text-left mb-4">
         <label className="block text-gray-700 font-medium mb-1">
-          Email Address*
+          Email Address <span className="text-red-500">*</span>
         </label>
         <input
           type="email"
@@ -56,7 +56,7 @@ const Login = ({ onSwitch }) => {
       </div>
       <div className="text-left mb-6">
         <label className="block text-gray-700 font-medium mb-1">
-          Password*
+          Password <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <input

@@ -65,6 +65,11 @@ exports.createAppointmentRequest = async (req, res) => {
 exports.getAllAppointmentRequests = async (req, res) => {
   try {
     const appointmentRequests = await prisma.appointmentRequest.findMany({
+      where: {
+        status: {
+          not: "Approved",
+        },
+      },
       include: {
         pet: true,
         owner: true,
@@ -106,11 +111,12 @@ exports.acceptAppointmentRequest = async (req, res) => {
 
   try {
     const appointmentRequest = await prisma.appointmentRequest.update({
-      where: { id: Number(id) },
+      where: { id: parseInt(id) },
       data: {
-        status: "Accepted",
+        status: "Approved",
         remark,
         adminId: req.user.id,
+        approvedBy: req.user.id,
       },
     });
 
@@ -118,7 +124,7 @@ exports.acceptAppointmentRequest = async (req, res) => {
       data: {
         appointmentDate: appointmentRequest.appointmentDate,
         appointmentType: appointmentRequest.appointmentType,
-        assignedVetId,
+        assignedVetId: parseInt(assignedVetId),
         petId: appointmentRequest.petId,
         ownerId: appointmentRequest.ownerId,
         approvedAt: new Date(),
@@ -137,13 +143,23 @@ exports.declineAppointmentRequest = async (req, res) => {
   const { remark, rescheduleDate } = req.body;
 
   try {
+    const validRescheduleDate = rescheduleDate
+      ? new Date(rescheduleDate)
+      : null;
+    const declinedAt = new Date();
+
+    if (rescheduleDate && isNaN(validRescheduleDate)) {
+      return res.status(400).json({ error: "Invalid reschedule date." });
+    }
+
     const appointmentRequest = await prisma.appointmentRequest.update({
       where: { id: Number(id) },
       data: {
         status: "Declined",
         remark,
-        rescheduleDate: rescheduleDate || null,
-        declinedAt: new Date(),
+        rescheduleDate: validRescheduleDate,
+        declinedAt,
+        declinedBy: req.user.id,
         adminId: req.user.id,
       },
     });
