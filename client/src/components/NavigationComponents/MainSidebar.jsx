@@ -60,8 +60,8 @@ const MainSidebar = ({ setActiveComponent }) => {
       },
       {
         icon: <EventAvailableIcon />,
-        label: "Scheduled Appointment",
-        onClick: () => handleItemClick("ScheduledAppointments"),
+        label: "Appointment Schedule",
+        onClick: () => handleItemClick("AppointmentSchedule"),
         roles: ["Staff"],
       },
       {
@@ -76,7 +76,7 @@ const MainSidebar = ({ setActiveComponent }) => {
             onClick: () => handleItemClick("AppointmentRequests"),
           },
           {
-            label: "Scheduled",
+            label: "Schedule",
             icon: <EventAvailableIcon />,
             onClick: () => handleItemClick("AppointmentSchedule"),
           },

@@ -1,27 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { IconButton, Tooltip } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import {
+  Visibility,
+  Comment,
+  DomainVerificationTwoTone,
+} from "@mui/icons-material";
 import { getAppointmentSchedules } from "../../services/appointmentScheduleService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
+import { getUserProfile } from "../../services/userService";
 
 const AppointmentSchedule = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+
+  const fetchAppointmentSchedules = async () => {
+    setLoading(true);
+    try {
+      const data = await getAppointmentSchedules();
+      setRequests(data);
+    } catch (error) {
+      console.error("Error fetching appointment schedules:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    try {
+      const profile = await getUserProfile();
+      setUserProfile(profile);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAppointmentSchedules = async () => {
-      try {
-        const data = await getAppointmentSchedules();
-        setRequests(data);
-      } catch (error) {
-        console.error("Error fetching appointment schedules:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointmentSchedules();
+    fetchUserProfile();
   }, []);
+
+  const filterRequests = () => {
+    if (userProfile?.isAdmin) return requests;
+    if (userProfile?.isClient) {
+      return requests.filter((request) => request.owner?.id === userProfile.id);
+    }
+    if (userProfile?.isStaff) {
+      return requests.filter(
+        (request) => request.assignedVet?.id === userProfile.id
+      );
+    }
+    return [];
+  };
 
   return (
     <div className="p-4">
@@ -48,50 +78,72 @@ const AppointmentSchedule = () => {
               </tr>
             </thead>
             <tbody>
-              {requests.map((request, index) => (
-                <tr
-                  key={request.id}
-                  className={`${
-                    index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                  } shadow-md`}
-                >
-                  <td className="px-4 py-3 text-center rounded-l-lg">
-                    {request.owner?.firstName} {request.owner?.lastName}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <DateTimeDisplay date={request.appointmentDate} />
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {request.appointmentType}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {request.assignedVet
-                      ? `${request.assignedVet.firstName} ${request.assignedVet.lastName}`
-                      : "Not assigned"}
-                  </td>
-
-                  <td className="px-4 py-3 text-center">
-                    {request.pet?.name || "No pet"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {request.pet?.type || "Unknown"}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {request.pet?.breed || "Unknown"}
-                  </td>
-                  <td className="px-2 py-3 text-center rounded-r-lg">
-                    <div className="flex flex-col justify-center gap-1.5">
-                      <div className="flex justify-center gap-1.5 mt-1">
-                        <Tooltip title="View All Details">
-                          <IconButton>
-                            <Visibility />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                    </div>
+              {filterRequests().length === 0 ? (
+                <tr className="bg-gray-100">
+                  <td
+                    colSpan="8"
+                    className="px-4 py-3 text-center text-lg font-semibold text-gray-500 rounded-l-lg rounded-r-lg"
+                  >
+                    No Data Available
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filterRequests().map((request, index) => (
+                  <tr
+                    key={request.id}
+                    className={`${
+                      index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                    } shadow-md`}
+                  >
+                    <td className="px-4 py-3 text-center rounded-l-lg">
+                      {request.owner?.firstName} {request.owner?.lastName}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <DateTimeDisplay date={request.appointmentDate} />
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {request.appointmentType}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {request.assignedVet
+                        ? `${request.assignedVet.firstName} ${request.assignedVet.lastName}`
+                        : "Not assigned"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {request.pet?.name || "No pet"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {request.pet?.type || "Unknown"}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {request.pet?.breed || "Unknown"}
+                    </td>
+                    <td className="px-2 py-3 text-center rounded-r-lg">
+                      <div className="flex flex-col justify-center gap-1.5">
+                        <div className="flex justify-center gap-1.5 mt-1">
+                          <Tooltip title="View All Details">
+                            <IconButton>
+                              <Visibility />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Admin's Remark">
+                            <IconButton>
+                              <Comment />
+                            </IconButton>
+                          </Tooltip>
+                          {(userProfile?.isStaff || userProfile?.isAdmin) && (
+                            <Tooltip title="Accomplishment Form">
+                              <IconButton color="primary">
+                                <DomainVerificationTwoTone />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
