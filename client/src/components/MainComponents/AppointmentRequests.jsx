@@ -156,24 +156,37 @@ const AppointmentRequests = () => {
                     <td className="px-4 py-3 text-center">
                       {request.pet?.breed || "(unknown)"}
                     </td>
-                    <td className="px-4 py-3 text-center">{request.status}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className={`px-2 py-1 text-sm font-semibold rounded ${
+                          request.status === "Pending"
+                            ? "bg-yellow-300"
+                            : request.status === "Declined"
+                            ? "bg-red-300"
+                            : "bg-gray-200"
+                        }`}
+                      >
+                        {request.status}
+                      </span>
+                    </td>
                     <td className="px-2 py-3 text-center rounded-r-lg">
                       <div className="flex flex-col justify-center gap-0.5">
                         <div className="flex justify-center gap-0.5 mt-1">
-                          {userProfile?.isAdmin && (
-                            <>
-                              <Tooltip title="Accept Appointment">
-                                <IconButton color="success">
-                                  <CheckCircle />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Decline Appointment">
-                                <IconButton color="error">
-                                  <Cancel />
-                                </IconButton>
-                              </Tooltip>
-                            </>
-                          )}
+                          {userProfile?.isAdmin &&
+                            request.status !== "Declined" && (
+                              <>
+                                <Tooltip title="Accept Appointment">
+                                  <IconButton color="success">
+                                    <CheckCircle />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Decline Appointment">
+                                  <IconButton color="error">
+                                    <Cancel />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
                           <Tooltip title="View All Details">
                             <IconButton
                               onClick={() => handleViewDetailsClick(request.id)}

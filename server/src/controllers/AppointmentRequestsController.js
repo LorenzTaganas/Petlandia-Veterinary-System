@@ -175,6 +175,7 @@ exports.editAppointmentRequest = async (req, res) => {
         preferredVetId,
         reason,
         additionalComments,
+        status: req.body.status || "Pending",
       },
     });
 

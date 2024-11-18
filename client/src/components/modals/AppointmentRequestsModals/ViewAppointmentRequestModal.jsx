@@ -92,6 +92,10 @@ const ViewAppointmentRequestModal = ({
         },
       };
 
+      if (appointmentDetails.status === "Declined") {
+        updatedData.status = "Pending";
+      }
+
       await editAppointmentRequest(appointmentId, updatedData);
       setIsEditing(false);
       fetchAppointmentDetails();
