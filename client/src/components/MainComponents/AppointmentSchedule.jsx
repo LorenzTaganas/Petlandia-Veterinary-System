@@ -57,13 +57,13 @@ const AppointmentSchedule = () => {
     return [];
   };
 
-  const handleRemarkClick = async (appointmentId) => {
-    try {
-      const response = await getAppointmentRequestDetails(appointmentId);
-      setSelectedRemark(response.remark);
+  const handleRemarkClick = (appointmentId) => {
+    const selectedSchedule = requests.find(
+      (request) => request.id === appointmentId
+    );
+    if (selectedSchedule) {
+      setSelectedRemark(selectedSchedule.remark);
       setIsRemarkModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching appointment details:", error);
     }
   };
 

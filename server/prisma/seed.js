@@ -127,20 +127,20 @@ async function main() {
     ],
   });
 
-  await prisma.appointmentSchedule.createMany({
-    data: [
-      {
-        appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
-        appointmentType: "Treatment",
-        assignedVetId: 2,
-        petId: mittens.id,
-        ownerId: 3,
-        approvedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-  });
+  // await prisma.appointmentSchedule.createMany({
+  //   data: [
+  //     {
+  //       appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
+  //       appointmentType: "Treatment",
+  //       assignedVetId: 2,
+  //       petId: mittens.id,
+  //       ownerId: 3,
+  //       approvedAt: new Date(),
+  //       createdAt: new Date(),
+  //       updatedAt: new Date(),
+  //     },
+  //   ],
+  // });
 }
 
 main()
