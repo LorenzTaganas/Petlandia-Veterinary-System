@@ -64,6 +64,7 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
                 reason: true,
                 additionalComments: true,
                 remark: true,
+                approvedBy: true,
               },
             },
           },
@@ -78,21 +79,17 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
     }
 
     const appointmentRequest =
-      appointmentSchedule.pet.appointmentRequests.length > 0
-        ? appointmentSchedule.pet.appointmentRequests[0]
-        : null;
+      appointmentSchedule.pet?.appointmentRequests?.[0] || null;
 
-    const reason = appointmentRequest ? appointmentRequest.reason : null;
-    const additionalComments = appointmentRequest
-      ? appointmentRequest.additionalComments
-      : null;
-    const remark = appointmentRequest ? appointmentRequest.remark : null;
+    const { reason, additionalComments, remark, approvedBy } =
+      appointmentRequest || {};
 
     res.status(200).json({
       ...appointmentSchedule,
-      reason,
-      additionalComments,
-      remark,
+      reason: reason || null,
+      additionalComments: additionalComments || null,
+      remark: remark || null,
+      approvedBy: approvedBy || null,
     });
   } catch (error) {
     console.error(error);

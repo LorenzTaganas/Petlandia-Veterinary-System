@@ -5,8 +5,13 @@ import {
   deleteAppointmentRequest,
 } from "../../../services/appointmentRequestService";
 import { getAppointmentScheduleDetails } from "../../../services/appointmentScheduleService";
-import { getUserProfile, getUsersByRole } from "../../../services/userService";
-import { formatDateForInput } from "../../../utils/dateTimeUtil";
+import {
+  getUserProfile,
+  getUsersByRole,
+  getUserById,
+  getFullName,
+} from "../../../services/userService";
+import { formatDateForInput, formatDate } from "../../../utils/dateTimeUtil";
 
 const ViewAppointmentScheduleModal = ({
   appointmentId,
@@ -19,7 +24,7 @@ const ViewAppointmentScheduleModal = ({
   const [formData, setFormData] = useState({
     appointmentDate: "",
     appointmentType: "",
-    preferredVetId: "",
+    assignedVetId: "",
     petName: "",
     petType: "",
     petBreed: "",
@@ -30,6 +35,7 @@ const ViewAppointmentScheduleModal = ({
   });
   const [staffMembers, setStaffMembers] = useState([]);
   const [userRole, setUserRole] = useState("");
+  const [approvedByUser, setApprovedByUser] = useState(null);
 
   useEffect(() => {
     if (appointmentId) {
@@ -66,10 +72,15 @@ const ViewAppointmentScheduleModal = ({
     try {
       const data = await getAppointmentScheduleDetails(appointmentId);
       setAppointmentDetails(data);
+      if (data.approvedBy) {
+        const approvedByUser = await getUserById(data.approvedBy);
+        setApprovedByUser(approvedByUser);
+      }
+
       setFormData({
         appointmentDate: formatDateForInput(data.appointmentDate),
         appointmentType: data.appointmentType,
-        preferredVetId: data.preferredVetId,
+        assignedVetId: data.assignedVetId,
         petName: data.pet.name,
         petType: data.pet.type,
         petBreed: data.pet.breed,
@@ -92,7 +103,7 @@ const ViewAppointmentScheduleModal = ({
       const updatedData = {
         appointmentDate: formatDateForInput(formData.appointmentDate),
         appointmentType: formData.appointmentType,
-        preferredVetId: formData.preferredVetId,
+        assignedVetId: formData.assignedVetId,
         reason: formData.reason,
         additionalComments: formData.additionalComments,
         pet: {
@@ -136,6 +147,18 @@ const ViewAppointmentScheduleModal = ({
     <Modal open={isVisible} onClose={onClose}>
       <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto">
         <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
+        {appointmentDetails && (
+          <>
+            <div className="mb-4">
+              <strong>Approved At:</strong>{" "}
+              {formatDate(appointmentDetails.approvedAt)?.date}{" "}
+              {formatDate(appointmentDetails.approvedAt)?.time}
+            </div>
+            <div className="mb-4">
+              <strong>Approved By:</strong> {getFullName(approvedByUser)}
+            </div>
+          </>
+        )}
         <div className="flex space-x-4">
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">
@@ -170,13 +193,13 @@ const ViewAppointmentScheduleModal = ({
         <div className="flex space-x-4">
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">
-              Preferred Veterinarian
+              Assigned Veterinarian
             </label>
             <select
               className="w-full mb-4 p-2 border rounded"
-              value={formData.preferredVetId}
+              value={formData.assignedVetId}
               onChange={handleChange}
-              name="preferredVetId"
+              name="assignedVetId"
               disabled={!isEditing}
             >
               {staffMembers.map((staff) => (
@@ -289,9 +312,7 @@ const ViewAppointmentScheduleModal = ({
           </button>
           {userRole !== "Client" && (
             <button
-              className={
-                "bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              }
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
               onClick={isEditing ? handleSaveClick : handleEditClick}
             >
               {isEditing ? "Save" : "Edit"}

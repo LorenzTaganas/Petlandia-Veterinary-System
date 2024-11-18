@@ -5,8 +5,12 @@ import {
   editAppointmentRequest,
   deleteAppointmentRequest,
 } from "../../../services/appointmentRequestService";
-import { getUsersByRole } from "../../../services/userService";
-import { formatDateForInput } from "../../../utils/dateTimeUtil";
+import {
+  getUsersByRole,
+  getUserById,
+  getFullName,
+} from "../../../services/userService";
+import { formatDateForInput, formatDate } from "../../../utils/dateTimeUtil";
 
 const ViewAppointmentRequestModal = ({
   appointmentId,
@@ -29,6 +33,7 @@ const ViewAppointmentRequestModal = ({
     additionalComments: "",
   });
   const [staffMembers, setStaffMembers] = useState([]);
+  const [declinedByUser, setDeclinedByUser] = useState(null);
 
   useEffect(() => {
     if (appointmentId) {
@@ -65,6 +70,11 @@ const ViewAppointmentRequestModal = ({
         reason: data.reason,
         additionalComments: data.additionalComments,
       });
+
+      if (data.declinedBy) {
+        const user = await getUserById(data.declinedBy);
+        setDeclinedByUser(user);
+      }
     } catch (error) {
       console.error("Error fetching appointment details:", error);
     }
@@ -123,6 +133,21 @@ const ViewAppointmentRequestModal = ({
     <Modal open={isVisible} onClose={onClose}>
       <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto">
         <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
+        {appointmentDetails &&
+          appointmentDetails.status === "Declined" &&
+          declinedByUser && (
+            <>
+              <div className="mb-4">
+                <strong>Declined At:</strong>{" "}
+                {formatDate(appointmentDetails.declinedAt)?.date}{" "}
+                {formatDate(appointmentDetails.declinedAt)?.time}
+              </div>
+              <div className="mb-4">
+                <strong>Declined By:</strong> {getFullName(declinedByUser)}
+              </div>
+            </>
+          )}
+
         <div className="flex space-x-4">
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">

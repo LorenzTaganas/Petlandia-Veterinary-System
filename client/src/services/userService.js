@@ -40,3 +40,13 @@ export const getUsersByRole = async (role) => {
     throw error;
   }
 };
+
+export const getUserById = async (userId) => {
+  try {
+    const response = await axiosInstance.get(`/users/id/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
+};
