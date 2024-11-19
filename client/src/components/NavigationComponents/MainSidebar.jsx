@@ -1,27 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
-import MenuIcon from "@mui/icons-material/Menu";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AppointmentIcon from "@mui/icons-material/CalendarToday";
-import MedicalHistoryIcon from "@mui/icons-material/MedicalServices";
-import PaymentHistoryIcon from "@mui/icons-material/Payment";
-import ReportIcon from "@mui/icons-material/Assessment";
-import HomeIcon from "@mui/icons-material/Home";
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
-import GroupIcon from "@mui/icons-material/Group";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronDownIcon from "@mui/icons-material/ExpandMore";
-import placeholder from "../../assets/placeholder.png";
-import { getUserProfile, getFullName } from "../../services/userService";
+import {
+  Menu as MenuIcon,
+  Dashboard as DashboardIcon,
+  CalendarToday as AppointmentIcon,
+  WorkHistory as WorkHistoryIcon,
+  Payment as PaymentHistoryIcon,
+  Assessment as ReportIcon,
+  Home as HomeIcon,
+  PendingActions as PendingActionsIcon,
+  EventAvailable as EventAvailableIcon,
+  VideoLibrary as VideoLibraryIcon,
+  Group as GroupIcon,
+  PersonAdd as PersonAddIcon,
+  AdminPanelSettings as AdminPanelSettingsIcon,
+  Person as PersonIcon,
+  ChevronRight as ChevronRightIcon,
+  ExpandMore as ChevronDownIcon,
+} from "@mui/icons-material";
 
-const MainSidebar = ({ setActiveComponent, activeComponent }) => {
+import placeholder from "../../assets/placeholder.png";
+import { getUserProfile } from "../../services/userService";
+
+const MainSidebar = ({ setActiveComponent }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [user, setUser] = useState(null);
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
+  const [isAccountManagementOpen, setIsAccountManagementOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,11 +56,12 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
         icon: <DashboardIcon />,
         label: "Dashboard",
         onClick: () => handleItemClick("Dashboard"),
+        roles: ["Staff", "Admin"],
       },
       {
         icon: <EventAvailableIcon />,
-        label: "Scheduled Appointment",
-        onClick: () => handleItemClick("ScheduledAppointments"),
+        label: "Appointment Schedule",
+        onClick: () => handleItemClick("AppointmentSchedule"),
         roles: ["Staff"],
       },
       {
@@ -69,7 +76,7 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
             onClick: () => handleItemClick("AppointmentRequests"),
           },
           {
-            label: "Scheduled",
+            label: "Schedule",
             icon: <EventAvailableIcon />,
             onClick: () => handleItemClick("AppointmentSchedule"),
           },
@@ -77,9 +84,9 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
         isOpen: isAppointmentOpen,
       },
       {
-        icon: <MedicalHistoryIcon />,
-        label: "Medical History",
-        onClick: () => handleItemClick("MedicalHistory"),
+        icon: <WorkHistoryIcon />,
+        label: "Appointment History",
+        onClick: () => handleItemClick("AppointmentHistory"),
       },
       {
         icon: <PaymentHistoryIcon />,
@@ -100,8 +107,26 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
       {
         icon: <GroupIcon />,
         label: "Account Management",
-        onClick: () => handleItemClick("AccountManagement"),
+        onClick: () => setIsAccountManagementOpen(!isAccountManagementOpen),
         roles: ["Admin"],
+        subItems: [
+          {
+            label: "Admin Accounts",
+            icon: <AdminPanelSettingsIcon />,
+            onClick: () => handleItemClick("AdminAccounts"),
+          },
+          {
+            label: "Staff Accounts",
+            icon: <PersonAddIcon />,
+            onClick: () => handleItemClick("StaffAccounts"),
+          },
+          {
+            label: "Client Accounts",
+            icon: <PersonIcon />,
+            onClick: () => handleItemClick("ClientAccounts"),
+          },
+        ],
+        isOpen: isAccountManagementOpen,
       },
     ];
 
@@ -128,7 +153,7 @@ const MainSidebar = ({ setActiveComponent, activeComponent }) => {
     <div className="flex flex-col h-screen bg-[#CCC7FF]">
       <div
         className={`flex flex-col h-screen bg-[#CCC7FF] ${
-          isOpen ? "w-64" : "w-20"
+          isOpen ? "w-72" : "w-20"
         } transition-width duration-300`}
       >
         <div className="flex items-center justify-between p-4">
@@ -197,7 +222,13 @@ const SidebarItem = ({
             </div>
           )}
           {subItems && isOpen && !isAppointment && (
-            <ExpandMoreIcon className="ml-auto text-black" />
+            <div className="ml-auto">
+              {isOpenNested ? (
+                <ChevronDownIcon className="text-black" />
+              ) : (
+                <ChevronRightIcon className="text-black" />
+              )}
+            </div>
           )}
         </div>
       </Tooltip>

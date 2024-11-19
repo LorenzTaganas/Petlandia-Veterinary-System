@@ -7,6 +7,8 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
 
+// const db = require("./src/database/db");
+
 const http = require("http");
 const { WebSocketServer } = require("ws");
 const server = http.createServer(app);

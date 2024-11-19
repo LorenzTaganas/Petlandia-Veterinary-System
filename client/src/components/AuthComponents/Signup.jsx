@@ -41,7 +41,7 @@ const Signup = ({ onSwitch }) => {
       <div className="flex gap-4 mb-4">
         <div className="w-1/2 text-left">
           <label className="block text-gray-700 font-medium mb-1">
-            First Name*
+            First Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -53,7 +53,7 @@ const Signup = ({ onSwitch }) => {
         </div>
         <div className="w-1/2 text-left">
           <label className="block text-gray-700 font-medium mb-1">
-            Last Name*
+            Last Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -67,7 +67,7 @@ const Signup = ({ onSwitch }) => {
       <div className="flex gap-4 mb-4">
         <div className="w-1/2 text-left">
           <label className="block text-gray-700 font-medium mb-1">
-            Email Address*
+            Email Address <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
@@ -79,7 +79,7 @@ const Signup = ({ onSwitch }) => {
         </div>
         <div className="w-1/2 text-left">
           <label className="block text-gray-700 font-medium mb-1">
-            Contact No*
+            Contact No <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -93,7 +93,7 @@ const Signup = ({ onSwitch }) => {
       <div className="flex gap-4 mb-6">
         <div className="w-1/2 text-left">
           <label className="block text-gray-700 font-medium mb-1">
-            Password*
+            Password <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -114,7 +114,7 @@ const Signup = ({ onSwitch }) => {
         </div>
         <div className="w-1/2 text-left">
           <label className="block text-gray-700 font-medium mb-1">
-            Confirm Password*
+            Confirm Password <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input

@@ -58,6 +58,24 @@ exports.signup = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
+    const existingEmail = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists." });
+    }
+
+    const existingContactNo = await prisma.user.findFirst({
+      where: { contactNo },
+    });
+
+    if (existingContactNo) {
+      return res
+        .status(400)
+        .json({ message: "Contact number already exists." });
+    }
+
     const newUser = await prisma.user.create({
       data: {
         firstName,
@@ -68,13 +86,11 @@ exports.signup = async (req, res) => {
         role: "Client",
       },
     });
+
     res
       .status(201)
       .json({ message: "User created successfully.", user: newUser });
   } catch (error) {
-    if (error.code === "P2002") {
-      return res.status(400).json({ message: "Email already exists." });
-    }
     res.status(400).json({ message: "Error creating user.", error });
   }
 };
@@ -88,6 +104,9 @@ exports.login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
+      return res.status(403).json({ message: "Invalid credentials." });
+
+    if (!user.isActive)
       return res.status(403).json({ message: "Invalid credentials." });
 
     const accessToken = jwt.sign(
@@ -155,6 +174,42 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+  const userId = req.user.id;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match." });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(403).json({ message: "Incorrect current password." });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Server error.", error });
+  }
+};
+
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -176,6 +231,74 @@ exports.getUserProfile = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found." });
 
     res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error.", error });
+  }
+};
+
+exports.updateUserProfile = async (req, res) => {
+  const { firstName, lastName, email, contactNo } = req.body;
+  const id = req.user.id;
+
+  if (!firstName || !lastName || !email || !contactNo) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    const existingEmail = await prisma.user.findFirst({
+      where: {
+        email,
+        NOT: { id: id },
+      },
+    });
+
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email is already taken." });
+    }
+
+    const existingContactNo = await prisma.user.findFirst({
+      where: {
+        contactNo,
+        NOT: { id: id },
+      },
+    });
+
+    if (existingContactNo) {
+      return res
+        .status(400)
+        .json({ message: "Contact number is already taken." });
+    }
+
+    const user = await prisma.user.update({
+      where: { id: id },
+      data: {
+        firstName,
+        lastName,
+        email,
+        contactNo,
+      },
+    });
+
+    res.status(200).json({ message: "Profile updated successfully.", user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error.", error });
+  }
+};
+
+exports.getUsersByRole = async (req, res) => {
+  const { role } = req.params;
+  const currentUserId = req.user.id;
+
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        role,
+        id: {
+          not: currentUserId,
+        },
+      },
+    });
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Server error.", error });
   }
