@@ -65,6 +65,7 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
                 additionalComments: true,
                 remark: true,
                 approvedBy: true,
+                status: true,
               },
             },
           },
@@ -81,7 +82,7 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
     const appointmentRequest =
       appointmentSchedule.pet?.appointmentRequests?.[0] || null;
 
-    const { reason, additionalComments, remark, approvedBy } =
+    const { reason, additionalComments, remark, approvedBy, status } =
       appointmentRequest || {};
 
     res.status(200).json({
@@ -90,6 +91,7 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
       additionalComments: additionalComments || null,
       remark: remark || null,
       approvedBy: approvedBy || null,
+      status: status || null,
     });
   } catch (error) {
     console.error(error);

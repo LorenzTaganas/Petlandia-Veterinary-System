@@ -147,7 +147,7 @@ const ViewAppointmentScheduleModal = ({
     <Modal open={isVisible} onClose={onClose}>
       <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto">
         <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
-        {appointmentDetails && (
+        {/* {appointmentDetails && (
           <>
             <div className="mb-4">
               <strong>Approved At:</strong>{" "}
@@ -158,7 +158,7 @@ const ViewAppointmentScheduleModal = ({
               <strong>Approved By:</strong> {getFullName(approvedByUser)}
             </div>
           </>
-        )}
+        )} */}
         <div className="flex space-x-4">
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">
@@ -244,7 +244,7 @@ const ViewAppointmentScheduleModal = ({
             <input
               type="text"
               className="w-full mb-4 p-2 border rounded"
-              value={formData.petBreed}
+              value={formData.petBreed || ""}
               onChange={handleChange}
               name="petBreed"
               disabled={!isEditing}
@@ -259,7 +259,7 @@ const ViewAppointmentScheduleModal = ({
             <input
               type="text"
               className="w-full mb-4 p-2 border rounded"
-              value={formData.petAge}
+              value={formData.petAge || ""}
               onChange={handleChange}
               name="petAge"
               disabled={!isEditing}
@@ -272,7 +272,7 @@ const ViewAppointmentScheduleModal = ({
             <input
               type="text"
               className="w-full mb-4 p-2 border rounded"
-              value={formData.petWeight}
+              value={formData.petWeight || ""}
               onChange={handleChange}
               name="petWeight"
               disabled={!isEditing}
@@ -297,7 +297,7 @@ const ViewAppointmentScheduleModal = ({
           </label>
           <textarea
             className="w-full mb-4 p-2 border rounded"
-            value={formData.additionalComments}
+            value={formData.additionalComments || ""}
             onChange={handleChange}
             name="additionalComments"
             disabled={!isEditing}

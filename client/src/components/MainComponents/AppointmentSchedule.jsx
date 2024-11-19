@@ -5,9 +5,12 @@ import {
   Comment,
   DomainVerificationTwoTone,
 } from "@mui/icons-material";
-import { getAppointmentSchedules } from "../../services/appointmentScheduleService";
+import {
+  getAppointmentSchedules,
+  getAppointmentScheduleDetails,
+} from "../../services/appointmentScheduleService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
-import { getUserProfile } from "../../services/userService";
+import { getUserProfile, getFullName } from "../../services/userService";
 import ViewAppointmentScheduleModal from "../modals/AppointmentScheduleModals/ViewAppointmentScheduleModal";
 import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
 
@@ -18,6 +21,12 @@ const AppointmentSchedule = () => {
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [remarkDetails, setRemarkDetails] = useState({
+    remark: null,
+    status: null,
+    approvedAt: null,
+    approvedBy: null,
+  });
 
   const fetchAppointmentSchedules = async () => {
     setLoading(true);
@@ -70,19 +79,36 @@ const AppointmentSchedule = () => {
     setSelectedAppointmentId(selectedSchedule.id);
   };
 
-  const handleRemarkClick = (appointmentId) => {
-    const selectedSchedule = requests.find(
-      (request) => request.id === appointmentId
-    );
-    if (selectedSchedule) {
-      setSelectedRemark(selectedSchedule.remark);
+  const handleRemarkClick = async (appointmentId) => {
+    try {
+      const response = await getAppointmentScheduleDetails(appointmentId);
+      const approvedByUser = response.approvedBy
+        ? await getUserProfile(response.approvedBy)
+        : null;
+
+      setRemarkDetails({
+        remark: response.remark,
+        status: response.status,
+        approvedAt: response.approvedAt,
+        approvedBy: approvedByUser
+          ? getFullName(approvedByUser)
+          : response.approvedBy,
+      });
+
       setIsRemarkModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching appointment details:", error);
     }
   };
 
   const closeRemarkModal = () => {
     setIsRemarkModalOpen(false);
-    setSelectedRemark(null);
+    setRemarkDetails({
+      remark: null,
+      status: null,
+      approvedAt: null,
+      approvedBy: null,
+    });
   };
 
   return (
@@ -128,7 +154,7 @@ const AppointmentSchedule = () => {
                     } shadow-md`}
                   >
                     <td className="px-4 py-3 text-center rounded-l-lg">
-                      {request.owner?.firstName} {request.owner?.lastName}
+                      {getFullName(request.owner)}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <DateTimeDisplay date={request.appointmentDate} />
@@ -193,7 +219,13 @@ const AppointmentSchedule = () => {
         refreshData={refreshData}
       />
       {isRemarkModalOpen && (
-        <RemarkModal remark={selectedRemark} onClose={closeRemarkModal} />
+        <RemarkModal
+          status={remarkDetails.status}
+          remark={remarkDetails.remark}
+          approvedAt={remarkDetails.approvedAt}
+          approvedBy={remarkDetails.approvedBy}
+          onClose={closeRemarkModal}
+        />
       )}
     </div>
   );

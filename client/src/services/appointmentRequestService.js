@@ -82,13 +82,19 @@ export const acceptAppointmentRequest = async (id, assignedVetId, remark) => {
   }
 };
 
-export const declineAppointmentRequest = async (id, remark, rescheduleDate) => {
+export const declineAppointmentRequest = async (
+  id,
+  remark,
+  rescheduleDate,
+  assignedVetId
+) => {
   try {
     const response = await axiosInstance.put(
       `/appointment-requests/${id}/decline`,
       {
         remark,
         rescheduleDate,
+        assignedVetId,
       }
     );
     return response.data;
@@ -124,6 +130,33 @@ export const deleteAppointmentRequest = async (id) => {
   } catch (error) {
     console.error(
       "Error deleting appointment request:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const rescheduleAppointmentRequest = async (
+  id,
+  newAppointmentDate,
+  remark,
+  approve,
+  assignedVetId
+) => {
+  try {
+    const response = await axiosInstance.put(
+      `/appointment-requests/${id}/reschedule`,
+      {
+        newAppointmentDate,
+        remark,
+        approve,
+        assignedVetId,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error rescheduling appointment request:",
       error.response?.data || error.message
     );
     throw error;

@@ -11,6 +11,7 @@ import {
   getAllAppointmentRequests,
   getAppointmentRequestDetails,
   createAppointmentRequest,
+  rescheduleAppointmentRequest,
 } from "../../services/appointmentRequestService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import AddAppointmentRequestModal from "../modals/AppointmentRequestsModals/AddAppointmentRequestModal";
@@ -19,12 +20,14 @@ import ApproveRequestModal from "../modals/AppointmentRequestsModals/ApproveRequ
 import DeclineRequestModal from "../modals/AppointmentRequestsModals/DeclineRequestModal";
 import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
 import { getUserProfile, getFullName } from "../../services/userService";
+import { formatDateForInput } from "../../utils/dateTimeUtil";
 
 const AppointmentRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openAddRequestModal, setOpenAddRequestModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [selectedAppointmentRequest, setSelectedAppointmentRequest] =
     useState(null);
@@ -32,6 +35,13 @@ const AppointmentRequests = () => {
   const [openDeclineModal, setOpenDeclineModal] = useState(false);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [remarkDetails, setRemarkDetails] = useState({
+    remark: null,
+    status: null,
+    declinedAt: null,
+    declinedBy: null,
+    rescheduleDate: null,
+  });
 
   const fetchAppointmentRequests = async () => {
     setLoading(true);
@@ -49,6 +59,14 @@ const AppointmentRequests = () => {
     try {
       const profile = await getUserProfile();
       setUserProfile(profile);
+
+      if (profile.isAdmin) {
+        setUserRole("Admin");
+      } else if (profile.isStaff) {
+        setUserRole("Staff");
+      } else if (profile.isClient) {
+        setUserRole("Client");
+      }
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
@@ -110,16 +128,79 @@ const AppointmentRequests = () => {
   const handleRemarkClick = async (appointmentId) => {
     try {
       const response = await getAppointmentRequestDetails(appointmentId);
-      setSelectedRemark(response.remark);
+      const declinedByUser = response.declinedBy
+        ? await getUserProfile(response.declinedBy)
+        : null;
+
+      setRemarkDetails({
+        remark: response.remark,
+        status: response.status,
+        declinedAt: response.declinedAt,
+        declinedBy: declinedByUser
+          ? getFullName(declinedByUser)
+          : response.declinedBy,
+        rescheduleDate: response.rescheduleDate,
+        assignedVetId: response.assignedVetId,
+      });
+
       setIsRemarkModalOpen(true);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
     }
   };
 
+  const handleAcceptReschedule = async () => {
+    console.log(remarkDetails);
+    const appointmentId = 21;
+    const rescheduleDate = remarkDetails?.rescheduleDate;
+    const assignedVetId = 5;
+
+    console.log(
+      "handleAcceptReschedule triggered with appointmentId:",
+      appointmentId
+    );
+
+    if (!appointmentId || !rescheduleDate) {
+      console.log("Appointment ID or Reschedule Date is missing!");
+      alert("Appointment ID or Reschedule Date is missing!");
+      return;
+    }
+
+    try {
+      const formattedDate = formatDateForInput(rescheduleDate);
+      console.log("Formatted Reschedule Date:", formattedDate);
+
+      const updatedAppointment = await rescheduleAppointmentRequest(
+        appointmentId,
+        formattedDate,
+        "Reschedule accepted",
+        true,
+        assignedVetId
+      );
+
+      console.log("Updated Appointment Data:", updatedAppointment);
+
+      if (updatedAppointment) {
+        setRemarkDetails(updatedAppointment);
+        refreshData();
+      }
+
+      alert("Appointment rescheduled successfully!");
+      closeRemarkModal();
+    } catch (error) {
+      console.error("Error rescheduling appointment:", error);
+      alert("Failed to reschedule appointment.");
+    }
+  };
+
   const closeRemarkModal = () => {
     setIsRemarkModalOpen(false);
-    setSelectedRemark(null);
+    setRemarkDetails({
+      remark: null,
+      status: null,
+      declinedAt: null,
+      declinedBy: null,
+    });
   };
 
   return (
@@ -286,7 +367,19 @@ const AppointmentRequests = () => {
         />
       )}
       {isRemarkModalOpen && (
-        <RemarkModal remark={selectedRemark} onClose={closeRemarkModal} />
+        <RemarkModal
+          appointmentId={selectedAppointmentId}
+          status={remarkDetails.status}
+          remark={remarkDetails.remark}
+          declinedAt={remarkDetails.declinedAt}
+          declinedBy={remarkDetails.declinedBy}
+          rescheduleDate={remarkDetails.rescheduleDate}
+          onClose={closeRemarkModal}
+          userClient={userProfile.isClient}
+          onAcceptReschedule={(appointmentId) =>
+            handleAcceptReschedule(appointmentId)
+          }
+        />
       )}
     </div>
   );

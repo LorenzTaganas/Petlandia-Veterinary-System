@@ -39,4 +39,10 @@ router.delete(
   appointmentRequestController.deleteAppointmentRequest
 );
 
+router.put(
+  "/:id/reschedule",
+  authenticate,
+  appointmentRequestController.rescheduleAppointmentRequest
+);
+
 module.exports = router;

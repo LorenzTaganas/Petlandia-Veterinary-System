@@ -159,8 +159,8 @@ exports.declineAppointmentRequest = async (req, res) => {
         remark,
         rescheduleDate: validRescheduleDate,
         declinedAt,
-        declinedBy: req.user.id,
-        adminId: req.user.id,
+        declinedByUser: { connect: { id: req.user.id } },
+        admin: { connect: { id: req.user.id } },
       },
     });
 
@@ -235,5 +235,80 @@ exports.deleteAppointmentRequest = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete appointment request." });
+  }
+};
+
+exports.rescheduleAppointmentRequest = async (req, res) => {
+  const { id } = req.params;
+  const { newAppointmentDate, remark, approve, assignedVetId } = req.body;
+
+  try {
+    const validNewAppointmentDate = new Date(newAppointmentDate);
+
+    if (isNaN(validNewAppointmentDate)) {
+      return res.status(400).json({ error: "Invalid new appointment date." });
+    }
+
+    const appointmentRequest = await prisma.appointmentRequest.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!appointmentRequest) {
+      return res.status(404).json({ error: "Appointment request not found." });
+    }
+
+    const updatedData = {
+      appointmentDate: validNewAppointmentDate,
+      remark,
+    };
+
+    if (approve) {
+      updatedData.status = "Approved";
+    }
+
+    const updatedAppointmentRequest = await prisma.appointmentRequest.update({
+      where: { id: Number(id) },
+      data: updatedData,
+    });
+
+    const existingSchedule = await prisma.appointmentSchedule.findFirst({
+      where: {
+        petId: appointmentRequest.petId,
+        appointmentDate: appointmentRequest.appointmentDate,
+      },
+    });
+
+    if (existingSchedule) {
+      await prisma.appointmentSchedule.update({
+        where: { id: existingSchedule.id },
+        data: {
+          appointmentDate: validNewAppointmentDate,
+          assignedVetId: assignedVetId
+            ? parseInt(assignedVetId)
+            : existingSchedule.assignedVetId,
+          approvedAt: new Date(),
+        },
+      });
+    } else {
+      await prisma.appointmentSchedule.create({
+        data: {
+          appointmentDate: validNewAppointmentDate,
+          appointmentType: appointmentRequest.appointmentType,
+          assignedVetId: assignedVetId
+            ? parseInt(assignedVetId)
+            : appointmentRequest.assignedVetId,
+          petId: appointmentRequest.petId,
+          ownerId: appointmentRequest.ownerId,
+          approvedAt: new Date(),
+        },
+      });
+    }
+
+    return res.status(200).json(updatedAppointmentRequest);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Failed to reschedule appointment request." });
   }
 };

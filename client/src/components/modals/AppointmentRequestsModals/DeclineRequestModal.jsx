@@ -1,10 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getUsersByRole } from "../../../services/userService";
 import { declineAppointmentRequest } from "../../../services/appointmentRequestService";
 
 const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
   const [remark, setRemark] = useState("");
   const [rescheduleDate, setRescheduleDate] = useState("");
+  const [assignedVet, setAssignedVet] = useState("");
+  const [staffMembers, setStaffMembers] = useState([]);
   const [formError, setFormError] = useState("");
+
+  useEffect(() => {
+    const fetchStaffMembers = async () => {
+      try {
+        const staff = await getUsersByRole("Staff");
+        setStaffMembers(staff);
+      } catch (error) {
+        console.error("Error fetching staff members:", error);
+      }
+    };
+    fetchStaffMembers();
+  }, []);
 
   const handleDecline = async () => {
     if (!rescheduleDate) {
@@ -19,11 +34,17 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
       return;
     }
 
+    if (!assignedVet) {
+      setFormError("Veterinarian is required.");
+      return;
+    }
+
     try {
       await declineAppointmentRequest(
         appointmentRequest.id,
         remark,
-        rescheduleDate
+        rescheduleDate,
+        assignedVet
       );
       refreshData();
       onClose();
@@ -34,7 +55,7 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="modal-content bg-white p-6 rounded-lg w-[32rem] h-[50vh] overflow-auto shadow-lg">
+      <div className="modal-content bg-white p-6 rounded-lg w-[32rem] h-[60vh] overflow-auto shadow-lg">
         <h3 className="text-xl font-semibold mb-4">
           Decline Appointment Request
         </h3>
@@ -51,6 +72,34 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
             required
           />
           {formError && !rescheduleDate && (
+            <p className="text-sm text-red-500 mt-2">{formError}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Select Veterinarian <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={assignedVet}
+            onChange={(e) => setAssignedVet(e.target.value)}
+            className="w-full p-2 border rounded-md mt-2"
+            required
+          >
+            <option value="" disabled>
+              Select Veterinarian...
+            </option>
+            {staffMembers.length > 0 ? (
+              staffMembers.map((staff) => (
+                <option key={staff.id} value={staff.id}>
+                  {staff.firstName} {staff.lastName}
+                </option>
+              ))
+            ) : (
+              <option>No staff available</option>
+            )}
+          </select>
+          {formError && !assignedVet && (
             <p className="text-sm text-red-500 mt-2">{formError}</p>
           )}
         </div>

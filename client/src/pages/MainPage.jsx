@@ -52,7 +52,7 @@ const MainPage = () => {
 
     switch (activeComponent) {
       case "Dashboard":
-        return <Dashboard />;
+        return <Dashboard setActiveComponent={setActiveComponent} />;
       case "AppointmentRequests":
         return <AppointmentRequests />;
       case "AppointmentSchedule":
