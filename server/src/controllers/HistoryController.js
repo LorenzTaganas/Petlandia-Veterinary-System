@@ -55,7 +55,6 @@ exports.createHistory = async (req, res) => {
 exports.getAllPostAppointmentDetails = async (req, res) => {
   try {
     const postAppointmentDetails = await prisma.history.findMany({
-      where: { appointmentRequestId: { not: null } },
       select: {
         id: true,
         appointmentRequestId: true,
@@ -67,8 +66,11 @@ exports.getAllPostAppointmentDetails = async (req, res) => {
       },
     });
 
+    console.log("Fetched Post Appointment Details:", postAppointmentDetails);
+
     res.status(200).json(postAppointmentDetails);
   } catch (error) {
+    console.error("Error fetching post appointment details:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -147,7 +149,6 @@ exports.deletePostAppointmentDetails = async (req, res) => {
 exports.getAllPaymentHistory = async (req, res) => {
   try {
     const paymentHistory = await prisma.history.findMany({
-      where: { paymentDate: { not: null } },
       select: {
         id: true,
         paymentDate: true,
@@ -157,8 +158,11 @@ exports.getAllPaymentHistory = async (req, res) => {
       },
     });
 
+    console.log("Fetched Payment History:", paymentHistory);
+
     res.status(200).json(paymentHistory);
   } catch (error) {
+    console.error("Error fetching payment history:", error);
     res.status(500).json({ error: error.message });
   }
 };
