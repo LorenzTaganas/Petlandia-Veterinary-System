@@ -106,6 +106,7 @@ async function main() {
         remark: "Approved for treatment. Please monitor the hydration.",
         approvedAt: new Date(),
         approvedBy: 2,
+        assignedVetId: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -126,21 +127,6 @@ async function main() {
       },
     ],
   });
-
-  // await prisma.appointmentSchedule.createMany({
-  //   data: [
-  //     {
-  //       appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
-  //       appointmentType: "Treatment",
-  //       assignedVetId: 2,
-  //       petId: mittens.id,
-  //       ownerId: 3,
-  //       approvedAt: new Date(),
-  //       createdAt: new Date(),
-  //       updatedAt: new Date(),
-  //     },
-  //   ],
-  // });
 }
 
 main()

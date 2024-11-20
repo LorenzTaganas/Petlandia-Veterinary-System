@@ -1,8 +1,10 @@
 import axiosInstance from "./axiosInstance";
 
-export const getUserProfile = async () => {
+export const getUserProfile = async (userId = null) => {
   try {
-    const response = await axiosInstance.get("/profile");
+    const response = await axiosInstance.get(
+      userId ? `/users/id/${userId}` : "/profile"
+    );
     return {
       ...response.data,
       isAdmin: response.data.role === "Admin",

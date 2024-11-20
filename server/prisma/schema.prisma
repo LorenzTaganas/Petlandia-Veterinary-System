@@ -20,75 +20,59 @@ model User {
   email                 String                @unique
   password              String
   contactNo             String                @unique
-  role                  String                @default("Client") 
-  isActive              Boolean               @default(true)  
+  role                  String                @default("Client")
+  isActive              Boolean               @default(true)
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
-  pets                  Pet[]              
+  pets                  Pet[]
   appointmentRequests   AppointmentRequest[]  @relation("UserAppointments")
-  preferredAppointments AppointmentRequest[]  @relation("PreferredVet")      
-  assignedAppointments  AppointmentSchedule[] @relation("AssignedAppointments")
-  adminActions          AppointmentRequest[]  @relation("AdminActions")     
-  ownerAppointments     AppointmentSchedule[] @relation("OwnerAppointments") 
+  preferredAppointments AppointmentRequest[]  @relation("PreferredVet")
+  assignedAppointments  AppointmentRequest[]  @relation("AssignedAppointments") 
+  adminActions          AppointmentRequest[]  @relation("AdminActions")
   approvedAppointments  AppointmentRequest[]  @relation("ApprovedBy")
   declinedAppointments  AppointmentRequest[]  @relation("DeclinedBy")
 }
-
 
 model Pet {
   id                   Int                   @id @default(autoincrement())
   name                 String
   type                 String
-  breed                String?             
-  age                  Int?                
-  weight               Float?               
+  breed                String?
+  age                  Int?
+  weight               Float?
   owner                User                  @relation(fields: [ownerId], references: [id])
   ownerId              Int
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
-  appointmentRequests  AppointmentRequest[]
-  appointmentSchedules AppointmentSchedule[] 
+  appointmentRequests  AppointmentRequest[] 
 }
 
 model AppointmentRequest {
   id                Int      @id @default(autoincrement())
   requestedAt       DateTime @default(now())
   appointmentDate   DateTime
-  appointmentType   String 
+  appointmentType   String
   preferredVetId    Int?
   preferredVet      User?    @relation("PreferredVet", fields: [preferredVetId], references: [id])
-  pet               Pet      @relation(fields: [petId], references: [id])
+  assignedVetId     Int?
+  assignedVet       User?    @relation("AssignedAppointments", fields: [assignedVetId], references: [id])
   petId             Int
+  pet               Pet      @relation(fields: [petId], references: [id])
   ownerId           Int
   owner             User     @relation("UserAppointments", fields: [ownerId], references: [id])
   reason            String
   additionalComments String?
-  status            String   @default("Pending") 
+  status            String   @default("Pending")
   remark            String?
   rescheduleDate    DateTime?
   declinedAt        DateTime?
-  declinedBy        Int?   
-  approvedAt        DateTime? 
-  approvedBy        Int?    
+  declinedBy        Int?
+  approvedAt        DateTime?
+  approvedBy        Int?
   adminId           Int?
   admin             User?    @relation("AdminActions", fields: [adminId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
   approvedByUser    User?    @relation("ApprovedBy", fields: [approvedBy], references: [id])
   declinedByUser    User?    @relation("DeclinedBy", fields: [declinedBy], references: [id])
-}
-
-model AppointmentSchedule {
-  id                Int      @id @default(autoincrement())
-  appointmentDate   DateTime
-  appointmentType   String   
-  assignedVet       User     @relation("AssignedAppointments", fields: [assignedVetId], references: [id])
-  assignedVetId     Int
-  pet               Pet      @relation(fields: [petId], references: [id])
-  petId             Int
-  owner             User     @relation("OwnerAppointments", fields: [ownerId], references: [id])
-  ownerId           Int
-  approvedAt        DateTime @default(now())
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

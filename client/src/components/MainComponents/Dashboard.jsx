@@ -17,10 +17,6 @@ const Dashboard = ({ setActiveComponent }) => {
         const schedulesData = await getAppointmentSchedules();
         const profileData = await getUserProfile();
 
-        console.log("Requests Data:", requestsData);
-        console.log("Schedules Data:", schedulesData);
-        console.log("Profile Data:", profileData);
-
         setAppointmentRequests(requestsData);
         setAppointmentSchedules(schedulesData);
         setUserProfile(profileData);
@@ -40,10 +36,6 @@ const Dashboard = ({ setActiveComponent }) => {
 
   const { role, id, assignedVetId } = userProfile;
 
-  console.log("User Profile Role:", role);
-  console.log("User Profile ID:", id);
-  console.log("Assigned Vet ID:", assignedVetId);
-
   const filterData = (data, role, userId, assignedVetId) => {
     if (role === "Client") {
       return data.filter((item) => item.ownerId === userId);
@@ -60,7 +52,6 @@ const Dashboard = ({ setActiveComponent }) => {
     id,
     assignedVetId
   );
-  console.log("Filtered Requests:", filteredRequests);
 
   const filteredSchedules =
     role === "Staff"
@@ -72,8 +63,6 @@ const Dashboard = ({ setActiveComponent }) => {
       : appointmentSchedules.filter(
           (schedule) => schedule.status === "Approved"
         );
-
-  console.log("Filtered Schedules:", filteredSchedules);
 
   const handleItemClick = (label) => {
     setActiveComponent(label);

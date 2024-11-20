@@ -109,6 +109,10 @@ exports.acceptAppointmentRequest = async (req, res) => {
   const { id } = req.params;
   const { assignedVetId, remark } = req.body;
 
+  if (!req.user || !req.user.id) {
+    return res.status(400).json({ error: "User not authenticated." });
+  }
+
   try {
     const appointmentRequest = await prisma.appointmentRequest.update({
       where: { id: parseInt(id) },
@@ -117,21 +121,12 @@ exports.acceptAppointmentRequest = async (req, res) => {
         remark,
         adminId: req.user.id,
         approvedBy: req.user.id,
-      },
-    });
-
-    const appointmentSchedule = await prisma.appointmentSchedule.create({
-      data: {
-        appointmentDate: appointmentRequest.appointmentDate,
-        appointmentType: appointmentRequest.appointmentType,
         assignedVetId: parseInt(assignedVetId),
-        petId: appointmentRequest.petId,
-        ownerId: appointmentRequest.ownerId,
         approvedAt: new Date(),
       },
     });
 
-    res.status(200).json({ appointmentRequest, appointmentSchedule });
+    res.status(200).json(appointmentRequest);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to accept appointment request." });
@@ -140,7 +135,7 @@ exports.acceptAppointmentRequest = async (req, res) => {
 
 exports.declineAppointmentRequest = async (req, res) => {
   const { id } = req.params;
-  const { remark, rescheduleDate } = req.body;
+  const { remark, rescheduleDate, assignedVetId } = req.body;
 
   try {
     const validRescheduleDate = rescheduleDate
@@ -159,8 +154,9 @@ exports.declineAppointmentRequest = async (req, res) => {
         remark,
         rescheduleDate: validRescheduleDate,
         declinedAt,
-        declinedByUser: { connect: { id: req.user.id } },
-        admin: { connect: { id: req.user.id } },
+        declinedBy: req.user.id,
+        adminId: req.user.id,
+        assignedVetId: parseInt(assignedVetId),
       },
     });
 
@@ -260,10 +256,12 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
     const updatedData = {
       appointmentDate: validNewAppointmentDate,
       remark,
+      approvedBy: appointmentRequest.declinedBy,
     };
 
     if (approve) {
       updatedData.status = "Approved";
+      updatedData.approvedBy = appointmentRequest.declinedBy;
     }
 
     const updatedAppointmentRequest = await prisma.appointmentRequest.update({
@@ -271,34 +269,11 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
       data: updatedData,
     });
 
-    const existingSchedule = await prisma.appointmentSchedule.findFirst({
-      where: {
-        petId: appointmentRequest.petId,
-        appointmentDate: appointmentRequest.appointmentDate,
-      },
-    });
-
-    if (existingSchedule) {
-      await prisma.appointmentSchedule.update({
-        where: { id: existingSchedule.id },
+    if (assignedVetId) {
+      await prisma.appointmentRequest.update({
+        where: { id: updatedAppointmentRequest.id },
         data: {
-          appointmentDate: validNewAppointmentDate,
-          assignedVetId: assignedVetId
-            ? parseInt(assignedVetId)
-            : existingSchedule.assignedVetId,
-          approvedAt: new Date(),
-        },
-      });
-    } else {
-      await prisma.appointmentSchedule.create({
-        data: {
-          appointmentDate: validNewAppointmentDate,
-          appointmentType: appointmentRequest.appointmentType,
-          assignedVetId: assignedVetId
-            ? parseInt(assignedVetId)
-            : appointmentRequest.assignedVetId,
-          petId: appointmentRequest.petId,
-          ownerId: appointmentRequest.ownerId,
+          assignedVetId: parseInt(assignedVetId),
           approvedAt: new Date(),
         },
       });

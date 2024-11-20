@@ -82,8 +82,13 @@ const AppointmentSchedule = () => {
   const handleRemarkClick = async (appointmentId) => {
     try {
       const response = await getAppointmentScheduleDetails(appointmentId);
+
       const approvedByUser = response.approvedBy
         ? await getUserProfile(response.approvedBy)
+        : null;
+
+      const assignedVetUser = response.assignedVetId
+        ? await getUserProfile(response.assignedVetId)
         : null;
 
       setRemarkDetails({
@@ -93,8 +98,8 @@ const AppointmentSchedule = () => {
         approvedBy: approvedByUser
           ? getFullName(approvedByUser)
           : response.approvedBy,
+        assignedVet: assignedVetUser ? getFullName(assignedVetUser) : "N/A",
       });
-
       setIsRemarkModalOpen(true);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
@@ -225,6 +230,7 @@ const AppointmentSchedule = () => {
           approvedAt={remarkDetails.approvedAt}
           approvedBy={remarkDetails.approvedBy}
           onClose={closeRemarkModal}
+          assignedVet={remarkDetails.assignedVet}
         />
       )}
     </div>
