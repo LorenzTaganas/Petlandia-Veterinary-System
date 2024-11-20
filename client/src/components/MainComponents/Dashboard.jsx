@@ -64,7 +64,7 @@ const Dashboard = ({ setActiveComponent }) => {
         <h1 className="text-3xl font-bold mb-4 text-center">
           Welcome to Dashboard
         </h1>
-        <div className="flex justify-center gap-8">
+        <div className="flex justify-center flex-wrap gap-8 min-w-[15rem]">
           {role !== "Staff" && (
             <div className="bg-violet-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
               <img
