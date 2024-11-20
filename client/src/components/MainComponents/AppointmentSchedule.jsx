@@ -13,6 +13,7 @@ import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import { getUserProfile, getFullName } from "../../services/userService";
 import ViewAppointmentScheduleModal from "../modals/AppointmentScheduleModals/ViewAppointmentScheduleModal";
 import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
+import AccomplishmentFormModal from "../modals/AppointmentScheduleModals/AccomplishmentFormModal";
 
 const AppointmentSchedule = () => {
   const [requests, setRequests] = useState([]);
@@ -20,6 +21,8 @@ const AppointmentSchedule = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [isAccomplishmentModalOpen, setIsAccomplishmentModalOpen] =
+    useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [remarkDetails, setRemarkDetails] = useState({
     remark: null,
@@ -114,6 +117,11 @@ const AppointmentSchedule = () => {
       approvedAt: null,
       approvedBy: null,
     });
+  };
+
+  const handleAccomplishmentFormClick = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
+    setIsAccomplishmentModalOpen(true);
   };
 
   return (
@@ -216,7 +224,12 @@ const AppointmentSchedule = () => {
                           )}
                           {(userProfile?.isStaff || userProfile?.isAdmin) && (
                             <Tooltip title="Accomplishment Form">
-                              <IconButton color="primary">
+                              <IconButton
+                                color="primary"
+                                onClick={() =>
+                                  handleAccomplishmentFormClick(request.id)
+                                }
+                              >
                                 <DomainVerificationTwoTone />
                               </IconButton>
                             </Tooltip>
@@ -233,7 +246,11 @@ const AppointmentSchedule = () => {
       )}
       <ViewAppointmentScheduleModal
         appointmentId={selectedAppointmentId}
-        isVisible={!!selectedAppointmentId}
+        isVisible={
+          !!selectedAppointmentId &&
+          !isRemarkModalOpen &&
+          !isAccomplishmentModalOpen
+        }
         onClose={() => setSelectedAppointmentId(null)}
         refreshData={refreshData}
       />
@@ -245,6 +262,16 @@ const AppointmentSchedule = () => {
           approvedBy={remarkDetails.approvedBy}
           onClose={closeRemarkModal}
           assignedVet={remarkDetails.assignedVet}
+        />
+      )}
+      {isAccomplishmentModalOpen && (
+        <AccomplishmentFormModal
+          open={isAccomplishmentModalOpen}
+          onClose={() => {
+            setIsAccomplishmentModalOpen(false);
+            setSelectedAppointmentId(null);
+          }}
+          appointmentRequestId={selectedAppointmentId}
         />
       )}
     </div>

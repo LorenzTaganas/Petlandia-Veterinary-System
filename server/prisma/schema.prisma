@@ -31,6 +31,7 @@ model User {
   adminActions          AppointmentRequest[]  @relation("AdminActions")
   approvedAppointments  AppointmentRequest[]  @relation("ApprovedBy")
   declinedAppointments  AppointmentRequest[]  @relation("DeclinedBy")
+  history               History[]             @relation("UserHistory") 
 }
 
 model Pet {
@@ -75,6 +76,25 @@ model AppointmentRequest {
   declinedByUser    User?    @relation("DeclinedBy", fields: [declinedBy], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  history           History? @relation("AppointmentHistory")
+}
+
+model History {
+  id                        Int      @id @default(autoincrement())
+  appointmentRequestId      Int       @unique
+  appointmentRequest        AppointmentRequest @relation("AppointmentHistory", fields: [appointmentRequestId], references: [id]) 
+  dateAccomplished          DateTime @default(now())
+  proceduresPerformed       String
+  petConditionAfter         String
+  recommendationsForOwner   String?  
+  veterinariansNotes        String? 
+  paymentDate               DateTime @default(now())
+  ownerId                   Int
+  owner                     User     @relation("UserHistory", fields: [ownerId], references: [id]) 
+  paymentMethod             String
+  amount                    Float
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 }
 
 model Blacklist {

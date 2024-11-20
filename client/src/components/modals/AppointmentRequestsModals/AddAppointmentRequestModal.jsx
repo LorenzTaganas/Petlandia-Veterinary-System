@@ -57,8 +57,6 @@ const AddAppointmentRequestModal = ({ open, onClose, onSave }) => {
       additionalComments,
     };
 
-    console.log("Appointment Data:", newAppointment);
-
     onSave(newAppointment);
     handleClose();
   };
