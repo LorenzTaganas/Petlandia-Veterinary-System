@@ -218,8 +218,10 @@ const AppointmentRequests = () => {
                 {!userProfile?.isClient && (
                   <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
                 )}
-                {userProfile?.isClient && (
+                {userProfile?.isClient ? (
                   <th className="px-4 py-3 rounded-l-lg">Appointment Date</th>
+                ) : (
+                  <th className="px-4 py-3">Appointment Date</th>
                 )}
                 <th className="px-4 py-3">Appointment Date</th>
                 <th className="px-4 py-3">Appointment Type</th>
@@ -252,11 +254,16 @@ const AppointmentRequests = () => {
                         {getFullName(request.owner)}
                       </td>
                     )}
-                    {userProfile?.isClient && (
+                    {userProfile?.isClient ? (
                       <td className="px-4 py-3 text-center rounded-l-lg">
                         <DateTimeDisplay date={request.requestedAt} />
                       </td>
+                    ) : (
+                      <td className="px-4 py-3 text-center">
+                        <DateTimeDisplay date={request.requestedAt} />
+                      </td>
                     )}
+
                     <td className="px-4 py-3 text-center">
                       <DateTimeDisplay date={request.appointmentDate} />
                     </td>
