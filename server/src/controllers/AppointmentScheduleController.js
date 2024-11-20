@@ -46,16 +46,41 @@ exports.getAppointmentScheduleDetails = async (req, res) => {
 
 exports.editAppointmentSchedule = async (req, res) => {
   const { id } = req.params;
-  const { appointmentDate, assignedVetId } = req.body;
+  const {
+    appointmentDate,
+    appointmentType,
+    assignedVetId,
+    reason,
+    additionalComments,
+    pet,
+  } = req.body;
 
   try {
     const updatedRequest = await prisma.appointmentRequest.update({
       where: { id: Number(id) },
       data: {
         appointmentDate,
-        assignedVetId,
+        appointmentType,
+        assignedVetId: parseInt(assignedVetId),
+        reason,
+        additionalComments,
+        status: req.body.status || "Approved",
       },
     });
+
+    if (pet && pet.id) {
+      await prisma.pet.update({
+        where: { id: pet.id },
+        data: {
+          name: pet.name,
+          type: pet.type,
+          breed: pet.breed,
+          age: parseInt(pet.age, 10),
+          weight: parseFloat(pet.weight),
+        },
+      });
+    }
+
     res.status(200).json(updatedRequest);
   } catch (error) {
     console.error(error);

@@ -34,31 +34,21 @@ const Dashboard = ({ setActiveComponent }) => {
     return <div>Loading...</div>;
   }
 
-  const { role, id, assignedVetId } = userProfile;
+  const { role, id: userId } = userProfile;
 
-  const filterData = (data, role, userId, assignedVetId) => {
-    if (role === "Client") {
-      return data.filter((item) => item.ownerId === userId);
-    }
-    if (role === "Staff") {
-      return data.filter((item) => item.assignedVetId === assignedVetId);
-    }
-    return data;
-  };
-
-  const filteredRequests = filterData(
-    appointmentRequests.filter((request) => request.status === "Pending"),
-    role,
-    id,
-    assignedVetId
-  );
+  const filteredRequests =
+    role === "Client"
+      ? appointmentRequests.filter(
+          (request) =>
+            request.ownerId === userId && request.status === "Pending"
+        )
+      : appointmentRequests.filter((request) => request.status === "Pending");
 
   const filteredSchedules =
     role === "Staff"
       ? appointmentSchedules.filter(
           (schedule) =>
-            schedule.assignedVetId === assignedVetId &&
-            schedule.status === "Approved"
+            schedule.assignedVetId === userId && schedule.status === "Approved"
         )
       : appointmentSchedules.filter(
           (schedule) => schedule.status === "Approved"

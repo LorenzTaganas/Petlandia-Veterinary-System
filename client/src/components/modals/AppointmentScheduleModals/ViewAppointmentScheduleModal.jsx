@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "@mui/material";
-import {
-  editAppointmentRequest,
-  deleteAppointmentRequest,
-} from "../../../services/appointmentRequestService";
+import { deleteAppointmentRequest } from "../../../services/appointmentRequestService";
+import { editAppointmentSchedule } from "../../../services/appointmentScheduleService";
 import { getAppointmentScheduleDetails } from "../../../services/appointmentScheduleService";
 import {
   getUserProfile,
@@ -120,7 +118,7 @@ const ViewAppointmentScheduleModal = ({
         updatedData.status = "Pending";
       }
 
-      await editAppointmentRequest(appointmentId, updatedData);
+      await editAppointmentSchedule(appointmentId, updatedData);
       setIsEditing(false);
       fetchAppointmentDetails();
       refreshData();

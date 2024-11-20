@@ -184,7 +184,7 @@ exports.editAppointmentRequest = async (req, res) => {
       data: {
         appointmentDate,
         appointmentType,
-        preferredVetId,
+        preferredVetId: parseInt(preferredVetId),
         reason,
         additionalComments,
         status: req.body.status || "Pending",
