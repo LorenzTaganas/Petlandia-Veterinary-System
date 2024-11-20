@@ -154,7 +154,7 @@ const MainSidebar = ({ setActiveComponent }) => {
       <div
         className={`flex flex-col h-screen bg-[#CCC7FF] ${
           isOpen ? "w-72" : "w-20"
-        } transition-width duration-300`}
+        } transition-width duration-300 overflow-y-auto`}
       >
         <div className="flex items-center justify-between p-4">
           {isOpen && (
