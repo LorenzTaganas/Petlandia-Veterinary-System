@@ -130,8 +130,12 @@ const AppointmentSchedule = () => {
           <table className="w-full table-auto border-separate border-spacing-y-2">
             <thead>
               <tr className="bg-blue-500 text-white rounded-lg shadow-md">
-                <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
-                <th className="px-4 py-3">Appointment Date</th>
+                {!userProfile?.isClient && (
+                  <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
+                )}
+                {userProfile?.isClient && (
+                  <th className="px-4 py-3 rounded-l-lg">Appointment Date</th>
+                )}
                 <th className="px-4 py-3">Appointment Type</th>
                 <th className="px-4 py-3">Assigned Staff</th>
                 <th className="px-4 py-3">Pet Name</th>
@@ -158,12 +162,16 @@ const AppointmentSchedule = () => {
                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
                     } shadow-md`}
                   >
-                    <td className="px-4 py-3 text-center rounded-l-lg">
-                      {getFullName(request.owner)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <DateTimeDisplay date={request.appointmentDate} />
-                    </td>
+                    {!userProfile?.isClient && (
+                      <td className="px-4 py-3 text-center rounded-l-lg">
+                        {getFullName(request.owner)}
+                      </td>
+                    )}
+                    {userProfile?.isClient && (
+                      <td className="px-4 py-3 text-center rounded-l-lg">
+                        <DateTimeDisplay date={request.appointmentDate} />
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-center">
                       {request.appointmentType}
                     </td>
