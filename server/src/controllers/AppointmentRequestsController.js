@@ -67,7 +67,7 @@ exports.getAllAppointmentRequests = async (req, res) => {
     const appointmentRequests = await prisma.appointmentRequest.findMany({
       where: {
         status: {
-          not: "Approved",
+          notIn: ["Approved", "Successful"],
         },
       },
       include: {

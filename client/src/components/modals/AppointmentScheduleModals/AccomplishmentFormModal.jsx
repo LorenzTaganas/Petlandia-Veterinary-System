@@ -3,7 +3,12 @@ import { Divider } from "@mui/material";
 import { AttachMoney, MedicalServices } from "@mui/icons-material";
 import { createHistory } from "../../../services/historyService";
 
-const AccomplishmentFormModal = ({ open, onClose, appointmentRequestId }) => {
+const AccomplishmentFormModal = ({
+  open,
+  onClose,
+  refreshData,
+  appointmentRequestId,
+}) => {
   const [proceduresPerformed, setProceduresPerformed] = useState("");
   const [petConditionAfter, setPetConditionAfter] = useState("");
   const [recommendationsForOwner, setRecommendationsForOwner] = useState("");
@@ -26,6 +31,7 @@ const AccomplishmentFormModal = ({ open, onClose, appointmentRequestId }) => {
     try {
       const result = await createHistory(data);
       handleClose();
+      refreshData();
     } catch (error) {
       console.error("Error creating history", error);
     }

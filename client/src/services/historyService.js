@@ -94,3 +94,12 @@ export const deletePaymentHistory = async (id) => {
     throw error.response ? error.response.data : error;
   }
 };
+
+export const getStaffRemarksById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/history/staff-remarks/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};

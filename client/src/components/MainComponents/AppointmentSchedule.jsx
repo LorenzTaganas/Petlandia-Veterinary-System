@@ -272,6 +272,7 @@ const AppointmentSchedule = () => {
             setSelectedAppointmentId(null);
           }}
           appointmentRequestId={selectedAppointmentId}
+          refreshData={refreshData}
         />
       )}
     </div>

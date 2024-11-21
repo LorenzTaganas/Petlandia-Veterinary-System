@@ -223,7 +223,6 @@ const AppointmentRequests = () => {
                 ) : (
                   <th className="px-4 py-3">Appointment Date</th>
                 )}
-                <th className="px-4 py-3">Appointment Date</th>
                 <th className="px-4 py-3">Appointment Type</th>
                 <th className="px-4 py-3">Pet Type</th>
                 <th className="px-4 py-3">Pet Breed</th>
@@ -263,10 +262,6 @@ const AppointmentRequests = () => {
                         <DateTimeDisplay date={request.requestedAt} />
                       </td>
                     )}
-
-                    <td className="px-4 py-3 text-center">
-                      <DateTimeDisplay date={request.appointmentDate} />
-                    </td>
                     <td className="px-4 py-3 text-center">
                       {request.appointmentType}
                     </td>

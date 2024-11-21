@@ -20,6 +20,15 @@ exports.createHistory = async (req, res) => {
         .json({ error: "AppointmentRequestId is required" });
     }
 
+    const appointmentRequest = await prisma.appointmentRequest.findUnique({
+      where: { id: appointmentRequestId },
+      select: { ownerId: true },
+    });
+
+    if (!appointmentRequest) {
+      return res.status(404).json({ error: "AppointmentRequest not found" });
+    }
+
     const history = await prisma.history.create({
       data: {
         proceduresPerformed,
@@ -33,16 +42,14 @@ exports.createHistory = async (req, res) => {
           connect: { id: appointmentRequestId },
         },
         owner: {
-          connect: {
-            id: (
-              await prisma.appointmentRequest.findUnique({
-                where: { id: appointmentRequestId },
-                select: { ownerId: true },
-              })
-            ).ownerId,
-          },
+          connect: { id: appointmentRequest.ownerId },
         },
       },
+    });
+
+    await prisma.appointmentRequest.update({
+      where: { id: appointmentRequestId },
+      data: { status: "Successful" },
     });
 
     res.status(201).json(history);
@@ -54,24 +61,32 @@ exports.createHistory = async (req, res) => {
 
 exports.getAllPostAppointmentDetails = async (req, res) => {
   try {
-    const postAppointmentDetails = await prisma.history.findMany({
-      select: {
-        id: true,
-        appointmentRequestId: true,
-        dateAccomplished: true,
-        proceduresPerformed: true,
-        petConditionAfter: true,
-        recommendationsForOwner: true,
-        veterinariansNotes: true,
+    const appointmentRequests = await prisma.appointmentRequest.findMany({
+      where: { status: "Successful" },
+      include: {
+        pet: true,
+        owner: true,
+        assignedVet: true,
+        history: true,
       },
     });
 
-    console.log("Fetched Post Appointment Details:", postAppointmentDetails);
+    const formattedRequests = appointmentRequests.map((request) => ({
+      id: request.id,
+      owner: request.owner,
+      pet: request.pet,
+      assignedVet: request.assignedVet,
+      appointmentDate: request.appointmentDate,
+      appointmentType: request.appointmentType,
+      dateAccomplished: request.history.dateAccomplished,
+    }));
 
-    res.status(200).json(postAppointmentDetails);
+    res.status(200).json(formattedRequests);
   } catch (error) {
-    console.error("Error fetching post appointment details:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching appointment schedules:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve appointment schedules." });
   }
 };
 
@@ -155,10 +170,18 @@ exports.getAllPaymentHistory = async (req, res) => {
         ownerId: true,
         paymentMethod: true,
         amount: true,
+        appointmentRequest: {
+          select: {
+            assignedVet: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
       },
     });
-
-    console.log("Fetched Payment History:", paymentHistory);
 
     res.status(200).json(paymentHistory);
   } catch (error) {
@@ -230,5 +253,49 @@ exports.deletePaymentHistory = async (req, res) => {
     res.status(200).json({ message: "Payment History deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getStaffRemarksById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const history = await prisma.history.findUnique({
+      where: { id: Number(id) },
+      select: {
+        dateAccomplished: true,
+        proceduresPerformed: true,
+        petConditionAfter: true,
+        recommendationsForOwner: true,
+        veterinariansNotes: true,
+        appointmentRequest: {
+          select: {
+            assignedVet: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!history) {
+      return res.status(404).json({ error: "History not found" });
+    }
+
+    const staffRemarks = {
+      ...history,
+      assignedVet: history.appointmentRequest?.assignedVet
+        ? `${history.appointmentRequest.assignedVet.firstName} ${history.appointmentRequest.assignedVet.lastName}`
+        : "Not assigned",
+    };
+
+    res.status(200).json(staffRemarks);
+  } catch (error) {
+    console.error("Error fetching staff remarks:", error);
+    res.status(500).json({ error: "Failed to retrieve staff remarks." });
   }
 };

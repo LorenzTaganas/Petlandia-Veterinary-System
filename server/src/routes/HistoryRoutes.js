@@ -53,4 +53,10 @@ router.delete(
   HistoryController.deletePaymentHistory
 );
 
+router.get(
+  "/staff-remarks/:id",
+  authenticate,
+  HistoryController.getStaffRemarksById
+);
+
 module.exports = router;
