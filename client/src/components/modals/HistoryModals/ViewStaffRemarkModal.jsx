@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { getStaffRemarksById } from "../../../services/historyService";
 import { formatDate } from "../../../utils/dateTimeUtil";
 
-const ViewStaffRemarkModal = ({ appointmentId, isVisible, onClose }) => {
+const ViewStaffRemarkModal = ({ historyId, isVisible, onClose }) => {
   const [staffRemarks, setStaffRemarks] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchStaffRemarks = async () => {
     setLoading(true);
     try {
-      const data = await getStaffRemarksById(appointmentId);
+      const data = await getStaffRemarksById(historyId);
       setStaffRemarks(data);
     } catch (error) {
       console.error("Error fetching staff remarks:", error);
@@ -19,10 +19,10 @@ const ViewStaffRemarkModal = ({ appointmentId, isVisible, onClose }) => {
   };
 
   useEffect(() => {
-    if (appointmentId) {
+    if (historyId) {
       fetchStaffRemarks();
     }
-  }, [appointmentId]);
+  }, [historyId]);
 
   const renderTextField = (label, value) => {
     return (

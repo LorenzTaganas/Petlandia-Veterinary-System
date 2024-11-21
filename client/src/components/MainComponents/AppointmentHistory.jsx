@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import { Visibility, Comment } from "@mui/icons-material";
 import { getAllPostAppointmentDetails } from "../../services/historyService";
+import { getStaffRemarksById } from "../../services/historyService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import { getUserProfile, getFullName } from "../../services/userService";
 import ViewAppointmentHistoryModal from "../modals/HistoryModals/ViewApointmentHistoryModal";
@@ -15,6 +16,7 @@ const AppointmentHistory = () => {
   const [isAccomplishmentModalOpen, setIsAccomplishmentModalOpen] =
     useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [selectedHistoryId, setSelectedHistoryId] = useState(null);
 
   const fetchAppointmentSchedules = async () => {
     setLoading(true);
@@ -59,9 +61,15 @@ const AppointmentHistory = () => {
     return [];
   };
 
-  const handleViewStaffRemark = (appointmentId) => {
-    setSelectedAppointmentId(appointmentId);
-    setIsRemarkModalOpen(true);
+  const handleViewStaffRemark = async (historyId) => {
+    try {
+      setSelectedHistoryId(historyId);
+      const remarkData = await getStaffRemarksById(historyId);
+      setSelectedHistoryId(remarkData.id);
+      setIsRemarkModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching staff remarks:", error);
+    }
   };
 
   const handleViewAppointmentHistory = (appointmentId) => {
@@ -167,7 +175,9 @@ const AppointmentHistory = () => {
                           </Tooltip>
                           <Tooltip title="Staff's Remark">
                             <IconButton
-                              onClick={() => handleViewStaffRemark(request.id)}
+                              onClick={() =>
+                                handleViewStaffRemark(request.historyId)
+                              }
                             >
                               <Comment />
                             </IconButton>
@@ -189,7 +199,7 @@ const AppointmentHistory = () => {
         refreshData={refreshData}
       />
       <ViewStaffRemarkModal
-        appointmentId={selectedAppointmentId}
+        historyId={selectedHistoryId}
         isVisible={isRemarkModalOpen}
         onClose={() => setIsRemarkModalOpen(false)}
       />

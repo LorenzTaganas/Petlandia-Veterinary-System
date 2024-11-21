@@ -79,8 +79,8 @@ exports.getAllPostAppointmentDetails = async (req, res) => {
       appointmentDate: request.appointmentDate,
       appointmentType: request.appointmentType,
       dateAccomplished: request.history.dateAccomplished,
+      historyId: request.history.id,
     }));
-
     res.status(200).json(formattedRequests);
   } catch (error) {
     console.error("Error fetching appointment schedules:", error);
