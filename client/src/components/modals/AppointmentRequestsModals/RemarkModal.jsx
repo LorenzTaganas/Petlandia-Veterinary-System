@@ -10,6 +10,7 @@ const RemarkModal = ({
   declinedAt,
   declinedBy,
   rescheduleDate,
+  assignedVet,
   onClose,
   userClient,
   onAcceptReschedule,
@@ -61,6 +62,9 @@ const RemarkModal = ({
                 </p>
               </>
             )}
+            <p className="text-sm">
+              <strong>Assigned Veterinarian:</strong> {assignedVet || "N/A"}
+            </p>
           </div>
         )}
 

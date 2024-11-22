@@ -128,11 +128,17 @@ const AppointmentRequests = () => {
   const handleRemarkClick = async (appointmentId) => {
     try {
       const response = await getAppointmentRequestDetails(appointmentId);
+
       const declinedByUser = response.declinedBy
         ? await getUserProfile(response.declinedBy)
         : null;
 
+      const assignedVetUser = response.assignedVetId
+        ? await getUserProfile(response.assignedVetId)
+        : null;
+
       setRemarkDetails({
+        id: response.id,
         remark: response.remark,
         status: response.status,
         declinedAt: response.declinedAt,
@@ -140,9 +146,8 @@ const AppointmentRequests = () => {
           ? getFullName(declinedByUser)
           : response.declinedBy,
         rescheduleDate: response.rescheduleDate,
-        assignedVetId: response.assignedVetId,
+        assignedVet: assignedVetUser ? getFullName(assignedVetUser) : "N/A",
       });
-
       setIsRemarkModalOpen(true);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
@@ -150,25 +155,12 @@ const AppointmentRequests = () => {
   };
 
   const handleAcceptReschedule = async () => {
-    console.log(remarkDetails);
-    const appointmentId = 21;
+    const appointmentId = remarkDetails?.id;
     const rescheduleDate = remarkDetails?.rescheduleDate;
-    const assignedVetId = 5;
-
-    console.log(
-      "handleAcceptReschedule triggered with appointmentId:",
-      appointmentId
-    );
-
-    if (!appointmentId || !rescheduleDate) {
-      console.log("Appointment ID or Reschedule Date is missing!");
-      alert("Appointment ID or Reschedule Date is missing!");
-      return;
-    }
+    const assignedVetId = remarkDetails?.assignedVetId;
 
     try {
       const formattedDate = formatDateForInput(rescheduleDate);
-      console.log("Formatted Reschedule Date:", formattedDate);
 
       const updatedAppointment = await rescheduleAppointmentRequest(
         appointmentId,
@@ -177,9 +169,6 @@ const AppointmentRequests = () => {
         true,
         assignedVetId
       );
-
-      console.log("Updated Appointment Data:", updatedAppointment);
-
       if (updatedAppointment) {
         setRemarkDetails(updatedAppointment);
         refreshData();
@@ -226,9 +215,14 @@ const AppointmentRequests = () => {
           <table className="w-full table-auto border-separate border-spacing-y-2">
             <thead>
               <tr className="bg-blue-500 text-white rounded-lg shadow-md">
-                <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
-                <th className="px-4 py-3">Requested At</th>
-                <th className="px-4 py-3">Appointment Date</th>
+                {!userProfile?.isClient && (
+                  <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
+                )}
+                {userProfile?.isClient ? (
+                  <th className="px-4 py-3 rounded-l-lg">Appointment Date</th>
+                ) : (
+                  <th className="px-4 py-3">Appointment Date</th>
+                )}
                 <th className="px-4 py-3">Appointment Type</th>
                 <th className="px-4 py-3">Pet Type</th>
                 <th className="px-4 py-3">Pet Breed</th>
@@ -254,15 +248,20 @@ const AppointmentRequests = () => {
                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
                     } shadow-md`}
                   >
-                    <td className="px-4 py-3 text-center rounded-l-lg">
-                      {getFullName(request.owner)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <DateTimeDisplay date={request.requestedAt} />
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <DateTimeDisplay date={request.appointmentDate} />
-                    </td>
+                    {!userProfile?.isClient && (
+                      <td className="px-4 py-3 text-center rounded-l-lg">
+                        {getFullName(request.owner)}
+                      </td>
+                    )}
+                    {userProfile?.isClient ? (
+                      <td className="px-4 py-3 text-center rounded-l-lg">
+                        <DateTimeDisplay date={request.requestedAt} />
+                      </td>
+                    ) : (
+                      <td className="px-4 py-3 text-center">
+                        <DateTimeDisplay date={request.requestedAt} />
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-center">
                       {request.appointmentType}
                     </td>
@@ -374,6 +373,7 @@ const AppointmentRequests = () => {
           declinedAt={remarkDetails.declinedAt}
           declinedBy={remarkDetails.declinedBy}
           rescheduleDate={remarkDetails.rescheduleDate}
+          assignedVet={remarkDetails.assignedVet}
           onClose={closeRemarkModal}
           userClient={userProfile.isClient}
           onAcceptReschedule={(appointmentId) =>

@@ -4,9 +4,8 @@ const userRoutes = require("./UserRoutes");
 const adminRoutes = require("./AdminRoutes");
 const appointmentRequestRoutes = require("./AppointmentRequestRoutes");
 const appointmentScheduleRoutes = require("./AppointmentScheduleRoutes");
-const appointmentHistoryRoutes = require("./AppointmentHistoryRoutes");
+const historyRoutes = require("./HistoryRoutes");
 const notificationRoutes = require("./NotificationRoutes");
-const paymentRoutes = require("./PaymentRoutes");
 const reportRoutes = require("./ReportRoutes");
 const petGroomingRoutes = require("./PetGrooming");
 
@@ -14,10 +13,9 @@ router.use("/", userRoutes);
 router.use("/admin", adminRoutes);
 router.use("/appointment-requests", appointmentRequestRoutes);
 router.use("/appointment-schedule", appointmentScheduleRoutes);
-router.use("/appointment-history", appointmentHistoryRoutes);
+router.use("/history", historyRoutes);
 router.use("/notification", notificationRoutes);
-router.use("/payment", paymentRoutes);
-router.use("/report", reportRoutes);
+router.use("/reports", reportRoutes);
 router.use("/pet-grooming", petGroomingRoutes);
 
 module.exports = router;

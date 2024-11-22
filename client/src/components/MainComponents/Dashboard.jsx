@@ -17,10 +17,6 @@ const Dashboard = ({ setActiveComponent }) => {
         const schedulesData = await getAppointmentSchedules();
         const profileData = await getUserProfile();
 
-        console.log("Requests Data:", requestsData);
-        console.log("Schedules Data:", schedulesData);
-        console.log("Profile Data:", profileData);
-
         setAppointmentRequests(requestsData);
         setAppointmentSchedules(schedulesData);
         setUserProfile(profileData);
@@ -38,42 +34,25 @@ const Dashboard = ({ setActiveComponent }) => {
     return <div>Loading...</div>;
   }
 
-  const { role, id, assignedVetId } = userProfile;
+  const { role, id: userId } = userProfile;
 
-  console.log("User Profile Role:", role);
-  console.log("User Profile ID:", id);
-  console.log("Assigned Vet ID:", assignedVetId);
-
-  const filterData = (data, role, userId, assignedVetId) => {
-    if (role === "Client") {
-      return data.filter((item) => item.ownerId === userId);
-    }
-    if (role === "Staff") {
-      return data.filter((item) => item.assignedVetId === assignedVetId);
-    }
-    return data;
-  };
-
-  const filteredRequests = filterData(
-    appointmentRequests.filter((request) => request.status === "Pending"),
-    role,
-    id,
-    assignedVetId
-  );
-  console.log("Filtered Requests:", filteredRequests);
+  const filteredRequests =
+    role === "Client"
+      ? appointmentRequests.filter(
+          (request) =>
+            request.ownerId === userId && request.status === "Pending"
+        )
+      : appointmentRequests.filter((request) => request.status === "Pending");
 
   const filteredSchedules =
     role === "Staff"
       ? appointmentSchedules.filter(
           (schedule) =>
-            schedule.assignedVetId === assignedVetId &&
-            schedule.status === "Approved"
+            schedule.assignedVetId === userId && schedule.status === "Approved"
         )
       : appointmentSchedules.filter(
           (schedule) => schedule.status === "Approved"
         );
-
-  console.log("Filtered Schedules:", filteredSchedules);
 
   const handleItemClick = (label) => {
     setActiveComponent(label);
@@ -85,7 +64,7 @@ const Dashboard = ({ setActiveComponent }) => {
         <h1 className="text-3xl font-bold mb-4 text-center">
           Welcome to Dashboard
         </h1>
-        <div className="flex justify-center gap-8">
+        <div className="flex justify-center flex-wrap gap-8 min-w-[15rem]">
           {role !== "Staff" && (
             <div className="bg-violet-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
               <img

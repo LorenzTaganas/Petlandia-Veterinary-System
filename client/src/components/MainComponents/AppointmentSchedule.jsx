@@ -13,6 +13,7 @@ import DateTimeDisplay from "../helpers/DateTimeDisplay";
 import { getUserProfile, getFullName } from "../../services/userService";
 import ViewAppointmentScheduleModal from "../modals/AppointmentScheduleModals/ViewAppointmentScheduleModal";
 import RemarkModal from "../modals/AppointmentRequestsModals/RemarkModal";
+import AccomplishmentFormModal from "../modals/AppointmentScheduleModals/AccomplishmentFormModal";
 
 const AppointmentSchedule = () => {
   const [requests, setRequests] = useState([]);
@@ -20,6 +21,8 @@ const AppointmentSchedule = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [isAccomplishmentModalOpen, setIsAccomplishmentModalOpen] =
+    useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [remarkDetails, setRemarkDetails] = useState({
     remark: null,
@@ -82,8 +85,13 @@ const AppointmentSchedule = () => {
   const handleRemarkClick = async (appointmentId) => {
     try {
       const response = await getAppointmentScheduleDetails(appointmentId);
+
       const approvedByUser = response.approvedBy
         ? await getUserProfile(response.approvedBy)
+        : null;
+
+      const assignedVetUser = response.assignedVetId
+        ? await getUserProfile(response.assignedVetId)
         : null;
 
       setRemarkDetails({
@@ -93,8 +101,8 @@ const AppointmentSchedule = () => {
         approvedBy: approvedByUser
           ? getFullName(approvedByUser)
           : response.approvedBy,
+        assignedVet: assignedVetUser ? getFullName(assignedVetUser) : "N/A",
       });
-
       setIsRemarkModalOpen(true);
     } catch (error) {
       console.error("Error fetching appointment details:", error);
@@ -111,6 +119,11 @@ const AppointmentSchedule = () => {
     });
   };
 
+  const handleAccomplishmentFormClick = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
+    setIsAccomplishmentModalOpen(true);
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
@@ -125,8 +138,14 @@ const AppointmentSchedule = () => {
           <table className="w-full table-auto border-separate border-spacing-y-2">
             <thead>
               <tr className="bg-blue-500 text-white rounded-lg shadow-md">
-                <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
-                <th className="px-4 py-3">Appointment Date</th>
+                {!userProfile?.isClient && (
+                  <th className="px-4 py-3 rounded-l-lg">Owner Name</th>
+                )}
+                {userProfile?.isClient ? (
+                  <th className="px-4 py-3 rounded-l-lg">Appointment Date</th>
+                ) : (
+                  <th className="px-4 py-3">Appointment Date</th>
+                )}
                 <th className="px-4 py-3">Appointment Type</th>
                 <th className="px-4 py-3">Assigned Staff</th>
                 <th className="px-4 py-3">Pet Name</th>
@@ -153,12 +172,20 @@ const AppointmentSchedule = () => {
                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
                     } shadow-md`}
                   >
-                    <td className="px-4 py-3 text-center rounded-l-lg">
-                      {getFullName(request.owner)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <DateTimeDisplay date={request.appointmentDate} />
-                    </td>
+                    {!userProfile?.isClient && (
+                      <td className="px-4 py-3 text-center rounded-l-lg">
+                        {getFullName(request.owner)}
+                      </td>
+                    )}
+                    {userProfile?.isClient ? (
+                      <td className="px-4 py-3 text-center rounded-l-lg">
+                        <DateTimeDisplay date={request.appointmentDate} />
+                      </td>
+                    ) : (
+                      <td className="px-4 py-3 text-center">
+                        <DateTimeDisplay date={request.appointmentDate} />
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-center">
                       {request.appointmentType}
                     </td>
@@ -197,7 +224,12 @@ const AppointmentSchedule = () => {
                           )}
                           {(userProfile?.isStaff || userProfile?.isAdmin) && (
                             <Tooltip title="Accomplishment Form">
-                              <IconButton color="primary">
+                              <IconButton
+                                color="primary"
+                                onClick={() =>
+                                  handleAccomplishmentFormClick(request.id)
+                                }
+                              >
                                 <DomainVerificationTwoTone />
                               </IconButton>
                             </Tooltip>
@@ -214,7 +246,11 @@ const AppointmentSchedule = () => {
       )}
       <ViewAppointmentScheduleModal
         appointmentId={selectedAppointmentId}
-        isVisible={!!selectedAppointmentId}
+        isVisible={
+          !!selectedAppointmentId &&
+          !isRemarkModalOpen &&
+          !isAccomplishmentModalOpen
+        }
         onClose={() => setSelectedAppointmentId(null)}
         refreshData={refreshData}
       />
@@ -225,6 +261,18 @@ const AppointmentSchedule = () => {
           approvedAt={remarkDetails.approvedAt}
           approvedBy={remarkDetails.approvedBy}
           onClose={closeRemarkModal}
+          assignedVet={remarkDetails.assignedVet}
+        />
+      )}
+      {isAccomplishmentModalOpen && (
+        <AccomplishmentFormModal
+          open={isAccomplishmentModalOpen}
+          onClose={() => {
+            setIsAccomplishmentModalOpen(false);
+            setSelectedAppointmentId(null);
+          }}
+          appointmentRequestId={selectedAppointmentId}
+          refreshData={refreshData}
         />
       )}
     </div>

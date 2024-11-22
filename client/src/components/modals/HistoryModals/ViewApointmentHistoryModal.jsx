@@ -7,11 +7,10 @@ import {
   getUserProfile,
   getUsersByRole,
   getUserById,
-  getFullName,
 } from "../../../services/userService";
 import { formatDateForInput, formatDate } from "../../../utils/dateTimeUtil";
 
-const ViewAppointmentScheduleModal = ({
+const ViewAppointmentHistoryModal = ({
   appointmentId,
   isVisible,
   onClose,
@@ -308,24 +307,10 @@ const ViewAppointmentScheduleModal = ({
           >
             Back
           </button>
-          {userRole !== "Client" && (
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              onClick={isEditing ? handleSaveClick : handleEditClick}
-            >
-              {isEditing ? "Save" : "Edit"}
-            </button>
-          )}
-          <button
-            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-            onClick={handleDeleteClick}
-          >
-            Delete
-          </button>
         </div>
       </div>
     </Modal>
   );
 };
 
-export default ViewAppointmentScheduleModal;
+export default ViewAppointmentHistoryModal;

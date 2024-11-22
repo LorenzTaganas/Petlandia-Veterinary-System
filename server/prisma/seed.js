@@ -80,67 +80,101 @@ async function main() {
     },
   });
 
-  await prisma.appointmentRequest.createMany({
-    data: [
-      {
-        appointmentDate: new Date("2024-11-15T15:30:00.000Z"),
-        appointmentType: "Checkup",
-        preferredVetId: 2,
-        petId: buddy.id,
-        ownerId: 3,
-        reason: "Routine checkup",
-        additionalComments: "No additional comments.",
-        status: "Pending",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
-        appointmentType: "Treatment",
-        preferredVetId: 2,
-        petId: mittens.id,
-        ownerId: 3,
-        reason: "Vomiting for 2 days",
-        additionalComments: "Concern about dehydration.",
-        status: "Approved",
-        remark: "Approved for treatment. Please monitor the hydration.",
-        approvedAt: new Date(),
-        approvedBy: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        appointmentDate: new Date("2024-11-17T10:00:00.000Z"),
-        appointmentType: "Grooming",
-        preferredVetId: 2,
-        petId: max.id,
-        ownerId: 3,
-        reason: "Routine grooming",
-        additionalComments: "Needs to be trimmed.",
-        status: "Declined",
-        remark: "Declined due to unavailable slots. Please reschedule.",
-        declinedAt: new Date(),
-        declinedBy: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
+  const lucy = await prisma.pet.create({
+    data: {
+      name: "Lucy",
+      type: "Cat",
+      breed: "Maine Coon",
+      age: 5,
+      weight: 6.5,
+      ownerId: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   });
 
-  // await prisma.appointmentSchedule.createMany({
-  //   data: [
-  //     {
-  //       appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
-  //       appointmentType: "Treatment",
-  //       assignedVetId: 2,
-  //       petId: mittens.id,
-  //       ownerId: 3,
-  //       approvedAt: new Date(),
-  //       createdAt: new Date(),
-  //       updatedAt: new Date(),
-  //     },
-  //   ],
-  // });
+  const appointmentPending = await prisma.appointmentRequest.create({
+    data: {
+      appointmentDate: new Date("2024-11-15T15:30:00.000Z"),
+      appointmentType: "Checkup",
+      preferredVetId: 2,
+      petId: buddy.id,
+      ownerId: 3,
+      reason: "Routine checkup",
+      additionalComments: "No additional comments.",
+      status: "Pending",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  const appointmentApproved = await prisma.appointmentRequest.create({
+    data: {
+      appointmentDate: new Date("2024-11-16T10:00:00.000Z"),
+      appointmentType: "Treatment",
+      preferredVetId: 2,
+      petId: mittens.id,
+      ownerId: 3,
+      reason: "Vomiting for 2 days",
+      additionalComments: "Concern about dehydration.",
+      status: "Approved",
+      remark: "Approved for treatment. Please monitor the hydration.",
+      approvedAt: new Date(),
+      approvedBy: 2,
+      assignedVetId: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  const appointmentDeclined = await prisma.appointmentRequest.create({
+    data: {
+      appointmentDate: new Date("2024-11-17T10:00:00.000Z"),
+      appointmentType: "Grooming",
+      preferredVetId: 2,
+      petId: max.id,
+      ownerId: 3,
+      reason: "Routine grooming",
+      additionalComments: "Needs to be trimmed.",
+      status: "Declined",
+      remark: "Declined due to unavailable slots. Please reschedule.",
+      declinedAt: new Date(),
+      declinedBy: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  const appointmentSuccessful = await prisma.appointmentRequest.create({
+    data: {
+      appointmentDate: new Date("2024-11-18T09:00:00.000Z"),
+      appointmentType: "Checkup",
+      preferredVetId: 2,
+      petId: lucy.id,
+      ownerId: 3,
+      reason: "Routine checkup",
+      additionalComments: "No additional comments.",
+      status: "Successful",
+      assignedVetId: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  const history = await prisma.history.create({
+    data: {
+      appointmentRequestId: appointmentSuccessful.id,
+      proceduresPerformed: "Full checkup completed.",
+      petConditionAfter: "Healthy, no issues detected.",
+      recommendationsForOwner: "No further action required.",
+      veterinariansNotes: "Routine checkup performed successfully.",
+      paymentMethod: "Credit Card",
+      amount: 50.0,
+      ownerId: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
 }
 
 main()
