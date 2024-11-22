@@ -51,10 +51,6 @@ exports.getTopClients = async (req, res) => {
   const { user } = req;
   const { startDate, endDate } = req.query;
 
-  if (user.role !== "Admin" && user.role !== "Staff") {
-    return res.status(403).json({ message: "Access denied" });
-  }
-
   const dateFilter = {};
   if (startDate) dateFilter.gte = new Date(startDate);
   if (endDate) {
@@ -110,10 +106,6 @@ exports.getRevenueOverview = async (req, res) => {
   const { user } = req;
   const { startDate, endDate } = req.query;
 
-  if (user.role !== "Admin" && user.role !== "Staff") {
-    return res.status(403).json({ message: "Access denied" });
-  }
-
   const dateFilter = {};
   if (startDate) dateFilter.gte = new Date(startDate);
   if (endDate) {
@@ -128,11 +120,8 @@ exports.getRevenueOverview = async (req, res) => {
     };
 
     if (user.role === "Staff") {
-      whereClause.appointmentRequests = {
-        some: {
-          assignedVetId: user.id,
-          status: "Successful",
-        },
+      whereClause.appointmentRequest = {
+        assignedVetId: user.id,
       };
     }
 
@@ -162,10 +151,6 @@ exports.getMostSelectedAppointmentTypes = async (req, res) => {
   const { user } = req;
   const { startDate, endDate } = req.query;
 
-  if (user.role !== "Admin") {
-    return res.status(403).json({ message: "Access denied" });
-  }
-
   const dateFilter = {};
   if (startDate) dateFilter.gte = new Date(startDate);
   if (endDate) {
@@ -175,15 +160,21 @@ exports.getMostSelectedAppointmentTypes = async (req, res) => {
   }
 
   try {
+    const whereClause = {
+      appointmentDate: dateFilter,
+      status: "Successful",
+    };
+
+    if (user.role === "Staff") {
+      whereClause.assignedVetId = user.id;
+    }
+
     const appointmentTypes = await prisma.appointmentRequest.groupBy({
       by: ["appointmentType"],
       _count: {
         appointmentType: true,
       },
-      where: {
-        appointmentDate: dateFilter,
-        status: "Successful",
-      },
+      where: whereClause,
       orderBy: {
         _count: {
           appointmentType: "desc",
@@ -203,10 +194,6 @@ exports.getMostSelectedAppointmentTypes = async (req, res) => {
 
 exports.getAssignedStaff = async (req, res) => {
   const { user } = req;
-
-  if (user.role !== "Admin") {
-    return res.status(403).json({ message: "Access denied" });
-  }
 
   try {
     const assignedStaff = await prisma.user.findMany({
@@ -237,10 +224,6 @@ exports.getAssignedStaff = async (req, res) => {
 
 exports.getMostPreferredStaff = async (req, res) => {
   const { user } = req;
-
-  if (user.role !== "Admin") {
-    return res.status(403).json({ message: "Access denied" });
-  }
 
   try {
     const mostPreferredStaff = await prisma.user.findMany({
