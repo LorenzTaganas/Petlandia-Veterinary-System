@@ -159,7 +159,9 @@ const Reports = () => {
 
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div className="col-span-1">
-            <h2 className="font-semibold mb-2">Top Clients</h2>
+            <h2 className="font-semibold text-2xl mb-2 text-center">
+              Top Clients
+            </h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 {topClientsData.length > 0 ? (
@@ -210,7 +212,7 @@ const Reports = () => {
           </div>
 
           <div className="col-span-1">
-            <h2 className="font-semibold mb-2">
+            <h2 className="font-semibold text-2xl mb-2 text-center">
               Most Selected Appointment Types
             </h2>
             <ResponsiveContainer width="100%" height={300}>
@@ -258,7 +260,7 @@ const Reports = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">Revenue Overview</h2>
+          <h2 className="font-semibold text-2xl mb-2">Revenue Overview</h2>
 
           <div className="text-lg font-semibold mb-4">
             <strong>Total Revenue: </strong>₱{totalRevenue.toFixed(2)}
