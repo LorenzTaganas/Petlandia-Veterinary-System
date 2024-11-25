@@ -34,6 +34,14 @@ exports.getReports = async (req, res) => {
       },
     });
 
+    const successfulAppointmentsCount = await prisma.appointmentRequest.count({
+      where: {
+        ...statusFilter,
+        appointmentDate: dateFilter,
+        assignedVetId: user.role === "Staff" ? user.id : undefined,
+      },
+    });
+
     res.json({
       generatedBy: {
         firstName: user.firstName,
@@ -41,6 +49,7 @@ exports.getReports = async (req, res) => {
       },
       dateRange: { startDate, endDate },
       appointments,
+      successfulAppointmentsCount,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
