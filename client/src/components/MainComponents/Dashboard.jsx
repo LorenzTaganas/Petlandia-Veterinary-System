@@ -68,7 +68,7 @@ const Dashboard = ({ setActiveComponent }) => {
           {role !== "Staff" && (
             <div className="bg-violet-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
               <img
-                src={placeholderImage}
+                src="src/assets/request.png"
                 alt="Appointment Request"
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
@@ -89,7 +89,7 @@ const Dashboard = ({ setActiveComponent }) => {
 
           <div className="bg-violet-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
             <img
-              src={placeholderImage}
+              src="src/assets/scheduled.png"
               alt="Appointment Schedule"
               className="w-full h-48 object-cover rounded-lg mb-4"
             />

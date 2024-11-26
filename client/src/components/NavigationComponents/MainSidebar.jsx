@@ -159,7 +159,7 @@ const MainSidebar = ({ setActiveComponent }) => {
         <div className="flex items-center justify-between p-4">
           {isOpen && (
             <div className="flex justify-center flex-grow">
-              <img src={placeholder} alt="Logo" className="h-8" />
+              <img src="src/assets/Petlandia.png" alt="Logo" className="h-8" />
             </div>
           )}
           <button

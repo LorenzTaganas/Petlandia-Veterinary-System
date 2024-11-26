@@ -16,8 +16,12 @@ const LoginPage = () => {
         )}
       </div>
 
-      <div className="w-1/2 flex flex-col justify-center items-center bg-gray-100">
-        <img src={placeholderImage} alt="Logo" className="h-40 w-40 mb-4" />
+      <div className="w-1/2 flex flex-col justify-center items-center bg-blue-200">
+        <img
+          src="src/assets/dogs.jpg"
+          alt="Logo"
+          className="h-200 w-200 mb-4"
+        />
       </div>
     </div>
   );
