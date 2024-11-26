@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { uploadVideo, deleteVideo } from "../../services/petGroomingService";
+import {
+  getVideoList,
+  uploadVideo,
+  deleteVideo,
+} from "../../services/petGroomingService";
 import { getUserProfile } from "../../services/userService";
 import axiosInstance from "../../services/axiosInstance";
 
@@ -27,8 +31,8 @@ const PetGrooming = () => {
 
   const fetchVideoList = async () => {
     try {
-      const response = await axiosInstance.get("/pet-grooming/videos");
-      setVideoList(response.data);
+      const videos = await getVideoList();
+      setVideoList(videos);
     } catch (error) {
       console.error("Error fetching videos", error);
     }

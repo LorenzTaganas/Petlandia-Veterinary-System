@@ -1,5 +1,18 @@
 import axiosInstance from "./axiosInstance";
 
+export const getVideoList = async () => {
+  try {
+    const response = await axiosInstance.get("/pet-grooming/videos");
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching videos:",
+      error.response?.data || error.message
+    );
+    throw new Error(error.response?.data?.message || "Error fetching videos");
+  }
+};
+
 export const uploadVideo = async (file, title, description) => {
   const formData = new FormData();
   formData.append("video", file);
