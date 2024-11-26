@@ -1,5 +1,4 @@
 Main Page
-![image](https://github.com/user-attachments/assets/66f1551c-e0a6-4600-909d-315d2e61dc75)
 ![image](https://github.com/user-attachments/assets/0dac448c-d30e-4a92-a351-23a7106c51dc)
 ![image](https://github.com/user-attachments/assets/619fba7d-eb2d-417f-9108-e932cfd8196c)
 ![admin profile](https://github.com/user-attachments/assets/53c24490-94a8-4b8e-b555-254bfa554c50)
