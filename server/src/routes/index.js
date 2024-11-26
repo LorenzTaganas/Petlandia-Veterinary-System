@@ -7,7 +7,7 @@ const appointmentScheduleRoutes = require("./AppointmentScheduleRoutes");
 const historyRoutes = require("./HistoryRoutes");
 const notificationRoutes = require("./NotificationRoutes");
 const reportRoutes = require("./ReportRoutes");
-const petGroomingRoutes = require("./PetGrooming");
+const petGroomingRoutes = require("./PetGroomingRoutes");
 
 router.use("/", userRoutes);
 router.use("/admin", adminRoutes);

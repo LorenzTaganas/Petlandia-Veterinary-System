@@ -31,7 +31,7 @@ model User {
   adminActions          AppointmentRequest[]  @relation("AdminActions")
   approvedAppointments  AppointmentRequest[]  @relation("ApprovedBy")
   declinedAppointments  AppointmentRequest[]  @relation("DeclinedBy")
-  history               History[]             @relation("UserHistory") 
+  history               History[]             @relation("UserHistory")           
 }
 
 model Pet {
@@ -95,6 +95,16 @@ model History {
   amount                    Float
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
+}
+
+model PetGroomingVideo {
+  id           Int      @id @default(autoincrement())
+  videoUrl     String
+  title        String
+  description  String
+  uploadedBy   String   
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Blacklist {

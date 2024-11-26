@@ -21,6 +21,7 @@ import {
 } from "recharts";
 import { getUserProfile, getFullName } from "../../services/userService";
 import "../modals/ReportModals/ReportsPrintStyle.css";
+import { formatDateForDisplay } from "../../utils/dateTimeUtil";
 
 const Reports = () => {
   const currentYear = new Date().getFullYear();
@@ -34,6 +35,8 @@ const Reports = () => {
   const [revenue, setRevenue] = useState([]);
   const [appointmentTypes, setAppointmentTypes] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [successfulAppointmentsCount, setSuccessfulAppointmentsCount] =
+    useState(0);
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [generatedBy, setGeneratedBy] = useState("");
@@ -83,6 +86,7 @@ const Reports = () => {
         setRevenue(revenueData.revenue);
         setAppointmentTypes(appointmentTypesData.appointmentTypes);
         setGeneratedBy(getFullName(userData));
+        setSuccessfulAppointmentsCount(reportsData.successfulAppointmentsCount);
       } catch (error) {
         console.error(error.message);
       } finally {
@@ -155,6 +159,12 @@ const Reports = () => {
               Print Report
             </button>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <p className="font-semibold text-2xl">
+            Total Successful Appointments: {successfulAppointmentsCount}
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-6 mb-6">
@@ -261,11 +271,9 @@ const Reports = () => {
 
         <div className="mb-6">
           <h2 className="font-semibold text-2xl mb-2">Revenue Overview</h2>
-
           <div className="text-lg font-semibold mb-4">
             <strong>Total Revenue: </strong>₱{totalRevenue.toFixed(2)}
           </div>
-
           <ResponsiveContainer width="100%" height={300}>
             <LineChart
               data={revenue.map((entry) => ({
@@ -276,7 +284,11 @@ const Reports = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="paymentDate" />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                formatter={(value, name, props) => [
+                  `₱${value.toLocaleString()}`,
+                ]}
+              />
               <Legend />
               <Line
                 type="monotone"
@@ -289,7 +301,7 @@ const Reports = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="font-semibold mb-2">Appointment Reports</h2>
+          <h2 className="font-semibold text-2xl mb-2">Appointment Reports</h2>
           <table className="table-auto w-full border-collapse">
             <thead>
               <tr>
@@ -305,7 +317,7 @@ const Reports = () => {
               {reports.map((report) => (
                 <tr key={report.id}>
                   <td className="px-4 py-2 border">
-                    {new Date(report.appointmentDate).toLocaleDateString()}
+                    {formatDateForDisplay(report.appointmentDate)}
                   </td>
                   <td className="px-4 py-2 border">{report.appointmentType}</td>
                   <td className="px-4 py-2 border">
