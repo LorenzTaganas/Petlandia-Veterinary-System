@@ -125,10 +125,8 @@ const AppointmentSchedule = () => {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Appointment Schedule</h2>
-      </div>
+    <div className="m-0">
+      <div className="flex justify-between items-center mb-4"></div>
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="animate-spin">Loading...</div>

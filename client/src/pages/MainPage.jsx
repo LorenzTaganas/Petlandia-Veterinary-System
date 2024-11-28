@@ -47,7 +47,7 @@ const MainPage = () => {
 
   const renderActiveComponent = () => {
     if (loading) {
-      return <div className="text-center">Loading...</div>;
+      return <div className="text-center ">Loading...</div>;
     }
 
     switch (activeComponent) {
@@ -86,7 +86,7 @@ const MainPage = () => {
         setActiveComponent={setActiveComponent}
         userRole={userRole}
       />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden bg-white">
         <MainHeader
           setActiveComponent={setActiveComponent}
           activeComponent={formatComponentName(activeComponent)}
