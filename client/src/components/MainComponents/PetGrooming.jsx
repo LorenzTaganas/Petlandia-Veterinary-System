@@ -85,9 +85,7 @@ const PetGrooming = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        Pet Grooming Videos
-      </h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Videos</h2>
       {(userRole === "Admin" || userRole === "Staff") && (
         <div className="shadow-md rounded-lg p-6 mb-6">
           <div className="mb-4">

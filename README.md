@@ -1,5 +1,6 @@
 Main Page
-![admin accounts](https://github.com/user-attachments/assets/9af27e0c-f52c-43c9-8dbf-97e6b00947ef)
+![image](https://github.com/user-attachments/assets/0dac448c-d30e-4a92-a351-23a7106c51dc)
+![image](https://github.com/user-attachments/assets/619fba7d-eb2d-417f-9108-e932cfd8196c)
 ![admin profile](https://github.com/user-attachments/assets/53c24490-94a8-4b8e-b555-254bfa554c50)
 ![admin changepass](https://github.com/user-attachments/assets/2c5b7cf2-b708-40c9-8e42-981947bb4d95)
 
