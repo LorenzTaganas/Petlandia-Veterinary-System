@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { createNotification } = require("./NotificationController");
 
 exports.createAppointmentRequest = async (req, res) => {
   const {
@@ -49,9 +50,16 @@ exports.createAppointmentRequest = async (req, res) => {
       include: {
         pet: true,
         owner: true,
-        preferredVet: true,
       },
     });
+
+    const admins = await prisma.user.findMany({ where: { role: "Admin" } });
+    for (const admin of admins) {
+      await createNotification(
+        admin.id,
+        `New appointment request by ${req.user.name} on ${appointmentDate}.`
+      );
+    }
 
     return res.status(201).json(appointmentRequest);
   } catch (error) {
@@ -124,7 +132,25 @@ exports.acceptAppointmentRequest = async (req, res) => {
         assignedVetId: parseInt(assignedVetId),
         approvedAt: new Date(),
       },
+      include: {
+        owner: true,
+        preferredVet: true,
+      },
     });
+
+    await createNotification(
+      appointmentRequest.ownerId,
+      `Your appointment request on ${appointmentRequest.appointmentDate.toDateString()} has been approved by Admin ${
+        req.user.name
+      }.`
+    );
+
+    if (assignedVetId) {
+      await createNotification(
+        assignedVetId,
+        `You have been assigned to an appointment on ${appointmentRequest.appointmentDate.toDateString()}.`
+      );
+    }
 
     res.status(200).json(appointmentRequest);
   } catch (error) {
@@ -158,7 +184,13 @@ exports.declineAppointmentRequest = async (req, res) => {
         adminId: req.user.id,
         assignedVetId: parseInt(assignedVetId),
       },
+      include: { owner: true },
     });
+
+    await createNotification(
+      appointmentRequest.ownerId,
+      `Your appointment was declined. ${remark ? `Reason: ${remark}` : ""}`
+    );
 
     res.status(200).json(appointmentRequest);
   } catch (error) {
@@ -236,7 +268,7 @@ exports.deleteAppointmentRequest = async (req, res) => {
 
 exports.rescheduleAppointmentRequest = async (req, res) => {
   const { id } = req.params;
-  const { newAppointmentDate, remark, approve, assignedVetId } = req.body;
+  const { newAppointmentDate, remark, approve } = req.body;
 
   try {
     const validNewAppointmentDate = new Date(newAppointmentDate);
@@ -247,6 +279,10 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
 
     const appointmentRequest = await prisma.appointmentRequest.findUnique({
       where: { id: Number(id) },
+      include: {
+        owner: true,
+        preferredVet: true,
+      },
     });
 
     if (!appointmentRequest) {
@@ -256,12 +292,18 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
     const updatedData = {
       appointmentDate: validNewAppointmentDate,
       remark,
-      approvedBy: appointmentRequest.declinedBy,
     };
 
     if (approve) {
       updatedData.status = "Approved";
-      updatedData.approvedBy = appointmentRequest.declinedBy;
+      updatedData.approvedAt = new Date();
+
+      if (appointmentRequest.preferredVet) {
+        await createNotification(
+          appointmentRequest.preferredVetId,
+          `The appointment on ${validNewAppointmentDate.toDateString()} has been approved.`
+        );
+      }
     }
 
     const updatedAppointmentRequest = await prisma.appointmentRequest.update({
@@ -269,14 +311,13 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
       data: updatedData,
     });
 
-    if (assignedVetId) {
-      await prisma.appointmentRequest.update({
-        where: { id: updatedAppointmentRequest.id },
-        data: {
-          assignedVetId: parseInt(assignedVetId),
-          approvedAt: new Date(),
-        },
-      });
+    if (approve) {
+      await createNotification(
+        appointmentRequest.adminId,
+        `Client ${
+          appointmentRequest.owner.name
+        } approved the rescheduled date ${validNewAppointmentDate.toDateString()} for their appointment.`
+      );
     }
 
     return res.status(200).json(updatedAppointmentRequest);

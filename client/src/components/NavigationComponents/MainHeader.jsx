@@ -4,11 +4,15 @@ import Tooltip from "@mui/material/Tooltip";
 import { Notifications, ExitToApp, Lock, Person } from "@mui/icons-material";
 import { getUserProfile, getFullName } from "../../services/userService";
 import axiosInstance from "../../services/axiosInstance";
+import notificationService from "../../services/notificationService";
+import NotificationModal from "../modals/NotificationModals/NotificationModal";
 
 const MainHeader = ({ setActiveComponent, activeComponent }) => {
   const [fullName, setFullName] = useState("");
   const [user, setUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +27,20 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       }
     };
     fetchUserProfile();
-  }, []);
+
+    if (user) {
+      notificationService.connect(user.id);
+      notificationService.setNotificationCallback((newNotification) => {
+        setUnreadCount((prevCount) => prevCount + 1);
+      });
+    }
+
+    return () => {
+      if (user) {
+        notificationService.disconnect();
+      }
+    };
+  }, [user]);
 
   const handleUserSectionClick = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -50,7 +67,11 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
   };
 
   const handleNotificationClick = () => {
-    console.log("Notification clicked");
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -112,6 +133,13 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
           )}
         </div>
       </div>
+      {isModalOpen && (
+        <NotificationModal
+          userId={user?.id}
+          visible={isModalOpen}
+          onClose={handleModalClose}
+        />
+      )}
     </div>
   );
 };

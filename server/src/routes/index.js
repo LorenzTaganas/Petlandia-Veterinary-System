@@ -14,7 +14,7 @@ router.use("/admin", adminRoutes);
 router.use("/appointment-requests", appointmentRequestRoutes);
 router.use("/appointment-schedule", appointmentScheduleRoutes);
 router.use("/history", historyRoutes);
-router.use("/notification", notificationRoutes);
+router.use("/notifications", notificationRoutes);
 router.use("/reports", reportRoutes);
 router.use("/pet-grooming", petGroomingRoutes);
 

@@ -28,18 +28,23 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(routes);
 
-wss.on("connection", (ws) => {
-  console.log("Client connected");
+const {
+  initializeWebSocket,
+} = require("./src/controllers/NotificationController");
+initializeWebSocket(wss);
 
-  ws.on("message", (message) => {
-    console.log(`Received: ${message}`);
-    ws.send(`Sent: ${message}`);
-  });
+// wss.on("connection", (ws) => {
+//   console.log("Client connected");
 
-  ws.on("close", () => {
-    console.log("Client disconnected");
-  });
-});
+//   ws.on("message", (message) => {
+//     console.log(`Received: ${message}`);
+//     ws.send(`Sent: ${message}`);
+//   });
+
+//   ws.on("close", () => {
+//     console.log("Client disconnected");
+//   });
+// });
 
 app.get("/", (req, res) => {
   res.send("Test");

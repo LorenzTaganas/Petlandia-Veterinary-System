@@ -5,7 +5,6 @@ import {
   deleteVideo,
 } from "../../services/petGroomingService";
 import { getUserProfile } from "../../services/userService";
-import axiosInstance from "../../services/axiosInstance";
 
 const PetGrooming = () => {
   const [videoFile, setVideoFile] = useState(null);
