@@ -39,7 +39,7 @@ const HomePage = () => {
         <section className="flex items-center h-[calc(100vh-64px)] bg-blue-200">
           <div className="w-1/2">
             <img
-              src="src/assets/TEST PICTURE.png"
+              src="src/assets/dogs2.jpg"
               alt="Contact"
               className="w-full h-full object-cover"
             />
@@ -81,7 +81,7 @@ const HomePage = () => {
           </div>
           <div className="w-1/2">
             <img
-              src="src/assets/TEST PICTURE.png"
+              src="src/assets/dogs3.jpg"
               alt="Services"
               className="w-full h-full object-cover"
             />
@@ -129,7 +129,7 @@ const HomePage = () => {
                 position={[14.855481028466446, 120.81201212576464]}
                 icon={customMarkerIcon}
               >
-                <Popup>Malolos, Bulacan</Popup>
+                <Popup>PetLandia Malolos, Bulacan</Popup>
               </Marker>
             </MapContainer>
           </div>

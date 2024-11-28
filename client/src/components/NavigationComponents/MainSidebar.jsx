@@ -25,6 +25,7 @@ import { getUserProfile } from "../../services/userService";
 
 const MainSidebar = ({ setActiveComponent }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const [activeItem, setActiveItem] = useState("Dashboard"); // Track the active item
   const [user, setUser] = useState(null);
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
   const [isAccountManagementOpen, setIsAccountManagementOpen] = useState(false);
@@ -44,10 +45,14 @@ const MainSidebar = ({ setActiveComponent }) => {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  const handleReturnHome = () => navigate("/");
+  const handleReturnHome = () => {
+    setActiveItem("Return Home"); // Set active for Home
+    navigate("/");
+  };
 
   const handleItemClick = (label) => {
     setActiveComponent(label);
+    setActiveItem(label); // Set the active item
   };
 
   const renderSidebarItems = () => {
@@ -141,44 +146,54 @@ const MainSidebar = ({ setActiveComponent }) => {
           onClick={item.onClick}
           subItems={item.subItems}
           isOpenNested={item.isOpen}
-          toggleNested={item.onClick}
+          toggleNested={() => {
+            if (item.label === "Appointment") {
+              setIsAppointmentOpen(!isAppointmentOpen);
+            } else if (item.label === "Account Management") {
+              setIsAccountManagementOpen(!isAccountManagementOpen);
+            }
+          }}
           isAppointment={item.label === "Appointment"}
           isAppointmentOpen={isAppointmentOpen}
+          isActive={activeItem === item.label} // Pass active state
+          activeItem={activeItem} // Pass active item state
+          setActiveItem={setActiveItem} // Pass setActiveItem function
         />
       );
     });
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#CCC7FF]">
+    <div className="flex flex-col h-screen bg-[#7BB4FB]">
       <div
-        className={`flex flex-col h-screen bg-[#CCC7FF] ${
+        className={`flex flex-col h-screen bg-[#B7D7FF] ${
           isOpen ? "w-72" : "w-20"
-        } transition-width duration-300 overflow-y-auto`}
+        } transition-width duration-300 overflow-y-auto `}
       >
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-3.5 bg-[#3A7DFF]">
           {isOpen && (
-            <div className="flex justify-center flex-grow">
-              <img src="src/assets/Petlandia.png" alt="Logo" className="h-8" />
+            <div className="flex justify-center flex-grow bg-[#3A7DFF]">
+              <img src="src/assets/LGGO (1).png" alt="Logo" className="h-14" />
             </div>
           )}
           <button
             onClick={toggleSidebar}
-            className={`text-black ${!isOpen ? "mx-auto" : ""}`}
+            className={`text-[#f3f3ec] ${!isOpen ? "mx-auto p-2.5" : ""}`}
           >
             <MenuIcon fontSize="large" />
           </button>
         </div>
-        <hr className="border-gray-300 my-2" />
-        <nav className="flex flex-col mt-4 space-y-2 flex-grow">
+        {/* <hr className="border-gray-300 my-2 text-[#f3f3ec]" /> */}
+        <nav className="flex flex-col mt-4 space-y-2 flex-grow text-[#21458f]">
           {renderSidebarItems()}
         </nav>
-        <div className="mt-auto space-y-2 mb-4">
+        <div className="mt-auto space-y-2 mb-4 text-[#21458f]">
           <SidebarItem
             icon={<HomeIcon />}
             label="Return Home"
             isOpen={isOpen}
             onClick={handleReturnHome}
+            isActive={activeItem === "Return Home"} // Pass active state
           />
         </div>
       </div>
@@ -196,7 +211,19 @@ const SidebarItem = ({
   onClick,
   isAppointment,
   isAppointmentOpen,
+  isActive, // Receive active state
+  activeItem, // Receive active item state
+  setActiveItem, // Receive setActiveItem function
 }) => {
+  const handleClick = () => {
+    if (subItems) {
+      toggleNested();
+    } else {
+      onClick();
+      setActiveItem(label); // Set the active item
+    }
+  };
+
   return (
     <div>
       <Tooltip
@@ -205,28 +232,35 @@ const SidebarItem = ({
         placement="right"
       >
         <div
-          className={`flex items-center p-2 hover:bg-gray-200 cursor-pointer ${
+          className={`flex items-center p-2 hover:bg-[#3A7DFF] rounded-xl cursor-pointer ${
             !isOpen ? "justify-center" : "pl-6 pr-4"
-          }`}
-          onClick={subItems ? toggleNested : onClick}
+          } ${isActive ? "bg-[#3A7DFF] text-white" : ""}`} // Apply active styles
+          onClick={handleClick}
         >
           {icon}
-          {isOpen && <span className="ml-4 text-gray-700">{label}</span>}
+          {isOpen && (
+            <span
+              className={`ml-4 ${isActive ? "text-white" : "text-[#2B4980]"}`}
+            >
+              {label}
+            </span>
+          )}
+          {/* sidebar text color */}
           {isAppointment && subItems && isOpen && (
             <div className="ml-auto">
               {isAppointmentOpen ? (
-                <ChevronDownIcon className="text-black" />
+                <ChevronDownIcon className="text-[#2B4980]" /> //drop down color
               ) : (
-                <ChevronRightIcon className="text-black" />
+                <ChevronRightIcon className="text-[#2B4980]" />
               )}
             </div>
           )}
           {subItems && isOpen && !isAppointment && (
             <div className="ml-auto">
               {isOpenNested ? (
-                <ChevronDownIcon className="text-black" />
+                <ChevronDownIcon className="text-[#2B4980]" /> //drop down color
               ) : (
-                <ChevronRightIcon className="text-black" />
+                <ChevronRightIcon className="text-[#2B4980]" />
               )}
             </div>
           )}
@@ -242,12 +276,25 @@ const SidebarItem = ({
               placement="right"
             >
               <div
-                className="flex items-center p-2 hover:bg-gray-300 cursor-pointer"
-                onClick={subItem.onClick}
+                className={`flex items-center p-2 hover:bg-[#3A7DFF] rounded-xl cursor-pointer ${
+                  activeItem === subItem.label ? "bg-[#3A7DFF] text-white" : ""
+                }`} // Apply active styles to sub-items
+                onClick={() => {
+                  subItem.onClick();
+                  setActiveItem(subItem.label); // Set the active sub-item
+                }}
               >
                 {subItem.icon}
                 {isOpen && (
-                  <span className="ml-4 text-gray-700">{subItem.label}</span>
+                  <span
+                    className={`ml-4 ${
+                      activeItem === subItem.label
+                        ? "text-white"
+                        : "text-[#2B4980]"
+                    }`}
+                  >
+                    {subItem.label}
+                  </span>
                 )}
               </div>
             </Tooltip>

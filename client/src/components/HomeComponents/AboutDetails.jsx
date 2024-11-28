@@ -4,10 +4,10 @@ const AboutDetails = () => {
   const currentYear = new Date().getFullYear(); // Moved the year calculation here
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-blue-200 to-indigo-300 flex flex-col items-center px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-blue-200 to-indigo-300 flex flex-col items-center">
       <div className="max-w-5xl bg-white shadow-xl rounded-lg p-8">
         {/* Header */}
-        <h1 className="text-4xl font-extrabold text-black mb-6 text-center">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           About Us
         </h1>
         <p className="text-lg text-gray-800 leading-relaxed text-center mb-8">
@@ -18,7 +18,7 @@ const AboutDetails = () => {
         </p>
 
         {/* Mission Section */}
-        <h2 className="text-3xl font-bold text-black mt-8 mb-4 text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Our Mission
         </h2>
         <p className="text-lg text-gray-800 leading-relaxed mb-8">
@@ -28,7 +28,7 @@ const AboutDetails = () => {
         </p>
 
         {/* Core Values Section */}
-        <h2 className="text-3xl font-bold text-black mt-8 mb-4 text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Our Core Values
         </h2>
         <div className="flex flex-col md:flex-row justify-around items-start gap-6">
@@ -62,7 +62,7 @@ const AboutDetails = () => {
         </div>
 
         {/* Why Choose Us Section */}
-        <h2 className="text-3xl font-bold text-black mt-12 mb-4 text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Why Choose Us?
         </h2>
         <p className="text-lg text-gray-800 leading-relaxed mb-8 text-center">
@@ -75,7 +75,7 @@ const AboutDetails = () => {
         {/* Image Section */}
         <div className="mt-8 flex justify-center">
           <img
-            src="src/assets/TEST PICTURE.png"
+            src="src/assets/dogs2.jpg"
             alt="About Us"
             className="rounded-lg shadow-xl w-full md:w-3/4"
           />
@@ -83,7 +83,7 @@ const AboutDetails = () => {
       </div>
       <footer className="bg-gray-600 text-white py-4 mt-8 w-full">
         <div className="max-w-screen-lg mx-auto text-center">
-          <p className="text-sm">
+          <p className="text-md">
             &copy; {currentYear} PetLandia Veterinary. All rights reserved.
           </p>
         </div>

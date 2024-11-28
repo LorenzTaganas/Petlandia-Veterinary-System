@@ -2,11 +2,11 @@ import React from "react";
 
 const ContactDetails = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-blue-200 to-indigo-300 flex flex-col items-center px-6 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-blue-200 to-indigo-300 flex flex-col items-center">
       <main className="flex-grow">
         <section className="bg-light-blue-50 text-gray-800 py-16 px-6">
           <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-            <h1 className="text-4xl font-extrabold text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
               Contact Us
             </h1>
             <p className="text-lg text-center mb-8">
@@ -55,9 +55,9 @@ const ContactDetails = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-4 mt-8 w-full">
+      <footer className="bg-gray-600 text-white py-4 mt-8 w-full">
         <div className="container mx-auto text-center">
-          <p>
+          <p className="text-md">
             &copy; {new Date().getFullYear()} PetLandia Veterinary. All rights
             reserved.
           </p>

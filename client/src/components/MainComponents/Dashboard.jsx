@@ -59,14 +59,19 @@ const Dashboard = ({ setActiveComponent }) => {
   };
 
   return (
-    <div className="p-6 flex justify-center">
+    <div className="p-6 flex justify-center bg-white">
       <div className="w-full max-w-7xl">
-        <h1 className="text-3xl font-bold mb-4 text-center">
-          Welcome to Dashboard
+        <h1 className="text-3xl font-bold mb-4 text-center text-[#3A7DFF]">
+          Welcome{" "}
+          <span className="mb-4 text-3xl font-bold text-[#3A7DFF]">
+            {userProfile.firstName.charAt(0).toUpperCase() +
+              userProfile.firstName.slice(1).toLowerCase()}
+          </span>
+          !
         </h1>
-        <div className="flex justify-center flex-wrap gap-8 min-w-[15rem]">
+        <div className="flex justify-center flex-wrap gap-8 min-w-[15rem] relative">
           {role !== "Staff" && (
-            <div className="bg-violet-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
+            <div className="bg-white p-6 rounded-lg drop-shadow-md shadow-lg w-full max-w-md z-10">
               <img
                 src="src/assets/request.png"
                 alt="Appointment Request"
@@ -77,17 +82,16 @@ const Dashboard = ({ setActiveComponent }) => {
                 <span className="mr-1">Count:</span>
                 {filteredRequests.length}
               </p>
-
               <button
                 onClick={() => handleItemClick("AppointmentRequests")}
-                className="w-full mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                className="w-full mt-4 py-2 px-4 bg-[#3A7DFF] text-white rounded-lg hover:bg-blue-600 transition"
               >
                 View
               </button>
             </div>
           )}
 
-          <div className="bg-violet-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
+          <div className="bg-white p-6 rounded-lg drop-shadow-md shadow-lg w-full max-w-md z-0">
             <img
               src="src/assets/scheduled.png"
               alt="Appointment Schedule"
@@ -100,7 +104,7 @@ const Dashboard = ({ setActiveComponent }) => {
             </p>
             <button
               onClick={() => handleItemClick("AppointmentSchedule")}
-              className="w-full mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              className="w-full mt-4 py-2 px-4 bg-[#3A7DFF] text-white rounded-lg hover:bg-blue-600 transition"
             >
               View
             </button>

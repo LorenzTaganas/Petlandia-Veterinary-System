@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import placeholderImage from "../../assets/placeholder.png";
 import Cookies from "js-cookie";
 
 const HomeHeader = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
+  const [activeLink, setActiveLink] = useState(location.pathname);
 
   useEffect(() => {
     const token = Cookies.get("accessToken");
     setIsAuthenticated(!!token);
   }, []);
 
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
+
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-white shadow-md">
       {/* Logo Section */}
       <div className="flex items-center space-x-3">
-        <img src="src/assets/Petlandia.png" alt="Logo" className="h-5 w-auto" />
+        <img src="src/assets/LGGO (2).png" alt="Logo" className="h-10 w-auto" />
         <h1 className="text-2xl font-bold text-gray-800"></h1>
       </div>
 
@@ -25,7 +31,10 @@ const HomeHeader = () => {
           <li>
             <Link
               to="/"
-              className="text-gray-600 hover:text-blue-500 font-medium transition duration-300"
+              className={`text-gray-600 hover:text-blue-700 font-medium transition duration-300 ${
+                activeLink === "/" ? " text-blue-600" : ""
+              }`}
+              onClick={() => setActiveLink("/")}
             >
               Home
             </Link>
@@ -33,7 +42,10 @@ const HomeHeader = () => {
           <li>
             <Link
               to="/about-details"
-              className="text-gray-600 hover:text-blue-500 font-medium transition duration-300"
+              className={`text-gray-600 hover:text-blue-500 font-medium transition duration-300 ${
+                activeLink === "/about-details" ? " text-blue-600" : ""
+              }`}
+              onClick={() => setActiveLink("/about-details")}
             >
               About
             </Link>
@@ -41,7 +53,10 @@ const HomeHeader = () => {
           <li>
             <Link
               to="/services-details"
-              className="text-gray-600 hover:text-blue-500 font-medium transition duration-300"
+              className={`text-gray-600 hover:text-blue-500 font-medium transition duration-300 ${
+                activeLink === "/services-details" ? "text-blue-600" : ""
+              }`}
+              onClick={() => setActiveLink("/services-details")}
             >
               Services
             </Link>
@@ -49,7 +64,10 @@ const HomeHeader = () => {
           <li>
             <Link
               to="/contact-details"
-              className="text-gray-600 hover:text-blue-500 font-medium transition duration-300"
+              className={`text-gray-600 hover:text-blue-500 font-medium transition duration-300 ${
+                activeLink === "/contact-details" ? " text-blue-600" : ""
+              }`}
+              onClick={() => setActiveLink("/contact-details")}
             >
               Contact
             </Link>
@@ -77,9 +95,9 @@ const HomeHeader = () => {
             stroke="currentColor"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>

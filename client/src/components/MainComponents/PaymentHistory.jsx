@@ -35,10 +35,7 @@ const PaymentHistory = () => {
   }, []);
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Payment History</h2>
-      </div>
+    <div className="m-0">
       <div className="overflow-x-auto">
         <table className="w-full table-auto border-separate border-spacing-y-2">
           <thead>

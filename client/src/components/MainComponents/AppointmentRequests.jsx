@@ -193,9 +193,8 @@ const AppointmentRequests = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="m-0">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Appointment Requests</h2>
         {userProfile?.isClient && (
           <button
             className="bg-blue-500 text-white py-2 px-4 rounded flex items-center"

@@ -54,8 +54,8 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white">
-      <div className="flex-grow text-xl font-semibold text-gray-700">
+    <div className="flex items-center justify-between p-4 bg-white shadow-md">
+      <div className="flex-grow text-2xl font-semibold text-[#1666F7] ml-4">
         {activeComponent}
       </div>
       <div className="flex items-center space-x-2">
@@ -69,7 +69,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
           className="flex items-center space-x-2 cursor-pointer relative"
           onClick={handleUserSectionClick}
         >
-          <div className="flex items-center border border-[#968AFF] rounded-md px-4 py-2">
+          <div className="flex items-center border-2 bg-white shadow-inner border-blue-600 rounded-lg px-4 py-2">
             <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
               <span className="text-sm font-bold text-white">
                 {user
@@ -84,7 +84,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
 
           {isDropdownOpen && (
             <div
-              className="absolute right-0 top-12 bg-white p-2 mt-3 border border-[#ccc] rounded-md shadow-lg"
+              className="absolute right-0 top-12 bg-white p-2 mt-3 border border-[#ccc] rounded-md shadow-lg z-50"
               style={{ width: "200px" }}
             >
               <button
