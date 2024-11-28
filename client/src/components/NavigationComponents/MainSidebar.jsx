@@ -25,7 +25,7 @@ import { getUserProfile } from "../../services/userService";
 
 const MainSidebar = ({ setActiveComponent }) => {
   const [isOpen, setIsOpen] = useState(true);
-  const [activeItem, setActiveItem] = useState("Dashboard"); // Track the active item
+  const [activeItem, setActiveItem] = useState("Dashboard");
   const [user, setUser] = useState(null);
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
   const [isAccountManagementOpen, setIsAccountManagementOpen] = useState(false);
@@ -46,13 +46,13 @@ const MainSidebar = ({ setActiveComponent }) => {
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleReturnHome = () => {
-    setActiveItem("Return Home"); // Set active for Home
+    setActiveItem("Return Home");
     navigate("/");
   };
 
   const handleItemClick = (label) => {
     setActiveComponent(label);
-    setActiveItem(label); // Set the active item
+    setActiveItem(label);
   };
 
   const renderSidebarItems = () => {
@@ -155,9 +155,9 @@ const MainSidebar = ({ setActiveComponent }) => {
           }}
           isAppointment={item.label === "Appointment"}
           isAppointmentOpen={isAppointmentOpen}
-          isActive={activeItem === item.label} // Pass active state
-          activeItem={activeItem} // Pass active item state
-          setActiveItem={setActiveItem} // Pass setActiveItem function
+          isActive={activeItem === item.label}
+          activeItem={activeItem}
+          setActiveItem={setActiveItem}
         />
       );
     });
@@ -193,7 +193,7 @@ const MainSidebar = ({ setActiveComponent }) => {
             label="Return Home"
             isOpen={isOpen}
             onClick={handleReturnHome}
-            isActive={activeItem === "Return Home"} // Pass active state
+            isActive={activeItem === "Return Home"}
           />
         </div>
       </div>
@@ -211,16 +211,16 @@ const SidebarItem = ({
   onClick,
   isAppointment,
   isAppointmentOpen,
-  isActive, // Receive active state
-  activeItem, // Receive active item state
-  setActiveItem, // Receive setActiveItem function
+  isActive,
+  activeItem,
+  setActiveItem,
 }) => {
   const handleClick = () => {
     if (subItems) {
       toggleNested();
     } else {
       onClick();
-      setActiveItem(label); // Set the active item
+      setActiveItem(label);
     }
   };
 
@@ -234,7 +234,7 @@ const SidebarItem = ({
         <div
           className={`flex items-center p-2 hover:bg-[#3A7DFF] rounded-xl cursor-pointer ${
             !isOpen ? "justify-center" : "pl-6 pr-4"
-          } ${isActive ? "bg-[#3A7DFF] text-white" : ""}`} // Apply active styles
+          } ${isActive ? "bg-[#3A7DFF] text-white" : ""}`}
           onClick={handleClick}
         >
           {icon}
@@ -245,11 +245,10 @@ const SidebarItem = ({
               {label}
             </span>
           )}
-          {/* sidebar text color */}
           {isAppointment && subItems && isOpen && (
             <div className="ml-auto">
               {isAppointmentOpen ? (
-                <ChevronDownIcon className="text-[#2B4980]" /> //drop down color
+                <ChevronDownIcon className="text-[#2B4980]" />
               ) : (
                 <ChevronRightIcon className="text-[#2B4980]" />
               )}
@@ -258,7 +257,7 @@ const SidebarItem = ({
           {subItems && isOpen && !isAppointment && (
             <div className="ml-auto">
               {isOpenNested ? (
-                <ChevronDownIcon className="text-[#2B4980]" /> //drop down color
+                <ChevronDownIcon className="text-[#2B4980]" />
               ) : (
                 <ChevronRightIcon className="text-[#2B4980]" />
               )}
@@ -278,10 +277,10 @@ const SidebarItem = ({
               <div
                 className={`flex items-center p-2 hover:bg-[#3A7DFF] rounded-xl cursor-pointer ${
                   activeItem === subItem.label ? "bg-[#3A7DFF] text-white" : ""
-                }`} // Apply active styles to sub-items
+                }`}
                 onClick={() => {
                   subItem.onClick();
-                  setActiveItem(subItem.label); // Set the active sub-item
+                  setActiveItem(subItem.label);
                 }}
               >
                 {subItem.icon}

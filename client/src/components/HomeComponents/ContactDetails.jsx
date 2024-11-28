@@ -54,7 +54,6 @@ const ContactDetails = () => {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-gray-600 text-white py-4 mt-8 w-full">
         <div className="container mx-auto text-center">
           <p className="text-md">

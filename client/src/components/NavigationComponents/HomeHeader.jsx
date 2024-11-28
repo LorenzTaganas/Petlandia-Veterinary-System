@@ -19,13 +19,10 @@ const HomeHeader = () => {
 
   return (
     <header className="flex justify-between items-center px-6 py-4 bg-white shadow-md">
-      {/* Logo Section */}
       <div className="flex items-center space-x-3">
         <img src="src/assets/LGGO (2).png" alt="Logo" className="h-10 w-auto" />
         <h1 className="text-2xl font-bold text-gray-800"></h1>
       </div>
-
-      {/* Navigation Section */}
       <nav className="hidden md:flex flex-grow justify-center space-x-8">
         <ul className="flex space-x-8">
           <li>

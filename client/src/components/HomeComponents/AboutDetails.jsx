@@ -1,12 +1,11 @@
 import React from "react";
 
 const AboutDetails = () => {
-  const currentYear = new Date().getFullYear(); // Moved the year calculation here
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-blue-200 to-indigo-300 flex flex-col items-center">
       <div className="max-w-5xl bg-white shadow-xl rounded-lg p-8">
-        {/* Header */}
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           About Us
         </h1>
@@ -17,7 +16,6 @@ const AboutDetails = () => {
           veterinary care with compassion and expertise.
         </p>
 
-        {/* Mission Section */}
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Our Mission
         </h2>
@@ -27,7 +25,6 @@ const AboutDetails = () => {
           confidence in every step of their pet’s health journey.
         </p>
 
-        {/* Core Values Section */}
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Our Core Values
         </h2>
@@ -61,7 +58,6 @@ const AboutDetails = () => {
           </div>
         </div>
 
-        {/* Why Choose Us Section */}
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Why Choose Us?
         </h2>
@@ -72,7 +68,6 @@ const AboutDetails = () => {
           needs.
         </p>
 
-        {/* Image Section */}
         <div className="mt-8 flex justify-center">
           <img
             src="src/assets/dogs2.jpg"

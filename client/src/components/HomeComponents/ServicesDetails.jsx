@@ -17,7 +17,6 @@ const ServicesDetails = () => {
           Services We Offer
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Individual Service Items */}
           <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
             <h3 className="text-xl font-bold text-gray-800 mb-4">
               General Check-Ups
@@ -37,7 +36,6 @@ const ServicesDetails = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mt-8">
-          {/* Treatment Section */}
           <div className="bg-gray-50 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-bold text-gray-800 mb-4">Treatment</h3>
             <p className="text-gray-600 mb-4">
