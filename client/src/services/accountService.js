@@ -86,3 +86,46 @@ export const addStaffAccount = async (
     password,
   });
 };
+
+export const getAllUsersExceptSelf = async () => {
+  const response = await axiosInstance.get("/admin/account/exclude-self");
+  return response.data;
+};
+
+export const createUserWithRole = async (
+  firstName,
+  lastName,
+  email,
+  contactNo,
+  password,
+  role
+) => {
+  await axiosInstance.post("/admin/account/create", {
+    firstName,
+    lastName,
+    email,
+    contactNo,
+    password,
+    role,
+  });
+};
+
+export const updateUserWithRole = async (
+  id,
+  firstName,
+  lastName,
+  email,
+  contactNo,
+  role,
+  isActive
+) => {
+  await axiosInstance.put("/admin/account/update", {
+    id,
+    firstName,
+    lastName,
+    email,
+    contactNo,
+    role,
+    isActive,
+  });
+};

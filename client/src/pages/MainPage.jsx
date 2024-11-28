@@ -10,6 +10,7 @@ import Profile from "../components/MainComponents/Profile";
 import Reports from "../components/MainComponents/Reports";
 import AppointmentSchedule from "../components/MainComponents/AppointmentSchedule";
 import ChangePassword from "../components/MainComponents/ChangePassword";
+import AccountManagement from "../components/MainComponents/AccountManagement";
 import AdminAccounts from "../components/MainComponents/AdminAccounts";
 import StaffAccounts from "../components/MainComponents/StaffAccounts";
 import ClientAccounts from "../components/MainComponents/ClientAccounts";
@@ -69,6 +70,8 @@ const MainPage = () => {
         return <ChangePassword />;
       case "PetGrooming":
         return <PetGrooming />;
+      case "AccountManagement":
+        return <AccountManagement />;
       case "AdminAccounts":
         return <AdminAccounts />;
       case "StaffAccounts":

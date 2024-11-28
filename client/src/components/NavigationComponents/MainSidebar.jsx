@@ -112,26 +112,27 @@ const MainSidebar = ({ setActiveComponent }) => {
       {
         icon: <GroupIcon />,
         label: "Account Management",
-        onClick: () => setIsAccountManagementOpen(!isAccountManagementOpen),
+        onClick: () => handleItemClick("AccountManagement"),
         roles: ["Admin"],
-        subItems: [
-          {
-            label: "Admin Accounts",
-            icon: <AdminPanelSettingsIcon />,
-            onClick: () => handleItemClick("AdminAccounts"),
-          },
-          {
-            label: "Staff Accounts",
-            icon: <PersonAddIcon />,
-            onClick: () => handleItemClick("StaffAccounts"),
-          },
-          {
-            label: "Client Accounts",
-            icon: <PersonIcon />,
-            onClick: () => handleItemClick("ClientAccounts"),
-          },
-        ],
-        isOpen: isAccountManagementOpen,
+        // onClick: () => setIsAccountManagementOpen(!isAccountManagementOpen),
+        // subItems: [
+        //   {
+        //     label: "Admin Accounts",
+        //     icon: <AdminPanelSettingsIcon />,
+        //     onClick: () => handleItemClick("AdminAccounts"),
+        //   },
+        //   {
+        //     label: "Staff Accounts",
+        //     icon: <PersonAddIcon />,
+        //     onClick: () => handleItemClick("StaffAccounts"),
+        //   },
+        //   {
+        //     label: "Client Accounts",
+        //     icon: <PersonIcon />,
+        //     onClick: () => handleItemClick("ClientAccounts"),
+        //   },
+        // ],
+        // isOpen: isAccountManagementOpen,
       },
     ];
 

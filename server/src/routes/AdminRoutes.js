@@ -28,4 +28,18 @@ router.put(
   adminController.changeAccountPassword
 );
 
+router.get(
+  "/account/exclude-self",
+  authenticate,
+  adminController.getAllUsersExceptSelf
+);
+
+router.post(
+  "/account/create",
+  authenticate,
+  adminController.createUserWithRole
+);
+
+router.put("/account/update", authenticate, adminController.updateUserWithRole);
+
 module.exports = router;
