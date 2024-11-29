@@ -120,7 +120,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       <div className="flex-grow text-2xl font-semibold text-[#1666F7] ml-4">
         {activeComponent}
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-8">
         <Tooltip title="Notifications" placement="bottom">
           <div className="relative">
             <Notifications
