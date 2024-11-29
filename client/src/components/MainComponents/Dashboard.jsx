@@ -50,6 +50,11 @@ const Dashboard = ({ setActiveComponent }) => {
           (schedule) =>
             schedule.assignedVetId === userId && schedule.status === "Approved"
         )
+      : role === "Client"
+      ? appointmentSchedules.filter(
+          (schedule) =>
+            schedule.ownerId === userId && schedule.status === "Approved"
+        )
       : appointmentSchedules.filter(
           (schedule) => schedule.status === "Approved"
         );
