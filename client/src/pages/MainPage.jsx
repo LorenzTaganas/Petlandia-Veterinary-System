@@ -68,7 +68,7 @@ const MainPage = () => {
         return <Profile />;
       case "ChangePassword":
         return <ChangePassword />;
-      case "PetGrooming":
+      case "FeaturedPets":
         return <PetGrooming />;
       case "AccountManagement":
         return <AccountManagement />;
