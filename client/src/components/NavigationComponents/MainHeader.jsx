@@ -50,7 +50,9 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
 
       notificationService.connect(user.id);
       notificationService.setNotificationCallback((newNotification) => {
-        setUnreadCount((prevCount) => prevCount + 1);
+        if (!newNotification.isRead) {
+          setUnreadCount((prevCount) => prevCount + 1);
+        }
       });
 
       return () => {
