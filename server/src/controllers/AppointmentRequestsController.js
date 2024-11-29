@@ -57,7 +57,9 @@ exports.createAppointmentRequest = async (req, res) => {
     for (const admin of admins) {
       await createNotification(
         admin.id,
-        `New appointment request by ${req.user.name} on ${appointmentDate}.`
+        `A new appointment for ${
+          req.user.fullName
+        } on ${appointmentRequest.appointmentDate.toDateString()} is requested.`
       );
     }
 
@@ -140,8 +142,8 @@ exports.acceptAppointmentRequest = async (req, res) => {
 
     await createNotification(
       appointmentRequest.ownerId,
-      `Your appointment request on ${appointmentRequest.appointmentDate.toDateString()} has been approved by Admin ${
-        req.user.name
+      `Your appointment request on ${appointmentRequest.appointmentDate.toDateString()} has been approved by Admin: ${
+        req.user.fullName
       }.`
     );
 
@@ -189,7 +191,9 @@ exports.declineAppointmentRequest = async (req, res) => {
 
     await createNotification(
       appointmentRequest.ownerId,
-      `Your appointment was declined. ${remark ? `Reason: ${remark}` : ""}`
+      `Your appointment was declined by Admin: ${req.user.fullName}. ${
+        remark ? `Reason: ${remark}` : ""
+      }`
     );
 
     res.status(200).json(appointmentRequest);
@@ -211,6 +215,20 @@ exports.editAppointmentRequest = async (req, res) => {
   } = req.body;
 
   try {
+    const existingAppointmentRequest =
+      await prisma.appointmentRequest.findUnique({
+        where: { id: Number(id) },
+        include: {
+          owner: true,
+          preferredVet: true,
+          assignedVet: true,
+        },
+      });
+
+    if (!existingAppointmentRequest) {
+      return res.status(404).json({ error: "Appointment request not found." });
+    }
+
     const updatedRequest = await prisma.appointmentRequest.update({
       where: { id: Number(id) },
       data: {
@@ -236,6 +254,35 @@ exports.editAppointmentRequest = async (req, res) => {
       });
     }
 
+    if (req.user.role === "Admin") {
+      await createNotification(
+        existingAppointmentRequest.ownerId,
+        `Your appointment details have been updated by Admin: ${req.user.fullName}.`
+      );
+
+      if (existingAppointmentRequest.assignedVetId) {
+        await createNotification(
+          existingAppointmentRequest.assignedVetId,
+          `Appointment details for ${existingAppointmentRequest.owner.fullName} have been updated by Admin: ${req.user.fullName}.`
+        );
+      }
+    } else {
+      const admins = await prisma.user.findMany({ where: { role: "Admin" } });
+      for (const admin of admins) {
+        await createNotification(
+          admin.id,
+          `Appointment details have been updated by ${req.user.fullName}.`
+        );
+      }
+
+      if (existingAppointmentRequest.assignedVetId) {
+        await createNotification(
+          existingAppointmentRequest.assignedVetId,
+          `Appointment details have been updated by ${req.user.fullName}.`
+        );
+      }
+    }
+
     res.status(200).json(updatedRequest);
   } catch (error) {
     console.error(error);
@@ -247,9 +294,59 @@ exports.deleteAppointmentRequest = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const appointmentRequest = await prisma.appointmentRequest.findUnique({
+      where: { id: Number(id) },
+      include: {
+        owner: true,
+        assignedVet: true,
+      },
+    });
+
+    if (!appointmentRequest) {
+      return res.status(404).json({ error: "Appointment request not found." });
+    }
+
+    const ownerFullName = appointmentRequest.owner
+      ? `${appointmentRequest.owner.firstName} ${appointmentRequest.owner.lastName}`
+      : "Unknown User";
+
     await prisma.appointmentRequest.delete({
       where: { id: Number(id) },
     });
+
+    const isAdmin = req.user.role === "Admin";
+
+    if (isAdmin) {
+      if (appointmentRequest.owner) {
+        await createNotification(
+          appointmentRequest.ownerId,
+          `Your appointment request has been deleted by Admin: ${req.user.fullName}.`
+        );
+      }
+
+      if (appointmentRequest.assignedVetId) {
+        await createNotification(
+          appointmentRequest.assignedVetId,
+          `The appointment you were assigned to has been deleted by Admin: ${req.user.fullName}.`
+        );
+      }
+    } else {
+      const admins = await prisma.user.findMany({ where: { role: "Admin" } });
+      for (const admin of admins) {
+        await createNotification(
+          admin.id,
+          `${ownerFullName} removed an appointment.`
+        );
+      }
+
+      if (appointmentRequest.assignedVetId) {
+        await createNotification(
+          appointmentRequest.assignedVetId,
+          `The appointment assigned to you has been removed by ${req.user.fullName}.`
+        );
+      }
+    }
+
     const updatedAppointmentRequests = await prisma.appointmentRequest.findMany(
       {
         include: {
@@ -259,6 +356,7 @@ exports.deleteAppointmentRequest = async (req, res) => {
         },
       }
     );
+
     res.status(200).json(updatedAppointmentRequests);
   } catch (error) {
     console.error(error);
@@ -301,7 +399,9 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
       if (appointmentRequest.preferredVet) {
         await createNotification(
           appointmentRequest.preferredVetId,
-          `The appointment on ${validNewAppointmentDate.toDateString()} has been approved.`
+          `The appointment on ${validNewAppointmentDate.toDateString()} has been approved by ${
+            req.user.fullName
+          }.`
         );
       }
     }
@@ -314,9 +414,9 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
     if (approve) {
       await createNotification(
         appointmentRequest.adminId,
-        `Client ${
-          appointmentRequest.owner.name
-        } approved the rescheduled date ${validNewAppointmentDate.toDateString()} for their appointment.`
+        `${
+          req.user.fullName
+        } approved the rescheduled date on ${validNewAppointmentDate.toDateString()}.`
       );
     }
 

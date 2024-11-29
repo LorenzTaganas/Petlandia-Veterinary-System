@@ -11,7 +11,11 @@ const jwt = require("jsonwebtoken");
 const http = require("http");
 const { WebSocketServer } = require("ws");
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({
+  server,
+  path: "/",
+});
+require("./src/controllers/NotificationController").initializeWebSocket(wss);
 
 require("dotenv").config();
 const port = process.env.PORT || 3000;

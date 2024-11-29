@@ -1,23 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import notificationService from "../../../services/notificationService";
-import { Divider, Button } from "@mui/material";
 
-const NotificationModal = ({ userId, visible, onClose }) => {
+const NotificationModal = ({
+  userId,
+  visible,
+  onClose,
+  onNotificationRead,
+}) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const data = await notificationService.fetchNotifications(userId);
-        setNotifications(data);
-        setUnreadCount(data.filter((notif) => !notif.isRead).length);
+        setNotifications(data || []);
+        setUnreadCount(data ? data.filter((notif) => !notif.isRead).length : 0);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
+        setNotifications([]);
       }
     };
 
-    if (visible) {
+    if (visible && userId) {
       fetchNotifications();
     }
   }, [visible, userId]);
@@ -45,64 +51,75 @@ const NotificationModal = ({ userId, visible, onClose }) => {
     if (unreadNotificationIds.length > 0) {
       try {
         await notificationService.markAsRead(unreadNotificationIds);
-        setNotifications((prevNotifications) =>
-          prevNotifications.map((notif) => ({ ...notif, isRead: true }))
-        );
-        setUnreadCount(0);
+        const updatedNotifications = notifications.map((notif) => ({
+          ...notif,
+          isRead: true,
+        }));
+        setNotifications(updatedNotifications);
+        const newUnreadCount = 0;
+        setUnreadCount(newUnreadCount);
+        onNotificationsRead(newUnreadCount);
       } catch (error) {
         console.error("Failed to mark notifications as read:", error);
       }
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
+
   return (
     <div
-      style={{
-        display: visible ? "block" : "none",
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        backgroundColor: "#fff",
-        padding: "20px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        zIndex: 999,
-        width: "300px",
-        maxHeight: "400px",
-        overflowY: "auto",
-      }}
+      className={`fixed inset-0 z-50 bg-gray-500 bg-opacity-50 ${
+        visible ? "block" : "hidden"
+      }`}
+      onClick={onClose}
     >
-      <h3>Notifications</h3>
-      <Button onClick={markAsRead} type="primary" block>
-        Mark All as Read
-      </Button>
-      <p>{unreadCount} Unread Notifications</p>
-
-      {notifications.length > 0 ? (
-        <div>
-          {notifications.map((notif) => (
-            <div key={notif.id}>
-              <div
-                style={{
-                  fontWeight: notif.isRead ? "normal" : "bold",
-                  marginBottom: "10px",
-                }}
-              >
-                {notif.message}
-                <div style={{ fontSize: "12px", color: "#888" }}>
+      <div
+        ref={modalRef}
+        className="absolute right-32 top-16 bg-white p-4 rounded-lg shadow-lg max-w-sm w-full max-h-[400px] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-xl font-semibold">Notifications</h3>
+        <p className="text-sm text-gray-600">
+          {unreadCount} Unread Notifications
+        </p>
+        <button
+          className="w-full bg-blue-500 text-white py-2 rounded-md mt-4"
+          onClick={markAsRead}
+        >
+          Mark All as Read
+        </button>
+        {notifications.length > 0 ? (
+          <div className="mt-4">
+            {notifications.map((notif) => (
+              <div key={notif.id} className="mb-4">
+                <div
+                  className={`${
+                    notif.isRead ? "font-normal" : "font-bold"
+                  } text-sm mb-2`}
+                >
+                  {notif.message}
+                </div>
+                <div className="text-xs text-gray-500">
                   {new Date(notif.createdAt).toLocaleString()}
                 </div>
               </div>
-              <Divider />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No notifications</p>
-      )}
-      <Button onClick={onClose} type="default" block>
-        Close
-      </Button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-600">No notifications</p>
+        )}
+      </div>
     </div>
   );
 };

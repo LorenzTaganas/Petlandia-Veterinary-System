@@ -1,3 +1,5 @@
+import axiosInstance from "./axiosInstance";
+
 class NotificationService {
   constructor() {
     this.socket = null;
@@ -5,13 +7,12 @@ class NotificationService {
     this.retryCount = 0;
     this.maxRetries = 5;
     this.reconnectDelay = 1000;
-    this.reconnecting = false; // New flag to prevent overlapping reconnections
+    this.reconnecting = false;
   }
 
   connect(userId) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      console.log("WebSocket already connected.");
-      return;
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
     }
 
     if (!userId) {
@@ -20,7 +21,11 @@ class NotificationService {
     }
 
     if (this.socket) {
-      this.socket.close();
+      try {
+        this.socket.close();
+      } catch (e) {
+        console.warn("Error closing existing socket:", e);
+      }
       this.socket = null;
     }
 
@@ -28,15 +33,13 @@ class NotificationService {
       this.socket = new WebSocket(`ws://localhost:3000/?user-id=${userId}`);
 
       this.socket.onopen = () => {
-        console.log("WebSocket connection established.");
         this.retryCount = 0;
-        this.reconnecting = false; // Reset reconnecting flag
+        this.reconnecting = false;
       };
 
       this.socket.onmessage = (event) => {
         try {
           const notification = JSON.parse(event.data);
-          console.log("New notification received:", notification);
           if (this.onNotificationReceived) {
             this.onNotificationReceived(notification);
           }
@@ -46,58 +49,62 @@ class NotificationService {
       };
 
       this.socket.onclose = (event) => {
-        console.log("WebSocket connection closed.", event.reason);
-        if (event.code !== 1000) {
+        if (event.code !== 1000 && !this.reconnecting) {
           this.retryReconnect(userId);
         }
       };
 
       this.socket.onerror = (error) => {
         console.error("WebSocket error:", error);
+        if (!this.reconnecting) {
+          this.retryReconnect(userId);
+        }
       };
     } catch (error) {
       console.error("WebSocket connection failed:", error);
+      if (!this.reconnecting) {
+        this.retryReconnect(userId);
+      }
     }
   }
 
   retryReconnect(userId) {
     if (this.reconnecting || this.retryCount >= this.maxRetries) {
-      if (this.retryCount >= this.maxRetries) {
-        console.error("Max reconnection attempts reached. Connection failed.");
-      }
+      console.error(
+        this.retryCount >= this.maxRetries
+          ? "Max reconnection attempts reached. Connection failed."
+          : "Already reconnecting."
+      );
       return;
     }
 
     this.reconnecting = true;
     const delay = this.reconnectDelay * Math.pow(2, this.retryCount);
-    console.log(
-      `Reconnection attempt ${this.retryCount + 1} in ${delay / 1000}s...`
-    );
-
-    setTimeout(() => {
+    this.reconnectTimeout = setTimeout(() => {
       this.retryCount++;
       this.reconnecting = false;
       this.connect(userId);
     }, delay);
   }
 
+  disconnect() {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+
   setNotificationCallback(callback) {
     this.onNotificationReceived = callback;
   }
 
-  disconnect() {
-    if (this.socket) {
-      this.socket.close();
-      this.socket = null;
-      console.log("WebSocket disconnected.");
-    }
-  }
-
   async fetchNotifications(userId) {
     try {
-      const response = await fetch(`/notifications/user/${userId}`);
-      const data = await response.json();
-      return data;
+      const response = await axiosInstance.get(`/notifications/user/${userId}`);
+      return response.data;
     } catch (error) {
       console.error("Error fetching notifications:", error);
       throw error;
@@ -106,13 +113,11 @@ class NotificationService {
 
   async markAsRead(notificationIds) {
     try {
-      const response = await fetch("/notifications/mark-as-read", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationIds }),
-      });
-      const data = await response.json();
-      return data;
+      const response = await axiosInstance.patch(
+        "/notifications/mark-as-read",
+        { notificationIds }
+      );
+      return response.data;
     } catch (error) {
       console.error("Error marking notifications as read:", error);
       throw error;

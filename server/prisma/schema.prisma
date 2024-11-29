@@ -47,6 +47,7 @@ model Pet {
   ownerId              Int
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
+  
   appointmentRequests  AppointmentRequest[] 
 }
 

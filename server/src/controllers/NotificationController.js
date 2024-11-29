@@ -8,29 +8,26 @@ exports.initializeWebSocket = (wss) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const userId = url.searchParams.get("user-id");
 
-    if (userId) {
-      if (wsClients.has(userId)) {
-        console.log(
-          `User ${userId} already connected. Terminating old connection.`
-        );
-        wsClients.get(userId).terminate();
-      }
-
-      wsClients.set(userId, ws);
-      console.log(`User ${userId} connected to WebSocket.`);
-
-      ws.on("close", () => {
-        wsClients.delete(userId);
-        console.log(`User ${userId} disconnected.`);
-      });
-
-      ws.on("error", (error) => {
-        console.error(`WebSocket error for user ${userId}:`, error);
-      });
-    } else {
+    if (!userId) {
       console.error("WebSocket connection without user-id");
       ws.close(1008, "Missing user-id");
+      return;
     }
+
+    ws.on("error", (error) => {
+      console.error(`WebSocket error for user ${userId}:`, error);
+      ws.close();
+    });
+
+    if (wsClients.has(userId)) {
+      wsClients.get(userId).close();
+    }
+
+    wsClients.set(userId, ws);
+
+    ws.on("close", () => {
+      wsClients.delete(userId);
+    });
   });
 };
 
@@ -43,14 +40,20 @@ const sendNotification = (userId, notification) => {
 
 exports.createNotification = async (userId, message) => {
   try {
+    const userIdInt = parseInt(userId, 10);
+
+    if (isNaN(userIdInt)) {
+      throw new Error("Invalid userId provided. Must be an integer.");
+    }
+
     const notification = await prisma.notification.create({
       data: {
-        userId,
+        userId: userIdInt,
         message,
       },
     });
 
-    sendNotification(userId, notification);
+    sendNotification(userIdInt, notification);
     return notification;
   } catch (error) {
     console.error("Error creating notification:", error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import { Notifications, ExitToApp, Lock, Person } from "@mui/icons-material";
@@ -13,6 +13,8 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const notificationButtonRef = useRef(null);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,20 +29,55 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       }
     };
     fetchUserProfile();
+  }, []);
 
+  useEffect(() => {
     if (user) {
+      // Fetch initial notifications and set unread count
+      const fetchInitialNotifications = async () => {
+        try {
+          const notifications = await notificationService.fetchNotifications(
+            user.id
+          );
+          const initialUnreadCount = notifications.filter(
+            (notif) => !notif.isRead
+          ).length;
+          setUnreadCount(initialUnreadCount);
+        } catch (error) {
+          console.error("Failed to fetch initial notifications:", error);
+        }
+      };
+      fetchInitialNotifications();
+
+      // Connect to WebSocket and set up notification callback
       notificationService.connect(user.id);
       notificationService.setNotificationCallback((newNotification) => {
         setUnreadCount((prevCount) => prevCount + 1);
       });
-    }
 
-    return () => {
-      if (user) {
+      return () => {
         notificationService.disconnect();
+      };
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        notificationButtonRef.current &&
+        !notificationButtonRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+        setIsModalOpen(false);
       }
     };
-  }, [user]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleUserSectionClick = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -60,7 +97,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       navigate("/");
     } catch (err) {
       console.error(
-        "Logout error:",
+        "Logout error: ",
         err.response ? err.response.data.message : "Error logging out"
       );
     }
@@ -74,17 +111,29 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
     setIsModalOpen(false);
   };
 
+  const handleNotificationRead = (newUnreadCount) => {
+    setUnreadCount(newUnreadCount);
+  };
+
   return (
     <div className="flex items-center justify-between p-4 bg-white shadow-md">
       <div className="flex-grow text-2xl font-semibold text-[#1666F7] ml-4">
         {activeComponent}
       </div>
       <div className="flex items-center space-x-2">
-        <Tooltip title="Notifications" placement="right">
-          <Notifications
-            className="text-black cursor-pointer"
-            onClick={handleNotificationClick}
-          />
+        <Tooltip title="Notifications" placement="bottom">
+          <div className="relative">
+            <Notifications
+              ref={notificationButtonRef}
+              className="text-black cursor-pointer"
+              onClick={handleNotificationClick}
+            />
+            {unreadCount > 0 && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center">
+                {unreadCount}
+              </div>
+            )}
+          </div>
         </Tooltip>
         <div
           className="flex items-center space-x-2 cursor-pointer relative"
@@ -105,6 +154,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
 
           {isDropdownOpen && (
             <div
+              ref={dropdownRef}
               className="absolute right-0 top-12 bg-white p-2 mt-3 border border-[#ccc] rounded-md shadow-lg z-50"
               style={{ width: "200px" }}
             >
@@ -138,6 +188,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
           userId={user?.id}
           visible={isModalOpen}
           onClose={handleModalClose}
+          onNotificationsRead={handleNotificationRead}
         />
       )}
     </div>
