@@ -33,7 +33,6 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
 
   useEffect(() => {
     if (user) {
-      // Fetch initial notifications and set unread count
       const fetchInitialNotifications = async () => {
         try {
           const notifications = await notificationService.fetchNotifications(
@@ -49,7 +48,6 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       };
       fetchInitialNotifications();
 
-      // Connect to WebSocket and set up notification callback
       notificationService.connect(user.id);
       notificationService.setNotificationCallback((newNotification) => {
         setUnreadCount((prevCount) => prevCount + 1);

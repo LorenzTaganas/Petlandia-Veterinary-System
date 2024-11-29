@@ -38,7 +38,7 @@ const ChangePassword = () => {
         </h2>
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">
-            Current Password*
+            Current Password <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -58,7 +58,7 @@ const ChangePassword = () => {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-1">
-            New Password*
+            New Password <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -78,7 +78,7 @@ const ChangePassword = () => {
         </div>
         <div className="mb-6">
           <label className="block text-gray-700 font-medium mb-1">
-            Confirm New Password*
+            Confirm New Password <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
