@@ -33,7 +33,6 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
 
   useEffect(() => {
     if (user) {
-      // Fetch initial notifications and set unread count
       const fetchInitialNotifications = async () => {
         try {
           const notifications = await notificationService.fetchNotifications(
@@ -49,10 +48,11 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       };
       fetchInitialNotifications();
 
-      // Connect to WebSocket and set up notification callback
       notificationService.connect(user.id);
       notificationService.setNotificationCallback((newNotification) => {
-        setUnreadCount((prevCount) => prevCount + 1);
+        if (!newNotification.isRead) {
+          setUnreadCount((prevCount) => prevCount + 1);
+        }
       });
 
       return () => {
@@ -120,7 +120,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
       <div className="flex-grow text-2xl font-semibold text-[#1666F7] ml-4">
         {activeComponent}
       </div>
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-8">
         <Tooltip title="Notifications" placement="bottom">
           <div className="relative">
             <Notifications

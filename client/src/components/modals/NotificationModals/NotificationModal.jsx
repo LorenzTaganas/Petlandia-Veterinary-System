@@ -5,7 +5,7 @@ const NotificationModal = ({
   userId,
   visible,
   onClose,
-  onNotificationRead,
+  onNotificationsRead,
 }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);

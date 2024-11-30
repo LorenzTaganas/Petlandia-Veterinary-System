@@ -18,18 +18,21 @@ const HomeHeader = () => {
   }, [location.pathname]);
 
   return (
-    <header className="flex justify-between items-center px-6 py-4 bg-white shadow-md">
+    <header className="fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-2  bg-white shadow-md z-50">
+      {/* Logo Section */}
       <div className="flex items-center space-x-3">
         <img src="src/assets/LGGO (2).png" alt="Logo" className="h-10 w-auto" />
         <h1 className="text-2xl font-bold text-gray-800"></h1>
       </div>
+
+      {/* Navigation Section */}
       <nav className="hidden md:flex flex-grow justify-center space-x-8">
         <ul className="flex space-x-8">
           <li>
             <Link
               to="/"
-              className={`text-gray-600 hover:text-blue-700 font-medium transition duration-300 ${
-                activeLink === "/" ? " text-blue-600" : ""
+              className={`text-gray-600 hover:text-blue-500 font-medium transition duration-300 ${
+                activeLink === "/" ? "text-blue-600" : ""
               }`}
               onClick={() => setActiveLink("/")}
             >
@@ -40,7 +43,7 @@ const HomeHeader = () => {
             <Link
               to="/about-details"
               className={`text-gray-600 hover:text-blue-500 font-medium transition duration-300 ${
-                activeLink === "/about-details" ? " text-blue-600" : ""
+                activeLink === "/about-details" ? "text-blue-600" : ""
               }`}
               onClick={() => setActiveLink("/about-details")}
             >
@@ -62,7 +65,7 @@ const HomeHeader = () => {
             <Link
               to="/contact-details"
               className={`text-gray-600 hover:text-blue-500 font-medium transition duration-300 ${
-                activeLink === "/contact-details" ? " text-blue-600" : ""
+                activeLink === "/contact-details" ? "text-blue-600" : ""
               }`}
               onClick={() => setActiveLink("/contact-details")}
             >

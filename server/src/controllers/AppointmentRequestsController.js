@@ -380,6 +380,7 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
       include: {
         owner: true,
         preferredVet: true,
+        assignedVet: true,
       },
     });
 
@@ -396,12 +397,10 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
       updatedData.status = "Approved";
       updatedData.approvedAt = new Date();
 
-      if (appointmentRequest.preferredVet) {
+      if (appointmentRequest.assignedVetId) {
         await createNotification(
-          appointmentRequest.preferredVetId,
-          `The appointment on ${validNewAppointmentDate.toDateString()} has been approved by ${
-            req.user.fullName
-          }.`
+          appointmentRequest.assignedVetId,
+          `You have been assigned to an appointment on ${validNewAppointmentDate.toDateString()}.`
         );
       }
     }
