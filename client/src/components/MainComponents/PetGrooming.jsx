@@ -97,7 +97,7 @@ const PetGrooming = () => {
               accept="video/*"
               onChange={handleFileChange}
               disabled={loading}
-              className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg p-2"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
             />
           </div>
           <div className="mb-4">
@@ -109,7 +109,7 @@ const PetGrooming = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={loading}
-              className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg p-2"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
             />
           </div>
           <div className="mb-4">
@@ -120,7 +120,7 @@ const PetGrooming = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={loading}
-              className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg p-2"
+              className="block w-full text-sm border border-gray-300 rounded-lg p-2"
             />
           </div>
           <button

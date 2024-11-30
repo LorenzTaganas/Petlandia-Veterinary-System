@@ -85,7 +85,7 @@ const Profile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="mb-4">
             <label className="block text-gray-700 font-medium">
-              First Name
+              First Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -97,7 +97,9 @@ const Profile = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium">Last Name</label>
+            <label className="block text-gray-700 font-medium">
+              Last Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="lastName"
@@ -108,7 +110,9 @@ const Profile = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium">Email</label>
+            <label className="block text-gray-700 font-medium">
+              Email <span className="text-red-500">*</span>
+            </label>
             <input
               type="email"
               name="email"
@@ -120,7 +124,7 @@ const Profile = () => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium">
-              Contact No.
+              Contact No. <span className="text-red-500">*</span>
             </label>
             <input
               type="text"

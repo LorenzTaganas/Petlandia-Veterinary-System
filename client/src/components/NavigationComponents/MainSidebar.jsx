@@ -106,8 +106,8 @@ const MainSidebar = ({ setActiveComponent }) => {
       },
       {
         icon: <VideoLibraryIcon />,
-        label: "Pet Grooming",
-        onClick: () => handleItemClick("PetGrooming"),
+        label: "Featured Pets",
+        onClick: () => handleItemClick("FeaturedPets"),
       },
       {
         icon: <GroupIcon />,
