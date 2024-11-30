@@ -79,7 +79,7 @@ const HomeHeader = () => {
       <div className="flex items-center">
         <Link to={isAuthenticated ? "/dashboard" : "/login"}>
           <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300">
-            {isAuthenticated ? "Go to Dashboard" : "Book Now"}
+            {isAuthenticated ? "Go to Dashboard" : "Book now"}
           </button>
         </Link>
       </div>
