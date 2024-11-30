@@ -47,6 +47,8 @@ const ViewAppointmentRequestModal = ({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
     useState(false);
+  const [isDeleteSuccessModalOpen, setIsDeleteSuccessModalOpen] =
+    useState(false);
 
   useEffect(() => {
     if (appointmentId) {
