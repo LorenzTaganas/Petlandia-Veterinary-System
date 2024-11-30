@@ -31,7 +31,7 @@ const Signup = ({ onSwitch }) => {
 
   return (
     <div
-      className="text-center p-8 bg-white shadow-md"
+      className="text-center p-12 bg-white shadow-lg rounded-md"
       style={{ width: "90%", height: "90%" }}
     >
       <h2 className="text-3xl font-semibold mb-4">Create Your Account</h2>
