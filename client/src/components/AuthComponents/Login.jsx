@@ -29,6 +29,7 @@ const Login = ({ onSwitch }) => {
         path: "/",
       });
       setMessage(response.data.message);
+
       navigate("/dashboard");
     } catch (error) {
       setMessage(error.response?.data?.message || "Login failed.");
@@ -36,58 +37,62 @@ const Login = ({ onSwitch }) => {
   };
 
   return (
-    <div
-      className="text-center p-8 bg-white shadow-md"
-      style={{ width: "90%", height: "90%" }}
-    >
-      <h2 className="text-3xl font-semibold mb-4">Sign In to Your Account</h2>
-      <p className="text-gray-700 mb-6">Hi, Welcome to Petlandia!</p>
+    <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-12">
+      <h2 className="text-3xl font-semibold pt-2 mb-4 text-center">
+        Sign In to Your Account
+      </h2>
+      <p className="text-gray-700 mb-6 text-center">
+        Hi, Welcome to Petlandia!
+      </p>
       <div className="text-left mb-4">
         <label className="block text-gray-700 font-medium mb-1">
           Email Address <span className="text-red-500">*</span>
         </label>
         <input
           type="email"
-          placeholder="Email Address"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
         />
-      </div>
-      <div className="text-left mb-6">
-        <label className="block text-gray-700 font-medium mb-1">
-          Password <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          />
-          <button
-            type="button"
-            onClick={handleClickShowPassword}
-            className="absolute inset-y-0 right-3 flex items-center text-gray-600"
-          >
-            {showPassword ? <Visibility /> : <VisibilityOff />}
-          </button>
+        <div className="text-left mb-6">
+          <label className="block text-gray-700 font-medium mb-1">
+            Password <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+            />
+            <button
+              type="button"
+              onClick={handleClickShowPassword}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 focus:outline-none"
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </button>
+          </div>
         </div>
+        <button
+          onClick={handleLogin}
+          className="w-full bg-blue-500 text-white py-2 rounded-lg shadow-lg hover:bg-blue-600 transition duration-300 mb-4"
+        >
+          Login
+        </button>
+        {message && <p className="text-red-500 text-center">{message}</p>}
+        <p className="mt-4 text-center">
+          New to Petlandia?{" "}
+          <span
+            className="text-blue-500 cursor-pointer hover:underline"
+            onClick={onSwitch}
+          >
+            Sign up here
+          </span>
+        </p>
       </div>
-      <button
-        onClick={handleLogin}
-        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors mb-4"
-      >
-        Login
-      </button>
-      {message && <p className="text-red-500">{message}</p>}
-      <p className="mt-4">
-        New to Petlandia?{" "}
-        <span className="text-blue-500 cursor-pointer" onClick={onSwitch}>
-          Sign up here
-        </span>
-      </p>
     </div>
   );
 };
