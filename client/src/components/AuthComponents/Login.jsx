@@ -72,7 +72,7 @@ const Login = ({ onSwitch }) => {
               onClick={handleClickShowPassword}
               className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 focus:outline-none"
             >
-              {showPassword ? <VisibilityOff /> : <Visibility />}
+              {showPassword ? <Visibility /> : <VisibilityOff />}
             </button>
           </div>
         </div>

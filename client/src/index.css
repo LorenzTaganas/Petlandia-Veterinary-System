@@ -2,3 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Paytone One";
+  src: url("assets/fonts/PaytoneOne-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Passion One";
+  src: url("assets/fonts/PassionOne-Regular.ttf") format("truetype");
+  src: url("assets/fonts/PassionOne-Black.ttf") format("truetype");
+  src: url("assets/fonts/PassionOne-Bold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Archivo Black";
+  src: url("assets/fonts/ArchivoBlack-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Lexend";
+  src: url("assets/fonts/Lexend-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Lilita";
+  src: url("assets/fonts/LilitaOne-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito";
+  src: url("Nunito-VariableFont_wght.ttf") format("truetype");
+  src: url("Nunito-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "PressStart2P";
+  src: url("PressStart2P-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
