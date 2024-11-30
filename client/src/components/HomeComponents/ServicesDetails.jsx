@@ -76,7 +76,6 @@ const ServicesDetails = () => {
       </div>
       <footer className="bg-gray-800 text-white py-8 mt-8 w-full">
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left px-6">
-          {/* Location Section */}
           <div>
             <p className="font-bold">Location</p>
             <p>
@@ -87,7 +86,6 @@ const ServicesDetails = () => {
             <p>Email: petlandiavets@gmail.com</p>
           </div>
 
-          {/* Welcome Section */}
           <div className="container mx-auto text-center">
             <p className="font-bold">Welcome to Petlandia!</p>
             <p>#AlagangPetlandia</p>
@@ -98,7 +96,6 @@ const ServicesDetails = () => {
             </p>
           </div>
 
-          {/* Operating Hours Section */}
           <div className="pl-10 ml-10">
             <p className="font-bold">Operating Hours</p>
             <p>Monday-Saturday: 9:00 AM - 6:00 PM</p>

@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { IconButton, Tooltip, Button } from "@mui/material";
+import {
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
 import {
   Add,
   CheckCircle,
@@ -35,6 +44,8 @@ const AppointmentRequests = () => {
   const [openDeclineModal, setOpenDeclineModal] = useState(false);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [remarkDetails, setRemarkDetails] = useState({
     remark: null,
     status: null,
@@ -173,13 +184,16 @@ const AppointmentRequests = () => {
         setRemarkDetails(updatedAppointment);
         refreshData();
       }
-
-      alert("Appointment rescheduled successfully!");
+      setIsConfirmModalOpen(false);
+      setIsSuccessModalOpen(true);
       closeRemarkModal();
     } catch (error) {
       console.error("Error rescheduling appointment:", error);
-      alert("Failed to reschedule appointment.");
     }
+  };
+
+  const handleCloseSuccess = () => {
+    setIsSuccessModalOpen(false);
   };
 
   const closeRemarkModal = () => {
@@ -384,6 +398,19 @@ const AppointmentRequests = () => {
           }
         />
       )}
+      <Dialog open={isSuccessModalOpen} onClose={handleCloseSuccess}>
+        <DialogTitle color="success.main">Success</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Reschedule proposal accepted successfully!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSuccess} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
