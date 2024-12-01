@@ -123,7 +123,7 @@ const AccomplishmentFormModal = ({
   return (
     <>
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-[45rem] h-[92vh] overflow-auto">
             <h2 className="text-xl font-semibold mb-4 text-center">
               Accomplishment Form

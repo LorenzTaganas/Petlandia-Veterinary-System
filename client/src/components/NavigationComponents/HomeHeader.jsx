@@ -19,13 +19,11 @@ const HomeHeader = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-2  bg-white shadow-md z-50">
-      {/* Logo Section */}
       <div className="flex items-center space-x-3">
         <img src="src/assets/LGGO (2).png" alt="Logo" className="h-10 w-auto" />
         <h1 className="text-2xl font-bold text-gray-800"></h1>
       </div>
 
-      {/* Navigation Section */}
       <nav className="hidden md:flex flex-grow justify-center space-x-8">
         <ul className="flex space-x-8">
           <li>
@@ -75,7 +73,6 @@ const HomeHeader = () => {
         </ul>
       </nav>
 
-      {/* Button Section */}
       <div className="flex items-center">
         <Link to={isAuthenticated ? "/dashboard" : "/login"}>
           <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300">
@@ -83,8 +80,6 @@ const HomeHeader = () => {
           </button>
         </Link>
       </div>
-
-      {/* Mobile Menu Button (for small screens) */}
       <div className="md:hidden">
         <button className="text-gray-600 hover:text-blue-500 focus:outline-none">
           <svg

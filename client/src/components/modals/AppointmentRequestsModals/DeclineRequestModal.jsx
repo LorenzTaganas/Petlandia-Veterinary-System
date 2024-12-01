@@ -119,7 +119,7 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="modal-content bg-white p-6 rounded-lg w-[32rem] h-[60vh] overflow-auto shadow-lg">
           <h3 className="text-xl font-semibold mb-4">
             Decline Appointment Request
