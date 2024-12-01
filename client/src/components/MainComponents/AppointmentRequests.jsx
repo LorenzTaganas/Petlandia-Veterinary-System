@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { IconButton, Tooltip, Button } from "@mui/material";
+import {
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import {
   Add,
   CheckCircle,
   Cancel,
   Visibility,
   Comment,
+  ArrowUpward,
+  ArrowDownward,
 } from "@mui/icons-material";
 import {
   getAllAppointmentRequests,
@@ -35,6 +50,11 @@ const AppointmentRequests = () => {
   const [openDeclineModal, setOpenDeclineModal] = useState(false);
   const [selectedRemark, setSelectedRemark] = useState(null);
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [sortBy, setSortBy] = useState("requestedAt");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [remarkDetails, setRemarkDetails] = useState({
     remark: null,
     status: null,
@@ -108,13 +128,38 @@ const AppointmentRequests = () => {
   };
 
   const filterRequests = () => {
-    if (userProfile?.isAdmin) return requests;
-    if (userProfile?.isClient) {
-      return requests.filter((request) => request.owner?.id === userProfile.id);
-    }
-    return [];
-  };
+    let filteredRequests = [];
 
+    if (userProfile?.isAdmin) {
+      filteredRequests = requests;
+    } else if (userProfile?.isClient) {
+      filteredRequests = requests.filter(
+        (request) => request.owner?.id === userProfile.id
+      );
+    }
+
+    if (statusFilter !== "All") {
+      filteredRequests = filteredRequests.filter(
+        (request) => request.status === statusFilter
+      );
+    }
+
+    return filteredRequests.sort((a, b) => {
+      let comparison = 0;
+
+      const fieldToSort =
+        sortBy === "requestedAt" ? "requestedAt" : "appointmentDate";
+
+      if (a[fieldToSort] < b[fieldToSort]) {
+        comparison = -1;
+      }
+      if (a[fieldToSort] > b[fieldToSort]) {
+        comparison = 1;
+      }
+
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
+  };
   const handleApproveRequest = (request) => {
     setSelectedAppointmentRequest(request);
     setOpenApproveModal(true);
@@ -173,13 +218,16 @@ const AppointmentRequests = () => {
         setRemarkDetails(updatedAppointment);
         refreshData();
       }
-
-      alert("Appointment rescheduled successfully!");
+      setIsConfirmModalOpen(false);
+      setIsSuccessModalOpen(true);
       closeRemarkModal();
     } catch (error) {
       console.error("Error rescheduling appointment:", error);
-      alert("Failed to reschedule appointment.");
     }
+  };
+
+  const handleCloseSuccess = () => {
+    setIsSuccessModalOpen(false);
   };
 
   const closeRemarkModal = () => {
@@ -195,6 +243,42 @@ const AppointmentRequests = () => {
   return (
     <div className="m-0">
       <div className="flex justify-between items-center mb-4">
+        <div className="flex space-x-2">
+          <FormControl variant="outlined" size="small" className="w-40">
+            <InputLabel>Sort By</InputLabel>
+            <Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              label="Sort By"
+            >
+              <MenuItem value="requestedAt">Requested At</MenuItem>
+              <MenuItem value="appointmentDate">Appointment Date</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Tooltip
+            title={`Sort ${sortOrder === "asc" ? "Descending" : "Ascending"}`}
+          >
+            <IconButton
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            >
+              {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
+            </IconButton>
+          </Tooltip>
+
+          <FormControl variant="outlined" size="small" className="w-40">
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              label="Status"
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="Declined">Declined</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         {userProfile?.isClient && (
           <button
             className="bg-blue-500 text-white py-2 px-4 rounded flex items-center"
@@ -384,6 +468,19 @@ const AppointmentRequests = () => {
           }
         />
       )}
+      <Dialog open={isSuccessModalOpen} onClose={handleCloseSuccess}>
+        <DialogTitle color="success.main">Success</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Reschedule proposal accepted successfully!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseSuccess} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

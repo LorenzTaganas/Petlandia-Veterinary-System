@@ -24,143 +24,302 @@ const AddAccountModal = ({
   setRole,
   onAddUser,
 }) => {
+  const [errors, setErrors] = useState({});
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!firstName.trim()) {
+      newErrors.firstName = "First Name is required";
+    } else if (!/^[A-Za-z]+$/.test(firstName)) {
+      newErrors.firstName = "First Name must contain only letters";
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last Name is required";
+    } else if (!/^[A-Za-z]+$/.test(lastName)) {
+      newErrors.lastName = "Last Name must contain only letters";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!email.includes("@")) {
+      newErrors.email = "Email must include @ symbol";
+    }
+
+    if (!contactNo.trim()) {
+      newErrors.contactNo = "Contact Number is required";
+    } else if (!/^\d{11}$/.test(contactNo)) {
+      newErrors.contactNo = "Contact Number must be 11 digits";
+    }
+
+    if (!role) {
+      newErrors.role = "Role is required";
+    }
+
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = "Confirm Password is required";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handlePasswordToggle = () => setShowPassword(!showPassword);
   const handleConfirmPasswordToggle = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
+  const handleAddUser = () => {
+    if (validateForm()) {
+      setIsConfirmModalOpen(true);
+    }
+  };
+
+  const handleConfirmAddUser = () => {
+    onAddUser();
+    setIsConfirmModalOpen(false);
+    setIsSuccessModalOpen(true);
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsSuccessModalOpen(false);
+    onClose();
+  };
+
   return (
     open && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-lg w-[32rem]">
-          <h2 className="text-xl font-semibold mb-4">Add User</h2>
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <label className="block text-gray-700 font-medium mb-1">
-                First Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                className="w-full mb-4 p-2 border rounded"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="First Name"
-              />
+      <>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg w-[32rem]">
+            <h2 className="text-xl font-semibold mb-4">Add User</h2>
+            <div className="flex space-x-4">
+              <div className="w-1/2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  First Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`w-full mb-4 p-2 border ${
+                    errors.firstName ? "border-red-500" : "border-gray-300"
+                  } rounded`}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="First Name"
+                />
+                {errors.firstName && (
+                  <p className="text-red-500 text-sm -mt-3 mb-2">
+                    {errors.firstName}
+                  </p>
+                )}
+              </div>
+              <div className="w-1/2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`w-full mb-4 p-2 border ${
+                    errors.lastName ? "border-red-500" : "border-gray-300"
+                  } rounded`}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Last Name"
+                />
+                {errors.lastName && (
+                  <p className="text-red-500 text-sm -mt-3 mb-2">
+                    {errors.lastName}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="w-1/2">
-              <label className="block text-gray-700 font-medium mb-1">
-                Last Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                className="w-full mb-4 p-2 border rounded"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Last Name"
-              />
+            <div className="flex space-x-4">
+              <div className="w-1/2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  className={`w-full mb-4 p-2 border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } rounded`}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm -mt-3 mb-2">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+              <div className="w-1/2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Contact Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`w-full mb-4 p-2 border ${
+                    errors.contactNo ? "border-red-500" : "border-gray-300"
+                  } rounded`}
+                  value={contactNo}
+                  onChange={(e) => setContactNo(e.target.value)}
+                  placeholder="Contact Number"
+                />
+                {errors.contactNo && (
+                  <p className="text-red-500 text-sm -mt-3 mb-2">
+                    {errors.contactNo}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="flex space-x-4">
-            <div className="w-1/2">
+            <div className="w-full mb-4">
               <label className="block text-gray-700 font-medium mb-1">
-                Email <span className="text-red-500">*</span>
+                Role <span className="text-red-500">*</span>
               </label>
-              <input
-                type="email"
-                className="w-full mb-4 p-2 border rounded"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-              />
+              <select
+                className={`w-full p-2 border ${
+                  errors.role ? "border-red-500" : "border-gray-300"
+                } rounded`}
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select One...
+                </option>
+                <option value="Admin">Admin</option>
+                <option value="Staff">Staff</option>
+                <option value="Client">Client</option>
+              </select>
+              {errors.role && (
+                <p className="text-red-500 text-sm mt-1">{errors.role}</p>
+              )}
             </div>
-            <div className="w-1/2">
-              <label className="block text-gray-700 font-medium mb-1">
-                Contact Number <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                className="w-full mb-4 p-2 border rounded"
-                value={contactNo}
-                onChange={(e) => setContactNo(e.target.value)}
-                placeholder="Contact Number"
-              />
-            </div>
-          </div>
-          <div className="w-full mb-4">
-            <label className="block text-gray-700 font-medium mb-1">
-              Role <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full p-2 border rounded"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="" disabled>
-                Select One...
-              </option>
-              <option value="Admin">Admin</option>
-              <option value="Staff">Staff</option>
-              <option value="Client">Client</option>
-            </select>
-          </div>
 
-          <div className="flex space-x-4 mb-4">
-            <div className="w-1/2">
-              <label className="block text-gray-700 font-medium mb-1">
-                Password <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="w-full p-2 border rounded"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                />
-                <div
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
-                  onClick={handlePasswordToggle}
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
+            <div className="flex space-x-4 mb-4">
+              <div className="w-1/2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className={`w-full p-2 border ${
+                      errors.password ? "border-red-500" : "border-gray-300"
+                    } rounded`}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                  />
+                  <div
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
+                    onClick={handlePasswordToggle}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </div>
                 </div>
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
+              <div className="w-1/2">
+                <label className="block text-gray-700 font-medium mb-1">
+                  Confirm Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className={`w-full p-2 border ${
+                      errors.confirmPassword
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded`}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm Password"
+                  />
+                  <div
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
+                    onClick={handleConfirmPasswordToggle}
+                  >
+                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                  </div>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
             </div>
-            <div className="w-1/2">
-              <label className="block text-gray-700 font-medium mb-1">
-                Confirm Password <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="w-full p-2 border rounded"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm Password"
-                />
-                <div
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2 flex items-center cursor-pointer"
-                  onClick={handleConfirmPasswordToggle}
-                >
-                  {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                </div>
-              </div>
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                onClick={handleAddUser}
+              >
+                Save
+              </button>
             </div>
-          </div>
-          <div className="flex justify-end space-x-4 mt-4">
-            <button
-              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              onClick={onAddUser}
-            >
-              Save
-            </button>
           </div>
         </div>
-      </div>
+
+        {isConfirmModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h2 className="text-2xl font-bold mb-4">Confirm Add User</h2>
+              <p className="mb-6">Are you sure you want to add this user?</p>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setIsConfirmModalOpen(false)}
+                  className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmAddUser}
+                  className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isSuccessModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h2 className="text-2xl font-bold text-green-600 mb-4">
+                User Added Successfully!
+              </h2>
+              <p className="mb-6">
+                The new user has been created in the system.
+              </p>
+              <button
+                onClick={handleSuccessModalClose}
+                className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </>
     )
   );
 };

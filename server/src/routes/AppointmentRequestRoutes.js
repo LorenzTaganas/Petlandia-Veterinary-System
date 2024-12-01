@@ -3,6 +3,11 @@ const appointmentRequestController = require("../controllers/AppointmentRequests
 const authenticate = require("../middlewares/authenticate");
 const router = express.Router();
 
+router.get(
+  "/staff-availability",
+  authenticate,
+  appointmentRequestController.checkVetAvailability
+);
 router.post(
   "/",
   authenticate,

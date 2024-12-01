@@ -174,6 +174,7 @@ exports.getAllPaymentHistory = async (req, res) => {
           select: {
             assignedVet: {
               select: {
+                id: true,
                 firstName: true,
                 lastName: true,
               },

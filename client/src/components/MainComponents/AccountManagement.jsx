@@ -1,7 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { IconButton, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { getFullName } from "../../services/userService";
-import { Edit, Check, Clear, Add, Lock } from "@mui/icons-material";
+import {
+  Edit,
+  Check,
+  Clear,
+  Add,
+  Lock,
+  ArrowUpward,
+  ArrowDownward,
+} from "@mui/icons-material";
 import {
   updateUserWithRole,
   toggleAccountStatus,
@@ -31,7 +46,9 @@ const AccountManagement = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [role, setRole] = useState("");
-  const [selectedRole, setSelectedRole] = useState("All");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [roleFilter, setRoleFilter] = useState("All");
 
   useEffect(() => {
     fetchUsers();
@@ -42,6 +59,22 @@ const AccountManagement = () => {
     const data = await getAllUsersExceptSelf();
     setUsers(data);
     setLoading(false);
+  };
+
+  const filterAndSortUsers = () => {
+    let filteredUsers = [...users];
+
+    if (roleFilter !== "All") {
+      filteredUsers = filteredUsers.filter((user) => user.role === roleFilter);
+    }
+
+    return filteredUsers.sort((a, b) => {
+      const nameA = getFullName(a).toLowerCase();
+      const nameB = getFullName(b).toLowerCase();
+
+      let comparison = nameA.localeCompare(nameB);
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
   };
 
   const handleToggleAccountStatus = async (id, isActive) => {
@@ -149,7 +182,40 @@ const AccountManagement = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">User Accounts</h2>
+        <div className="flex space-x-2 mb-4">
+          <FormControl variant="outlined" size="small" className="w-40">
+            <InputLabel>Sort By</InputLabel>
+            <Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              label="Sort By"
+            >
+              <MenuItem value="name">Name</MenuItem>
+            </Select>
+          </FormControl>
+          <Tooltip
+            title={`Sort ${sortOrder === "asc" ? "Descending" : "Ascending"}`}
+          >
+            <IconButton
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            >
+              {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
+            </IconButton>
+          </Tooltip>
+          <FormControl variant="outlined" size="small" className="w-40">
+            <InputLabel>Role</InputLabel>
+            <Select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              label="Role"
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Admin">Admin</MenuItem>
+              <MenuItem value="Staff">Staff</MenuItem>
+              <MenuItem value="Client">Client</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded flex items-center"
           onClick={() => setOpenAddUserModal(true)}
@@ -158,6 +224,7 @@ const AccountManagement = () => {
           Add User
         </button>
       </div>
+
       {loading ? (
         <div className="flex justify-center items-center">Loading...</div>
       ) : (
@@ -173,14 +240,17 @@ const AccountManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {users.length === 0 ? (
+              {filterAndSortUsers().length === 0 ? (
                 <tr className="bg-gray-100">
-                  <td colSpan="4" className="px-4 py-3 text-center">
+                  <td
+                    colSpan="5"
+                    className="px-4 py-3 text-center text-lg font-semibold text-gray-500 rounded-l-lg rounded-r-lg"
+                  >
                     No Data Available
                   </td>
                 </tr>
               ) : (
-                users.map((user, index) => (
+                filterAndSortUsers().map((user, index) => (
                   <tr
                     key={user.id}
                     className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}

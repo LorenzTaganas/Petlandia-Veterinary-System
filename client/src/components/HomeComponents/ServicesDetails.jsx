@@ -164,6 +164,7 @@ useEffect(() => {
             <p>Contact: (044) 802 7334 or 09658063229</p>
             <p>Email: petlandiavets@gmail.com</p>
           </div>
+
           <div className="container mx-auto text-center">
             <p className="font-bold">Welcome to Petlandia!</p>
             <p>#AlagangPetlandia</p>

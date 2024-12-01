@@ -62,6 +62,7 @@ const AboutDetails = () => {
                 WHY CHOOSE US?
               </h1>
 
+
               <p className="text-[#616161] text-lg font-txt mt-4 max-w-md transition duration-500 ease-in-out transform hover:scale-105 hover:text-black-1000">
               Our clinic offers a comprehensive range of veterinary services to ensure your pet's health and well-being. 
               Our team is committed to providing the highest standard of care with a personalized approach for every pet..
@@ -80,6 +81,26 @@ const AboutDetails = () => {
                 className="w-full h-full object-cover"
               />
             </div>
+
+        <div className="mt-8 flex justify-center">
+          <img
+            src="src/assets/dogs2.jpg"
+            alt="About Us"
+            className="rounded-lg shadow-xl w-full md:w-3/4"
+          />
+        </div>
+      </div>
+      <footer className="bg-gray-800 text-white py-8 mt-8 w-full">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left px-6">
+          <div>
+            <p className="font-bold">Location</p>
+            <p>
+              Sapphire Street, Capitol View Park Subdivision, Malolos,
+              Philippines
+            </p>
+            <p>Contact: (044) 802 7334 or 09658063229</p>
+            <p>Email: petlandiavets@gmail.com</p>
+
           </div>
         </section>
 
@@ -87,6 +108,7 @@ const AboutDetails = () => {
           <h2 className="font-paytone text-2xl font-bold text-[#3E3D3D] text-48 text-shadow-md text-center mb-6">
             Our Core Values
           </h2>
+
 
           <div className="flex flex-wrap justify-center gap-8 mt-12 h-[20rem]">
             <div className=" flex flex-col items-center bg-white p-6 rounded-[20px] shadow-now transition-transform duration-300 transform hover:scale-105 hover:shadow-up w-1/4">
@@ -113,6 +135,16 @@ const AboutDetails = () => {
                 By embracing cutting-edge technology, we deliver efficient and precise care tailored to every pet’s needs.
               </p>
             </div>
+
+          <div className="container mx-auto text-center">
+            <p className="font-bold">Welcome to Petlandia!</p>
+            <p>#AlagangPetlandia</p>
+            <p>#VetsYouCanTrust</p>
+            <p className="pt-5">
+              &copy; {new Date().getFullYear()} Petlandia Veterinary. All rights
+              reserved.
+            </p>
+
           </div>
         </section>
       </section>
@@ -138,6 +170,7 @@ const AboutDetails = () => {
               </p>
             </div>
 
+
             <div className="pl-10 ml-10">
               <p className="font-bold">Operating Hours</p>
               <p>Monday-Saturday: 9:00 AM - 6:00 PM</p>
@@ -145,6 +178,14 @@ const AboutDetails = () => {
               <p className="font-bold mt-4">Emergency Hours (by Appointment)</p>
               <p>6:00 PM - 6:00 AM</p>
             </div>
+
+          <div className="pl-10 ml-10">
+            <p className="font-bold">Operating Hours</p>
+            <p>Monday-Saturday: 9:00 AM - 6:00 PM</p>
+            <p>Sunday: 12:00 NN - 6:00 PM</p>
+            <p className="font-bold mt-4">Emergency Hours (by Appointment)</p>
+            <p>6:00 PM - 6:00 AM</p>
+
           </div>
       </footer>
     </div>

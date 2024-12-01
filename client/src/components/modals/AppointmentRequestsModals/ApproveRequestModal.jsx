@@ -8,12 +8,16 @@ import {
   Button,
 } from "@mui/material";
 import { getUsersByRole } from "../../../services/userService";
-import { acceptAppointmentRequest } from "../../../services/appointmentRequestService";
+import {
+  acceptAppointmentRequest,
+  checkVetAvailability,
+} from "../../../services/appointmentRequestService";
 
 const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
   const [assignedVet, setAssignedVet] = useState("");
   const [remark, setRemark] = useState("");
   const [staffMembers, setStaffMembers] = useState([]);
+  const [vetAvailability, setVetAvailability] = useState({});
   const [formError, setFormError] = useState("");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -23,18 +27,45 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
       try {
         const staff = await getUsersByRole("Staff");
         setStaffMembers(staff);
+
+        const availabilityPromises = staff.map(async (staffMember) => {
+          try {
+            const availability = await checkVetAvailability(
+              staffMember.id,
+              appointmentRequest.appointmentDate
+            );
+            return {
+              [staffMember.id]: availability.isAvailable,
+            };
+          } catch (error) {
+            return { [staffMember.id]: true };
+          }
+        });
+
+        const availabilityResults = await Promise.all(availabilityPromises);
+        const availabilityMap = availabilityResults.reduce(
+          (acc, curr) => ({ ...acc, ...curr }),
+          {}
+        );
+        setVetAvailability(availabilityMap);
       } catch (error) {
         console.error("Error fetching staff members:", error);
       }
     };
     fetchStaffMembers();
-  }, []);
+  }, [appointmentRequest.appointmentDate]);
 
   const validateForm = () => {
     if (!assignedVet) {
       setFormError("Veterinarian is required.");
       return false;
     }
+
+    if (vetAvailability[assignedVet] === false) {
+      setFormError("Selected veterinarian is not available at this time.");
+      return false;
+    }
+
     return true;
   };
 
@@ -67,7 +98,7 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="modal-content bg-white p-6 rounded-lg w-[32rem] h-[50vh] overflow-auto shadow-lg">
           <h3 className="text-xl font-semibold mb-4">
             Approve Appointment Request
@@ -93,15 +124,20 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
               </option>
               {staffMembers.length > 0 ? (
                 staffMembers.map((staff) => (
-                  <option key={staff.id} value={staff.id}>
+                  <option
+                    key={staff.id}
+                    value={staff.id}
+                    disabled={vetAvailability[staff.id] === false}
+                  >
                     {staff.firstName} {staff.lastName}
+                    {vetAvailability[staff.id] === false && " (unavailable)"}
                   </option>
                 ))
               ) : (
                 <option>No staff available</option>
               )}
             </select>
-            {formError && !assignedVet && (
+            {formError && (
               <p className="text-sm text-red-500 mt-2">{formError}</p>
             )}
           </div>
@@ -168,7 +204,6 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
       >
         <DialogTitle
           sx={{
-            // fontWeight: "bold",
             color: "success.main",
           }}
         >

@@ -3,36 +3,56 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axiosInstance from "../../services/axiosInstance";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [formErrors, setFormErrors] = useState({});
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const errors = {};
+    if (!email.trim()) errors.email = "Email is required";
+    if (!password.trim()) errors.password = "Password is required";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const handleLogin = async () => {
-    try {
-      const response = await axiosInstance.post("/login", {
-        email,
-        password,
-      });
-      const { accessToken } = response.data;
-      Cookies.set("accessToken", accessToken, {
-        httpOnly: false,
-        secure: true,
-        sameSite: "None",
-        path: "/",
-      });
-      setMessage(response.data.message);
+    if (validateForm()) {
+      try {
+        const response = await axiosInstance.post("/login", {
+          email,
+          password,
+        });
+        const { accessToken } = response.data;
+        Cookies.set("accessToken", accessToken, {
+          httpOnly: false,
+          secure: true,
+          sameSite: "None",
+          path: "/",
+        });
+        setMessage(response.data.message);
 
-      navigate("/dashboard");
-    } catch (error) {
-      setMessage(error.response?.data?.message || "Login failed.");
+        navigate("/dashboard");
+      } catch (error) {
+        setMessage(error.response?.data?.message || "Login failed.");
+      }
     }
   };
 
@@ -52,9 +72,17 @@ const Login = ({ onSwitch }) => {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setFormErrors((prev) => ({ ...prev, email: "" }));
+          }}
+          className={`w-full px-4 py-2 border ${
+            formErrors.email ? "border-red-500" : "border-gray-300"
+          } rounded focus:outline-none focus:border-blue-500`}
         />
+        {formErrors.email && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+        )}
         <div className="text-left mb-6">
           <label className="block text-gray-700 font-medium mb-1">
             Password <span className="text-red-500">*</span>
@@ -64,8 +92,13 @@ const Login = ({ onSwitch }) => {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setFormErrors((prev) => ({ ...prev, password: "" }));
+              }}
+              className={`w-full px-4 py-2 border ${
+                formErrors.password ? "border-red-500" : "border-gray-300"
+              } rounded focus:outline-none focus:border-blue-500`}
             />
             <button
               type="button"
@@ -75,6 +108,9 @@ const Login = ({ onSwitch }) => {
               {showPassword ? <Visibility /> : <VisibilityOff />}
             </button>
           </div>
+          {formErrors.password && (
+            <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>
+          )}
         </div>
         <button
           onClick={handleLogin}

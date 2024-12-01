@@ -18,7 +18,11 @@ import {
   getUserById,
   getFullName,
 } from "../../../services/userService";
-import { formatDateForInput, formatDate } from "../../../utils/dateTimeUtil";
+import {
+  formatDateForInput,
+  formatDateForInput2,
+  formatDate,
+} from "../../../utils/dateTimeUtil";
 
 const ViewAppointmentRequestModal = ({
   appointmentId,
@@ -28,6 +32,7 @@ const ViewAppointmentRequestModal = ({
 }) => {
   const [appointmentDetails, setAppointmentDetails] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState(null);
   const [formData, setFormData] = useState({
     appointmentDate: "",
     appointmentType: "",
@@ -69,12 +74,17 @@ const ViewAppointmentRequestModal = ({
     fetchStaffMembers();
   }, []);
 
+  useEffect(() => {
+    if (!isVisible) {
+      setIsEditing(false);
+    }
+  }, [isVisible]);
+
   const fetchAppointmentDetails = async () => {
     try {
       const data = await getAppointmentRequestDetails(appointmentId);
-      setAppointmentDetails(data);
-      setFormData({
-        appointmentDate: formatDateForInput(data.appointmentDate),
+      const formattedData = {
+        appointmentDate: formatDateForInput2(data.appointmentDate),
         appointmentType: data.appointmentType,
         preferredVetId: data.preferredVetId,
         petName: data.pet.name,
@@ -84,7 +94,11 @@ const ViewAppointmentRequestModal = ({
         petWeight: data.pet.weight,
         reason: data.reason,
         additionalComments: data.additionalComments,
-      });
+      };
+
+      setAppointmentDetails(data);
+      setFormData(formattedData);
+      setOriginalFormData(formattedData);
 
       if (data.declinedBy) {
         const user = await getUserById(data.declinedBy);
@@ -152,6 +166,13 @@ const ViewAppointmentRequestModal = ({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const isFormChanged = () => {
+    if (!originalFormData) return false;
+    return Object.keys(originalFormData).some(
+      (key) => originalFormData[key] !== formData[key]
+    );
   };
 
   const handleEditClick = () => {
@@ -227,7 +248,7 @@ const ViewAppointmentRequestModal = ({
   return (
     <>
       <Modal open={isVisible} onClose={onClose}>
-        <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto">
+        <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto z-50">
           <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
           <div className="flex space-x-4">
             <div className="w-1/2">
@@ -427,10 +448,13 @@ const ViewAppointmentRequestModal = ({
               Back
             </button>
             <button
-              className={
-                "bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              }
+              className={`${
+                isEditing && !isFormChanged()
+                  ? "bg-blue-300 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white py-2 px-4 rounded`}
               onClick={isEditing ? handleSaveClick : handleEditClick}
+              disabled={isEditing && !isFormChanged()}
             >
               {isEditing ? "Save" : "Edit"}
             </button>

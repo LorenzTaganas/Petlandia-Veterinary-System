@@ -142,7 +142,7 @@ const ViewAppointmentHistoryModal = ({
 
   return (
     <Modal open={isVisible} onClose={onClose}>
-      <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto">
+      <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto z-50">
         <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
         {/* {appointmentDetails && (
           <>
