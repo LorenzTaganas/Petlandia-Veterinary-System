@@ -58,6 +58,8 @@ const Signup = ({ onSwitch }) => {
   };
 
   const handleSignup = async () => {
+    setErrors({});
+
     if (validateForm()) {
       try {
         const response = await axios.post("http://localhost:3000/signup", {
@@ -69,9 +71,19 @@ const Signup = ({ onSwitch }) => {
         });
         setIsSuccessModalOpen(true);
       } catch (error) {
-        setErrors({
-          submit: error.response?.data?.message || "Signup failed.",
-        });
+        if (error.response && error.response.data) {
+          const backendErrorMessage = error.response.data.message;
+
+          if (backendErrorMessage === "Email already exists.") {
+            setErrors({ email: backendErrorMessage });
+          } else if (backendErrorMessage === "Contact number already exists.") {
+            setErrors({ contactNo: backendErrorMessage });
+          } else {
+            setErrors({ submit: backendErrorMessage || "Signup failed." });
+          }
+        } else {
+          setErrors({ submit: "An unexpected error occurred." });
+        }
       }
     }
   };
