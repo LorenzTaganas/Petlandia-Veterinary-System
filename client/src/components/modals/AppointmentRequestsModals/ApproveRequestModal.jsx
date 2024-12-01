@@ -62,9 +62,7 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
     }
 
     if (vetAvailability[assignedVet] === false) {
-      setFormError(
-        "Selected veterinarian is not available at this time. Appointments are scheduled with a 15-minute interval per staff member."
-      );
+      setFormError("Selected veterinarian is not available at this time.");
       return false;
     }
 

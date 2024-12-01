@@ -80,8 +80,7 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
     if (assignedVet && rescheduleDate) {
       const isVetAvailable = vetAvailability[assignedVet];
       if (isVetAvailable === false) {
-        errors.vetConflict =
-          "Selected staff is occupied at the assigned date. Appointments are scheduled with a 15-minute interval per staff member.";
+        errors.vetConflict = "Selected staff is occupied at the assigned date.";
       }
     }
 
