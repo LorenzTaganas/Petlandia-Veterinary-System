@@ -100,7 +100,6 @@ const AccomplishmentFormModal = ({
       setIsSuccessModalOpen(true);
     } catch (error) {
       console.error("Error creating history", error);
-      // Optionally, add error handling UI
     }
   };
 

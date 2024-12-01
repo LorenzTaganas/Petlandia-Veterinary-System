@@ -28,6 +28,7 @@ const ViewAppointmentRequestModal = ({
 }) => {
   const [appointmentDetails, setAppointmentDetails] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [originalFormData, setOriginalFormData] = useState(null);
   const [formData, setFormData] = useState({
     appointmentDate: "",
     appointmentType: "",
@@ -69,11 +70,16 @@ const ViewAppointmentRequestModal = ({
     fetchStaffMembers();
   }, []);
 
+  useEffect(() => {
+    if (!isVisible) {
+      setIsEditing(false);
+    }
+  }, [isVisible]);
+
   const fetchAppointmentDetails = async () => {
     try {
       const data = await getAppointmentRequestDetails(appointmentId);
-      setAppointmentDetails(data);
-      setFormData({
+      const formattedData = {
         appointmentDate: formatDateForInput(data.appointmentDate),
         appointmentType: data.appointmentType,
         preferredVetId: data.preferredVetId,
@@ -84,7 +90,11 @@ const ViewAppointmentRequestModal = ({
         petWeight: data.pet.weight,
         reason: data.reason,
         additionalComments: data.additionalComments,
-      });
+      };
+
+      setAppointmentDetails(data);
+      setFormData(formattedData);
+      setOriginalFormData(formattedData);
 
       if (data.declinedBy) {
         const user = await getUserById(data.declinedBy);
@@ -152,6 +162,13 @@ const ViewAppointmentRequestModal = ({
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const isFormChanged = () => {
+    if (!originalFormData) return false;
+    return Object.keys(originalFormData).some(
+      (key) => originalFormData[key] !== formData[key]
+    );
   };
 
   const handleEditClick = () => {
@@ -427,10 +444,13 @@ const ViewAppointmentRequestModal = ({
               Back
             </button>
             <button
-              className={
-                "bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              }
+              className={`${
+                isEditing && !isFormChanged()
+                  ? "bg-blue-300 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white py-2 px-4 rounded`}
               onClick={isEditing ? handleSaveClick : handleEditClick}
+              disabled={isEditing && !isFormChanged()}
             >
               {isEditing ? "Save" : "Edit"}
             </button>

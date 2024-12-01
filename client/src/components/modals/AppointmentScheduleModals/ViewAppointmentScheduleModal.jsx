@@ -70,6 +70,12 @@ const ViewAppointmentScheduleModal = ({
   }, []);
 
   useEffect(() => {
+    if (!isVisible) {
+      setIsEditing(false);
+    }
+  }, [isVisible]);
+
+  useEffect(() => {
     const checkAvailability = async () => {
       if (formData.appointmentDate && formData.assignedVetId) {
         try {
