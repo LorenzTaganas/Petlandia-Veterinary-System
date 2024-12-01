@@ -1,10 +1,26 @@
-Main Page
-![image](https://github.com/user-attachments/assets/0dac448c-d30e-4a92-a351-23a7106c51dc)
-![image](https://github.com/user-attachments/assets/619fba7d-eb2d-417f-9108-e932cfd8196c)
-![admin profile](https://github.com/user-attachments/assets/53c24490-94a8-4b8e-b555-254bfa554c50)
-![admin changepass](https://github.com/user-attachments/assets/2c5b7cf2-b708-40c9-8e42-981947bb4d95)
-
-
 Home Page
-![Petlandia- Home](https://github.com/user-attachments/assets/946350c4-c50e-4a8a-ab7d-620879c9438f)
-![Petlandia- Map   Footer](https://github.com/user-attachments/assets/3aba8e99-4051-444d-be7e-87d1da5bdb37)
+![image](https://github.com/user-attachments/assets/951aa00f-0f3a-4c8e-b98f-cb400e540c4f)
+![image](https://github.com/user-attachments/assets/e47b21eb-1612-4a7b-8c4b-c9466ccbeb9b)
+![image](https://github.com/user-attachments/assets/36374e8d-1a5f-4465-823e-4bc775168123)
+![image](https://github.com/user-attachments/assets/48a2bbbc-12b5-4bcd-9141-9b2d74e6aff8)
+
+Main Page
+![image](https://github.com/user-attachments/assets/3adfd3c9-cf71-4991-9c6b-9398f06b2a24)
+![image](https://github.com/user-attachments/assets/deb15a47-e124-485b-bf9f-f331c8765dfa)
+![image](https://github.com/user-attachments/assets/54bf9c85-d1b5-43bf-974f-40d9e69b8b5f)
+![image](https://github.com/user-attachments/assets/a6b36351-bbd3-4fe2-8c0d-26ec0cc62f72)
+![image](https://github.com/user-attachments/assets/b27f3f7a-3580-4126-b169-78c9827e1646)
+![image](https://github.com/user-attachments/assets/6a08b769-0de0-4291-a261-7d36c57925a8)
+![image](https://github.com/user-attachments/assets/2a57a289-cd14-490a-90c6-c17bb1123155)
+![image](https://github.com/user-attachments/assets/c42fdc38-b370-47bb-9d0b-9e1df10ea2b4)
+
+
+
+
+
+
+
+
+
+
+
