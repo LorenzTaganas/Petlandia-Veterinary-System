@@ -10,9 +10,9 @@ Main Page
 ![image](https://github.com/user-attachments/assets/deb15a47-e124-485b-bf9f-f331c8765dfa)
 ![image](https://github.com/user-attachments/assets/54bf9c85-d1b5-43bf-974f-40d9e69b8b5f)
 ![image](https://github.com/user-attachments/assets/b27f3f7a-3580-4126-b169-78c9827e1646)
+![image](https://github.com/user-attachments/assets/6372c42f-8e5a-4433-b317-729c5f64c677)
 ![image](https://github.com/user-attachments/assets/6a08b769-0de0-4291-a261-7d36c57925a8)
 ![image](https://github.com/user-attachments/assets/2a57a289-cd14-490a-90c6-c17bb1123155)
-![image](https://github.com/user-attachments/assets/c42fdc38-b370-47bb-9d0b-9e1df10ea2b4)
 
 
 
