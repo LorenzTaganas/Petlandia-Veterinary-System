@@ -5,6 +5,7 @@ Home Page
 ![image](https://github.com/user-attachments/assets/48a2bbbc-12b5-4bcd-9141-9b2d74e6aff8)
 
 Main Page
+![image](https://github.com/user-attachments/assets/7c49f730-cbfb-426a-a673-34438fac52d1)
 ![image](https://github.com/user-attachments/assets/3adfd3c9-cf71-4991-9c6b-9398f06b2a24)
 ![image](https://github.com/user-attachments/assets/deb15a47-e124-485b-bf9f-f331c8765dfa)
 ![image](https://github.com/user-attachments/assets/54bf9c85-d1b5-43bf-974f-40d9e69b8b5f)
