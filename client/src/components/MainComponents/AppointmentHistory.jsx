@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { IconButton, Tooltip } from "@mui/material";
-import { Visibility, Comment } from "@mui/icons-material";
+import {
+  IconButton,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import {
+  Visibility,
+  Comment,
+  ArrowUpward,
+  ArrowDownward,
+} from "@mui/icons-material";
 import { getAllPostAppointmentDetails } from "../../services/historyService";
 import { getStaffRemarksById } from "../../services/historyService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
@@ -17,6 +29,10 @@ const AppointmentHistory = () => {
     useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [selectedHistoryId, setSelectedHistoryId] = useState(null);
+
+  const [sortBy, setSortBy] = useState("dateAccomplished");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [typeFilter, setTypeFilter] = useState("All");
 
   const fetchAppointmentSchedules = async () => {
     setLoading(true);
@@ -49,16 +65,42 @@ const AppointmentHistory = () => {
   };
 
   const filterRequests = () => {
-    if (userProfile?.isAdmin) return requests;
-    if (userProfile?.isClient) {
-      return requests.filter((request) => request.owner?.id === userProfile.id);
-    }
-    if (userProfile?.isStaff) {
-      return requests.filter(
+    let filteredRequests = [];
+
+    if (userProfile?.isAdmin) {
+      filteredRequests = requests;
+    } else if (userProfile?.isClient) {
+      filteredRequests = requests.filter(
+        (request) => request.owner?.id === userProfile.id
+      );
+    } else if (userProfile?.isStaff) {
+      filteredRequests = requests.filter(
         (request) => request.assignedVet?.id === userProfile.id
       );
     }
-    return [];
+
+    if (typeFilter !== "All") {
+      filteredRequests = filteredRequests.filter(
+        (request) => request.appointmentType === typeFilter
+      );
+    }
+
+    return filteredRequests.sort((a, b) => {
+      let comparison = 0;
+      const dateA =
+        sortBy === "dateAccomplished"
+          ? new Date(a.dateAccomplished)
+          : new Date(a.appointmentDate);
+      const dateB =
+        sortBy === "dateAccomplished"
+          ? new Date(b.dateAccomplished)
+          : new Date(b.appointmentDate);
+
+      if (dateA < dateB) comparison = -1;
+      if (dateA > dateB) comparison = 1;
+
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
   };
 
   const handleViewStaffRemark = async (historyId) => {
@@ -79,6 +121,44 @@ const AppointmentHistory = () => {
 
   return (
     <div className="m-0">
+      <div className="flex space-x-2 mb-4">
+        <FormControl variant="outlined" size="small" className="w-40">
+          <InputLabel>Sort By</InputLabel>
+          <Select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            label="Sort By"
+          >
+            <MenuItem value="dateAccomplished">Date Accomplished</MenuItem>
+            <MenuItem value="appointmentDate">Appointment Date</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Tooltip
+          title={`Sort ${sortOrder === "asc" ? "Descending" : "Ascending"}`}
+        >
+          <IconButton
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          >
+            {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
+          </IconButton>
+        </Tooltip>
+
+        <FormControl variant="outlined" size="small" className="w-40">
+          <InputLabel>Appointment Type</InputLabel>
+          <Select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            label="Appointment Type"
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Checkup">Checkup</MenuItem>
+            <MenuItem value="Treatment">Treatment</MenuItem>
+            <MenuItem value="Grooming">Grooming</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="animate-spin">Loading...</div>

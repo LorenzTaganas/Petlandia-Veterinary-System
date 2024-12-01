@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { IconButton, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import {
   Visibility,
   Comment,
   DomainVerificationTwoTone,
+  ArrowUpward,
+  ArrowDownward,
 } from "@mui/icons-material";
 import {
   getAppointmentSchedules,
@@ -24,6 +33,9 @@ const AppointmentSchedule = () => {
   const [isAccomplishmentModalOpen, setIsAccomplishmentModalOpen] =
     useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [sortBy, setSortBy] = useState("appointmentDate");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [remarkDetails, setRemarkDetails] = useState({
     remark: null,
     status: null,
@@ -62,16 +74,38 @@ const AppointmentSchedule = () => {
   }, []);
 
   const filterRequests = () => {
-    if (userProfile?.isAdmin) return requests;
-    if (userProfile?.isClient) {
-      return requests.filter((request) => request.owner?.id === userProfile.id);
-    }
-    if (userProfile?.isStaff) {
-      return requests.filter(
+    let filteredRequests = [];
+
+    if (userProfile?.isAdmin) {
+      filteredRequests = requests;
+    } else if (userProfile?.isClient) {
+      filteredRequests = requests.filter(
+        (request) => request.owner?.id === userProfile.id
+      );
+    } else if (userProfile?.isStaff) {
+      filteredRequests = requests.filter(
         (request) => request.assignedVet?.id === userProfile.id
       );
     }
-    return [];
+
+    if (typeFilter !== "All") {
+      filteredRequests = filteredRequests.filter(
+        (request) => request.appointmentType === typeFilter
+      );
+    }
+
+    return filteredRequests.sort((a, b) => {
+      let comparison = 0;
+
+      if (a.appointmentDate < b.appointmentDate) {
+        comparison = -1;
+      }
+      if (a.appointmentDate > b.appointmentDate) {
+        comparison = 1;
+      }
+
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
   };
 
   const handleViewDetailsClick = (appointmentId) => {
@@ -126,7 +160,45 @@ const AppointmentSchedule = () => {
 
   return (
     <div className="m-0">
-      <div className="flex justify-between items-center mb-4"></div>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex space-x-2">
+          <FormControl variant="outlined" size="small" className="w-40">
+            <InputLabel>Sort By</InputLabel>
+            <Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              label="Sort By"
+            >
+              <MenuItem value="appointmentDate">Appointment Date</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Tooltip
+            title={`Sort ${sortOrder === "asc" ? "Descending" : "Ascending"}`}
+          >
+            <IconButton
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            >
+              {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
+            </IconButton>
+          </Tooltip>
+
+          <FormControl variant="outlined" size="small" className="w-40">
+            <InputLabel>Appointment Type</InputLabel>
+            <Select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              label="Appointment Type"
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Checkup">Checkup</MenuItem>
+              <MenuItem value="Treatment">Treatment</MenuItem>
+              <MenuItem value="Grooming">Grooming</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="animate-spin">Loading...</div>

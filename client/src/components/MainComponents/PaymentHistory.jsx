@@ -1,4 +1,13 @@
 import React, { useEffect, useState } from "react";
+import {
+  IconButton,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { getAllPaymentHistory } from "../../services/historyService";
 import { getFullName, getUserProfile } from "../../services/userService";
 import DateTimeDisplay from "../helpers/DateTimeDisplay";
@@ -7,6 +16,8 @@ const PaymentHistory = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("paymentDate");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const fetchUserProfile = async () => {
     try {
@@ -41,23 +52,57 @@ const PaymentHistory = () => {
   }, []);
 
   const filterPaymentHistory = () => {
-    if (userProfile?.isAdmin) return paymentHistory;
-    if (userProfile?.isClient) {
-      return paymentHistory.filter(
+    let filteredHistory = [];
+
+    if (userProfile?.isAdmin) {
+      filteredHistory = paymentHistory;
+    } else if (userProfile?.isClient) {
+      filteredHistory = paymentHistory.filter(
         (payment) => payment.owner?.id === userProfile.id
       );
-    }
-    if (userProfile?.isStaff) {
-      return paymentHistory.filter(
+    } else if (userProfile?.isStaff) {
+      filteredHistory = paymentHistory.filter(
         (payment) =>
           payment.appointmentRequest?.assignedVet?.id === userProfile.id
       );
     }
-    return [];
+
+    return filteredHistory.sort((a, b) => {
+      const dateA = new Date(a.paymentDate);
+      const dateB = new Date(b.paymentDate);
+
+      let comparison = 0;
+      if (dateA < dateB) comparison = -1;
+      if (dateA > dateB) comparison = 1;
+
+      return sortOrder === "asc" ? comparison : -comparison;
+    });
   };
 
   return (
     <div className="m-0">
+      <div className="flex space-x-2 mb-4">
+        <FormControl variant="outlined" size="small" className="w-40">
+          <InputLabel>Sort By</InputLabel>
+          <Select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            label="Sort By"
+          >
+            <MenuItem value="paymentDate">Payment Date</MenuItem>
+          </Select>
+        </FormControl>
+        <Tooltip
+          title={`Sort ${sortOrder === "asc" ? "Descending" : "Ascending"}`}
+        >
+          <IconButton
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          >
+            {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
+          </IconButton>
+        </Tooltip>
+      </div>
+
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="animate-spin">Loading...</div>
