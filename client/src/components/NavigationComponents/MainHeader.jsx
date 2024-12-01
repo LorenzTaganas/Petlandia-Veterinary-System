@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
-import { Notifications, ExitToApp, Lock, Person } from "@mui/icons-material";
+import {
+  Notifications,
+  ExitToApp,
+  Lock,
+  Person,
+  Warning,
+} from "@mui/icons-material";
 import { getUserProfile, getFullName } from "../../services/userService";
 import axiosInstance from "../../services/axiosInstance";
 import notificationService from "../../services/notificationService";
@@ -13,6 +19,8 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLogoutConfirmationOpen, setIsLogoutConfirmationOpen] =
+    useState(false);
   const notificationButtonRef = useRef(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -103,6 +111,20 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
     }
   };
 
+  const initiateLogout = () => {
+    setIsLogoutConfirmationOpen(true);
+  };
+
+  const confirmLogout = () => {
+    handleLogout();
+    setIsLogoutConfirmationOpen(false);
+    setIsDropdownOpen(false);
+  };
+
+  const cancelLogout = () => {
+    setIsLogoutConfirmationOpen(false);
+  };
+
   const handleNotificationClick = () => {
     setIsModalOpen(true);
   };
@@ -173,7 +195,7 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
                 <span>Change Password</span>
               </button>
               <button
-                onClick={handleLogout}
+                onClick={initiateLogout}
                 className="w-full text-red-500 flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-md"
               >
                 <ExitToApp />
@@ -183,6 +205,35 @@ const MainHeader = ({ setActiveComponent, activeComponent }) => {
           )}
         </div>
       </div>
+
+      {isLogoutConfirmationOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <div className="flex items-center mb-4">
+              <Warning className="text-yellow-500 mr-3" />
+              <h2 className="text-lg font-semibold">Confirm Logout</h2>
+            </div>
+            <p className="mb-4 text-gray-600">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelLogout}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isModalOpen && (
         <NotificationModal
           userId={user?.id}
