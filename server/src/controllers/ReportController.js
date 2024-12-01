@@ -75,13 +75,10 @@ exports.getTopClients = async (req, res) => {
         some: {
           status: "Successful",
           appointmentDate: dateFilter,
+          ...(user.role === "Staff" && { assignedVetId: user.id }),
         },
       },
     };
-
-    if (user.role === "Staff") {
-      whereClause.appointmentRequests.some.assignedVetId = user.id;
-    }
 
     const topClients = await prisma.user.findMany({
       where: whereClause,
@@ -93,6 +90,7 @@ exports.getTopClients = async (req, res) => {
           where: {
             status: "Successful",
             appointmentDate: dateFilter,
+            ...(user.role === "Staff" && { assignedVetId: user.id }),
           },
         },
       },
