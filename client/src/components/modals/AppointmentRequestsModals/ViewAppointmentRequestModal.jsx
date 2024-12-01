@@ -18,7 +18,11 @@ import {
   getUserById,
   getFullName,
 } from "../../../services/userService";
-import { formatDateForInput, formatDate } from "../../../utils/dateTimeUtil";
+import {
+  formatDateForInput,
+  formatDateForInput2,
+  formatDate,
+} from "../../../utils/dateTimeUtil";
 
 const ViewAppointmentRequestModal = ({
   appointmentId,
@@ -80,7 +84,7 @@ const ViewAppointmentRequestModal = ({
     try {
       const data = await getAppointmentRequestDetails(appointmentId);
       const formattedData = {
-        appointmentDate: formatDateForInput(data.appointmentDate),
+        appointmentDate: formatDateForInput2(data.appointmentDate),
         appointmentType: data.appointmentType,
         preferredVetId: data.preferredVetId,
         petName: data.pet.name,

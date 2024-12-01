@@ -10,7 +10,11 @@ import {
   getUserById,
   getFullName,
 } from "../../../services/userService";
-import { formatDateForInput, formatDate } from "../../../utils/dateTimeUtil";
+import {
+  formatDateForInput,
+  formatDateForInput2,
+  formatDate,
+} from "../../../utils/dateTimeUtil";
 
 const ViewAppointmentScheduleModal = ({
   appointmentId,
@@ -114,7 +118,7 @@ const ViewAppointmentScheduleModal = ({
       }
 
       setFormData({
-        appointmentDate: formatDateForInput(data.appointmentDate),
+        appointmentDate: formatDateForInput2(data.appointmentDate),
         appointmentType: data.appointmentType,
         assignedVetId: data.assignedVetId,
         petName: data.pet.name,
