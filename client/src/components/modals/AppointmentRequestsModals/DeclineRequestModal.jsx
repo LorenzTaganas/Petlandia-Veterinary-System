@@ -8,13 +8,17 @@ import {
   Button,
 } from "@mui/material";
 import { getUsersByRole } from "../../../services/userService";
-import { declineAppointmentRequest } from "../../../services/appointmentRequestService";
+import {
+  declineAppointmentRequest,
+  checkVetAvailability,
+} from "../../../services/appointmentRequestService";
 
 const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
   const [remark, setRemark] = useState("");
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [assignedVet, setAssignedVet] = useState("");
   const [staffMembers, setStaffMembers] = useState([]);
+  const [vetAvailability, setVetAvailability] = useState({});
   const [formErrors, setFormErrors] = useState({});
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -31,6 +35,32 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
     fetchStaffMembers();
   }, []);
 
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (rescheduleDate && assignedVet) {
+        try {
+          const availability = await checkVetAvailability(
+            assignedVet,
+            rescheduleDate
+          );
+
+          setVetAvailability((prev) => ({
+            ...prev,
+            [assignedVet]: availability.isAvailable,
+          }));
+        } catch (error) {
+          console.error("Error checking vet availability:", error);
+          setVetAvailability((prev) => ({
+            ...prev,
+            [assignedVet]: true,
+          }));
+        }
+      }
+    };
+
+    checkAvailability();
+  }, [rescheduleDate, assignedVet]);
+
   const validateForm = () => {
     const errors = {};
 
@@ -45,6 +75,13 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
 
     if (!assignedVet) {
       errors.assignedVet = "Veterinarian is required.";
+    }
+
+    if (assignedVet && rescheduleDate) {
+      const isVetAvailable = vetAvailability[assignedVet];
+      if (isVetAvailable === false) {
+        errors.vetConflict = "Selected staff is occupied at the assigned date.";
+      }
     }
 
     setFormErrors(errors);
@@ -119,10 +156,16 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
               value={assignedVet}
               onChange={(e) => {
                 setAssignedVet(e.target.value);
-                setFormErrors((prev) => ({ ...prev, assignedVet: "" }));
+                setFormErrors((prev) => ({
+                  ...prev,
+                  assignedVet: "",
+                  vetConflict: "",
+                }));
               }}
               className={`w-full p-2 border rounded-md mt-2 ${
-                formErrors.assignedVet ? "border-red-500" : ""
+                formErrors.assignedVet || formErrors.vetConflict
+                  ? "border-red-500"
+                  : ""
               }`}
               required
             >
@@ -142,6 +185,11 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
             {formErrors.assignedVet && (
               <p className="text-sm text-red-500 mt-2">
                 {formErrors.assignedVet}
+              </p>
+            )}
+            {formErrors.vetConflict && (
+              <p className="text-sm text-red-500 mt-2">
+                {formErrors.vetConflict}
               </p>
             )}
           </div>
@@ -217,7 +265,6 @@ const DeclineRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
       >
         <DialogTitle
           sx={{
-            // fontWeight: "bold",
             color: "success.main",
           }}
         >

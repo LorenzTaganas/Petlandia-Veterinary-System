@@ -427,3 +427,33 @@ exports.rescheduleAppointmentRequest = async (req, res) => {
       .json({ error: "Failed to reschedule appointment request." });
   }
 };
+
+exports.checkVetAvailability = async (req, res) => {
+  const { vetId, appointmentDate, currentAppointmentId } = req.query;
+
+  try {
+    const inputDate = new Date(appointmentDate);
+
+    const conflictingAppointments = await prisma.appointmentRequest.findMany({
+      where: {
+        id: {
+          not: parseInt(currentAppointmentId || 0),
+        },
+        assignedVetId: parseInt(vetId),
+        status: "Approved",
+        appointmentDate: {
+          gte: inputDate,
+          lt: new Date(inputDate.getTime() + 15 * 60000),
+        },
+      },
+    });
+
+    res.status(200).json({
+      isAvailable: conflictingAppointments.length === 0,
+      conflicts: conflictingAppointments,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to check vet availability." });
+  }
+};

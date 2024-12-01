@@ -3,6 +3,7 @@ import { Modal, Button } from "@mui/material";
 import { deleteAppointmentRequest } from "../../../services/appointmentRequestService";
 import { editAppointmentSchedule } from "../../../services/appointmentScheduleService";
 import { getAppointmentScheduleDetails } from "../../../services/appointmentScheduleService";
+import { checkVetAvailability } from "../../../services/appointmentRequestService";
 import {
   getUserProfile,
   getUsersByRole,
@@ -34,6 +35,8 @@ const ViewAppointmentScheduleModal = ({
   const [staffMembers, setStaffMembers] = useState([]);
   const [userRole, setUserRole] = useState("");
   const [approvedByUser, setApprovedByUser] = useState(null);
+  const [vetAvailability, setVetAvailability] = useState({});
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     if (appointmentId) {
@@ -66,6 +69,35 @@ const ViewAppointmentScheduleModal = ({
     fetchUserRole();
   }, []);
 
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (formData.appointmentDate && formData.assignedVetId) {
+        try {
+          const availability = await checkVetAvailability(
+            formData.assignedVetId,
+            formData.appointmentDate,
+            appointmentId
+          );
+
+          setVetAvailability((prev) => ({
+            ...prev,
+            [formData.assignedVetId]: availability.isAvailable,
+          }));
+        } catch (error) {
+          console.error("Error checking vet availability:", error);
+          setVetAvailability((prev) => ({
+            ...prev,
+            [formData.assignedVetId]: true,
+          }));
+        }
+      }
+    };
+
+    if (isEditing) {
+      checkAvailability();
+    }
+  }, [formData.appointmentDate, formData.assignedVetId, isEditing]);
+
   const fetchAppointmentDetails = async () => {
     try {
       const data = await getAppointmentScheduleDetails(appointmentId);
@@ -92,38 +124,64 @@ const ViewAppointmentScheduleModal = ({
     }
   };
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.appointmentDate) {
+      errors.appointmentDate = "Appointment date is required.";
+    }
+
+    if (!formData.assignedVetId) {
+      errors.assignedVetId = "Assigned veterinarian is required.";
+    }
+
+    if (
+      formData.assignedVetId &&
+      formData.appointmentDate &&
+      vetAvailability[formData.assignedVetId] === false
+    ) {
+      errors.vetConflict = "Selected staff is occupied at the assigned date.";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleEditClick = () => {
     setIsEditing(!isEditing);
+    setFormErrors({});
   };
 
   const handleSaveClick = async () => {
-    try {
-      const updatedData = {
-        appointmentDate: formatDateForInput(formData.appointmentDate),
-        appointmentType: formData.appointmentType,
-        assignedVetId: formData.assignedVetId,
-        reason: formData.reason,
-        additionalComments: formData.additionalComments,
-        pet: {
-          id: appointmentDetails.pet.id,
-          name: formData.petName,
-          type: formData.petType,
-          breed: formData.petBreed,
-          age: formData.petAge,
-          weight: formData.petWeight,
-        },
-      };
+    if (validateForm()) {
+      try {
+        const updatedData = {
+          appointmentDate: formatDateForInput(formData.appointmentDate),
+          appointmentType: formData.appointmentType,
+          assignedVetId: formData.assignedVetId,
+          reason: formData.reason,
+          additionalComments: formData.additionalComments,
+          pet: {
+            id: appointmentDetails.pet.id,
+            name: formData.petName,
+            type: formData.petType,
+            breed: formData.petBreed,
+            age: formData.petAge,
+            weight: formData.petWeight,
+          },
+        };
 
-      if (appointmentDetails.status === "Declined") {
-        updatedData.status = "Pending";
+        if (appointmentDetails.status === "Declined") {
+          updatedData.status = "Pending";
+        }
+
+        await editAppointmentSchedule(appointmentId, updatedData);
+        setIsEditing(false);
+        fetchAppointmentDetails();
+        refreshData();
+      } catch (error) {
+        console.error("Error saving appointment details:", error);
       }
-
-      await editAppointmentSchedule(appointmentId, updatedData);
-      setIsEditing(false);
-      fetchAppointmentDetails();
-      refreshData();
-    } catch (error) {
-      console.error("Error saving appointment details:", error);
     }
   };
 
@@ -138,25 +196,22 @@ const ViewAppointmentScheduleModal = ({
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "appointmentDate" || name === "assignedVetId") {
+      setFormErrors((prev) => ({
+        ...prev,
+        [name]: "",
+        vetConflict: "",
+      }));
+    }
   };
 
   return (
     <Modal open={isVisible} onClose={onClose}>
       <div className="bg-white p-6 rounded-lg w-[32rem] mx-auto mt-20 h-[80vh] overflow-auto">
         <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
-        {/* {appointmentDetails && (
-          <>
-            <div className="mb-4">
-              <strong>Approved At:</strong>{" "}
-              {formatDate(appointmentDetails.approvedAt)?.date}{" "}
-              {formatDate(appointmentDetails.approvedAt)?.time}
-            </div>
-            <div className="mb-4">
-              <strong>Approved By:</strong> {getFullName(approvedByUser)}
-            </div>
-          </>
-        )} */}
         <div className="flex space-x-4">
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">
@@ -164,12 +219,19 @@ const ViewAppointmentScheduleModal = ({
             </label>
             <input
               type="datetime-local"
-              className="w-full mb-4 p-2 border rounded"
+              className={`w-full mb-4 p-2 border rounded ${
+                formErrors.appointmentDate ? "border-red-500" : ""
+              }`}
               value={formData.appointmentDate}
               onChange={handleChange}
               name="appointmentDate"
               disabled={!isEditing}
             />
+            {formErrors.appointmentDate && (
+              <p className="text-sm text-red-500">
+                {formErrors.appointmentDate}
+              </p>
+            )}
           </div>
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">
@@ -194,7 +256,11 @@ const ViewAppointmentScheduleModal = ({
               Assigned Veterinarian
             </label>
             <select
-              className="w-full mb-4 p-2 border rounded"
+              className={`w-full mb-4 p-2 border rounded ${
+                formErrors.assignedVetId || formErrors.vetConflict
+                  ? "border-red-500"
+                  : ""
+              }`}
               value={formData.assignedVetId}
               onChange={handleChange}
               name="assignedVetId"
@@ -206,6 +272,12 @@ const ViewAppointmentScheduleModal = ({
                 </option>
               ))}
             </select>
+            {formErrors.assignedVetId && (
+              <p className="text-sm text-red-500">{formErrors.assignedVetId}</p>
+            )}
+            {formErrors.vetConflict && (
+              <p className="text-sm text-red-500">{formErrors.vetConflict}</p>
+            )}
           </div>
           <div className="w-1/2">
             <label className="block text-gray-700 font-medium mb-1">

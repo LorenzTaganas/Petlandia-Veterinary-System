@@ -162,3 +162,22 @@ export const rescheduleAppointmentRequest = async (
     throw error;
   }
 };
+
+export const checkVetAvailability = async (
+  vetId,
+  appointmentDate,
+  currentAppointmentId
+) => {
+  try {
+    const response = await axiosInstance.get(
+      "/appointment-requests/staff-availability",
+      {
+        params: { vetId, appointmentDate, currentAppointmentId },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error checking vet availability:", error);
+    throw error;
+  }
+};
