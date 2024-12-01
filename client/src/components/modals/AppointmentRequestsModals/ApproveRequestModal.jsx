@@ -38,7 +38,7 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
               [staffMember.id]: availability.isAvailable,
             };
           } catch (error) {
-            return { [staffMember.id]: true }; // default to available if check fails
+            return { [staffMember.id]: true };
           }
         });
 
@@ -62,7 +62,9 @@ const ApproveRequestModal = ({ appointmentRequest, onClose, refreshData }) => {
     }
 
     if (vetAvailability[assignedVet] === false) {
-      setFormError("Selected veterinarian is not available at this time.");
+      setFormError(
+        "Selected veterinarian is not available at this time. Appointments are scheduled with a 15-minute interval per staff member."
+      );
       return false;
     }
 

@@ -209,7 +209,7 @@ const ViewAppointmentScheduleModal = ({
       vetAvailability[formData.assignedVetId] === false
     ) {
       newErrors.vetConflict =
-        "Selected staff is occupied at the assigned date.";
+        "Selected staff is occupied at the assigned date. Appointments are scheduled with a 15-minute interval per staff member.";
     }
 
     setErrors(newErrors);
