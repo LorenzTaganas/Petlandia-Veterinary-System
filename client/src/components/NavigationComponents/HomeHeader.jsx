@@ -26,7 +26,7 @@ const HomeHeader = () => {
       </div>
 
       {/* Navigation Section */}
-      <nav className="pl-24 pr-8 hidden md:flex flex-grow justify-center space-x-8">
+      <nav className="pl-23 pr-8 hidden md:flex flex-grow justify-center space-x-8">
         <ul className="flex space-x-8">
           <li>
             <Link

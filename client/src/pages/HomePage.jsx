@@ -6,11 +6,13 @@ import markerIcon from "../assets/mapmarker.png";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import ChatbotModal from "../components/modals/ChatbotModals/ChatbotModal"; // Import the ChatbotModal component
 
 const HomePage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false); // Define the state
 
   const isElementInViewport = (el) => {
     const rect = el.getBoundingClientRect();
@@ -20,8 +22,7 @@ const HomePage = () => {
   useEffect(() => {
     const token = Cookies.get("accessToken");
     setIsAuthenticated(!!token);
-
-  },[]);
+  }, []);
 
   const customMarkerIcon = L.icon({
     iconUrl: markerIcon,
@@ -31,12 +32,13 @@ const HomePage = () => {
     color: [],
   });
 
-
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow">
-
-        <section  id="1st" className="mt-16 flex items-center h-[calc(100vh-64px)]">
+        <section
+          id="1st"
+          className="mt-16 flex items-center h-[calc(100vh-64px)]"
+        >
           <div
             className="relative w-full h-full bg-cover bg-center"
             style={{ backgroundImage: "url('src/assets/dogoo32.png')" }}
@@ -44,9 +46,7 @@ const HomePage = () => {
             <div className="absolute inset-0 bg-black opacity-0"></div>
 
             <div className="absolute right-20 top-20 text-black p-6 mt-40">
-              <h2
-                className="font-paytone max-w-xl text-cus text-black text-shadow-md"            
-              >
+              <h2 className="font-paytone max-w-xl text-cus text-black text-shadow-md">
                 Welcome to Pe
                 <span className="text-red-500 font-custom font-bold">t</span>
                 landia Veterinary Clinic
@@ -90,8 +90,8 @@ const HomePage = () => {
             </div>
           </div>
         </section>
-        
-        <section  className="bg-gradient-to-b from-indigo-100 to-indigo-40 flex items-center h-[calc(100vh-64px)]">
+
+        <section className="bg-gradient-to-b from-indigo-100 to-indigo-40 flex items-center h-[calc(100vh-64px)]">
           <div className="h-3/4 w-1/2 ml-24">
             <img
               src="src/assets/kyot.jpg"
@@ -112,7 +112,9 @@ const HomePage = () => {
             </h1>
 
             <p className="text-[#616161] font-txt mt-4 max-w-md transition duration-500 ease-in-out transform hover:scale-105 hover:text-black-1000">
-            PetLandia Vet Malolos offers expert veterinary care,<br></br> from routine check-ups to specialized treatments, with compassion and professionalism.
+              PetLandia Vet Malolos offers expert veterinary care,<br></br> from
+              routine check-ups to specialized treatments, with compassion and
+              professionalism.
             </p>
 
             <button className="mt-8 px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 shadow-xl">
@@ -120,10 +122,9 @@ const HomePage = () => {
                 Learn More
               </Link>
             </button>
-            
           </div>
         </section>
-  
+
         <section className="h-[calc(100vh-64px)] bg-gradient-to-t from-indigo-100 to-indigo-40 flex items-center justify-center">
           <div className="flex w-full max-w-screen-xl px-12 ">
             <div className="w-1/2 mt-20">
@@ -138,8 +139,10 @@ const HomePage = () => {
               </h1>
 
               <p className="text-[#616161] font-txt mt-4 max-w-md transition duration-500 ease-in-out transform hover:scale-105 hover:text-black-1000">
-              Our clinic offers a comprehensive range of veterinary services to ensure your pet's health and well-being. 
-              Our team is committed to providing the highest standard of care with a personalized approach for every pet..
+                Our clinic offers a comprehensive range of veterinary services
+                to ensure your pet's health and well-being. Our team is
+                committed to providing the highest standard of care with a
+                personalized approach for every pet..
               </p>
 
               <button className="mt-8 px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 shadow-xl">
@@ -148,44 +151,55 @@ const HomePage = () => {
             </div>
 
             <div className="flex flex-col w-1/2 space-y-6 h-full ml-10">
-            <div className="flex space-x-6 h-[35vh] w-full whitespace-normal">
-
-            <div className="bg-white p-6 rounded-[20px] flex-grow shadow-now transition-transform duration-300 transform hover:scale-105 hover:shadow-up flex flex-col">
-              <Link to="/services-details" className="flex flex-col h-full">
-                <div className="w-60 h-60 p-3 rounded-full flex justify-center items-center overflow-hidden">
-                  <img src="src/assets/checkup.png" alt="Services" className="w-full h-full object-contain" />
-                </div>
-                <h1 className="font-paytone text-2xl font-bold text-[#3E3D3D] text-3px text-shadow-md text-center">
-                  Checkup
-                </h1>
-                <p className="pl-6 text-gray-800 font-txt max-w-xs">
-                  We offer expert veterinary checkups to keep your pets healthy
-                </p>
-              </Link>
-            </div>
-
-              <div className="bg-white p-6 rounded-[20px] flex-grow shadow-now transition-transform duration-300 transform hover:scale-105 hover:shadow-up flex flex-col">
-                  <Link to="/services-details" className="flex flex-col h-full justify-center items-center">
-                    <div className="w-60 h-60 p-3  rounded-full flex justify-center items-center overflow-hidden">
-                      <img src="src/assets/grooming.png" alt="Services" className="w-full h-full object-contain" />
+              <div className="flex space-x-6 h-[35vh] w-full whitespace-normal">
+                <div className="bg-white p-6 rounded-[20px] flex-grow shadow-now transition-transform duration-300 transform hover:scale-105 hover:shadow-up flex flex-col">
+                  <Link to="/services-details" className="flex flex-col h-full">
+                    <div className="w-60 h-60 p-3 rounded-full flex justify-center items-center overflow-hidden">
+                      <img
+                        src="src/assets/checkup.png"
+                        alt="Services"
+                        className="w-full h-full object-contain"
+                      />
                     </div>
-                      <h1 className="font-paytone text-2xl font-bold text-[#3E3D3D] text-3px text-shadow-md text-center">
-                        Grooming
-                      </h1>
-
-                      <p className="pl-6 text-gray-800 font-txt max-w-xs">
-                      We offer grooming services for a clean, comfortable, and stress-free experience.
-                      </p>
-                    </Link>
-                  </div>
+                    <h1 className="font-paytone text-2xl font-bold text-[#3E3D3D] text-3px text-shadow-md text-center">
+                      Checkup
+                    </h1>
+                    <p className="pl-6 text-gray-800 font-txt max-w-xs">
+                      We offer expert veterinary checkups to keep your pets
+                      healthy
+                    </p>
+                  </Link>
                 </div>
 
+                <div className="bg-white p-6 rounded-[20px] flex-grow shadow-now transition-transform duration-300 transform hover:scale-105 hover:shadow-up flex flex-col">
+                  <Link
+                    to="/services-details"
+                    className="flex flex-col h-full justify-center items-center"
+                  >
+                    <div className="w-60 h-60 p-3  rounded-full flex justify-center items-center overflow-hidden">
+                      <img
+                        src="src/assets/grooming.png"
+                        alt="Services"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <h1 className="font-paytone text-2xl font-bold text-[#3E3D3D] text-3px text-shadow-md text-center">
+                      Grooming
+                    </h1>
+
+                    <p className="pl-6 text-gray-800 font-txt max-w-xs">
+                      We offer grooming services for a clean, comfortable, and
+                      stress-free experience.
+                    </p>
+                  </Link>
+                </div>
+              </div>
 
               <div className="bg-white p-6 h-[35vh] rounded-[20px] shadow-now transition-transform duration-300 transform hover:scale-105 hover:shadow-up flex items-center">
                 <div className="ml-8 w-40 h-40 rounded-[20px] overflow-hidden ">
-                  <img 
-                    src="src/assets/treat.png" 
-                    alt="Treatment Image" 
+                  <img
+                    src="src/assets/treat.png"
+                    alt="Treatment Image"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -195,29 +209,28 @@ const HomePage = () => {
                       Treatment
                     </h1>
                     <p className="text-gray-800 font-txt max-w-xs mt-4">
-                       We provide expert veterinary treatments, including diagnostics and care, for your pet's health and recovery
+                      We provide expert veterinary treatments, including
+                      diagnostics and care, for your pet's health and recovery
                     </p>
                   </Link>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
 
         <section className="h-[calc(100vh-64px)] bg-gradient-to-b from-indigo-0 to-indigo-0 flex flex-col items-center">
           <h1 className="flex font-paytone text-48 font-bold text-blue-800 mb-6 mt-20">
-              We look forward to seeing you!
+            We look forward to seeing you!
           </h1>
           <p className="text-[#616161] font-txt text-center max-w-2xl">
-            PetLandia is always here to help with your pet care needs.
-            Whether you have questions about our services or want to schedule an appointment, 
-            feel free to reach out to us through any of the following options
+            PetLandia is always here to help with your pet care needs. Whether
+            you have questions about our services or want to schedule an
+            appointment, feel free to reach out to us through any of the
+            following options
           </p>
 
           <div className="mt-20 flex w-3/4 justify-center space-x-20">
-            
-
             <div className="bg-transparent w-1/2 h flex flex-col justify-center items-center text-white rounded-lg p-4">
               <div className="w-28 h-28 p-6 bg-blue-500 rounded-full flex justify-center items-center overflow-hidden">
                 <img
@@ -226,17 +239,21 @@ const HomePage = () => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h4 className="mt-10 text-black font-semibold text-[30px] mb-4">Address</h4>
+              <h4 className="mt-10 text-black font-semibold text-[30px] mb-4">
+                Address
+              </h4>
 
               <div className="text-black text-center">
                 <p>
-                   Sapphire Street<br />
-                   Capitol View Park Subdivision<br />
-                   Malolos, Philippines
+                  Sapphire Street
+                  <br />
+                  Capitol View Park Subdivision
+                  <br />
+                  Malolos, Philippines
                 </p>
               </div>
             </div>
-            
+
             <div className="bg-transparent w-1/2 h flex flex-col justify-center items-center text-white rounded-lg p-4">
               <div className="mt-4 w-28 h-28 pl-[25px] p-6 bg-blue-500 rounded-full flex justify-center items-center overflow-hidden">
                 <img
@@ -245,37 +262,44 @@ const HomePage = () => {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h4 className=" mt-10 text-black font-semibold text-[30px] mb-4">Hours</h4>
+              <h4 className=" mt-10 text-black font-semibold text-[30px] mb-4">
+                Hours
+              </h4>
 
               <div className="text-black text-center">
                 <p>
-                  <b>Mon-Sat:</b> 9:00 AM - 6:00 PM<br />
-                  <b>Sunday:</b> 12:00 NN - 6:00 PM<br />
+                  <b>Mon-Sat:</b> 9:00 AM - 6:00 PM
+                  <br />
+                  <b>Sunday:</b> 12:00 NN - 6:00 PM
+                  <br />
                   <b>IN-CASE OF EMERGENCY:</b> 6:00 PM - 6:00 AM
                 </p>
               </div>
             </div>
-            
+
             <div className="bg-transparent w-1/2 h flex flex-col justify-center items-center text-white rounded-lg p-4">
-            <div className="w-28 h-28 p-6 bg-blue-500 rounded-full flex justify-center items-center overflow-hidden">
+              <div className="w-28 h-28 p-6 bg-blue-500 rounded-full flex justify-center items-center overflow-hidden">
                 <img
                   src="src/assets/phone.png"
                   alt="Services"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h4 className="mt-10 text-black font-semibold text-[30px] mb-4">Contact Info</h4>
+              <h4 className="mt-10 text-black font-semibold text-[30px] mb-4">
+                Contact Info
+              </h4>
 
               <div className="text-black text-center">
                 <p>
-                  <b>Call:</b> 0965-8063-229<br />
-                  <b>Fax:</b> (044) 802 7334<br />
+                  <b>Call:</b> 0965-8063-229
+                  <br />
+                  <b>Fax:</b> (044) 802 7334
+                  <br />
                   <b>Email:</b> petlandiavets@gmail.com
                 </p>
               </div>
             </div>
           </div>
-
         </section>
 
         <section className="h-96 mt-20">
@@ -299,7 +323,6 @@ const HomePage = () => {
           </div>
         </section>
       </main>
-
       <footer className="bg-gray-800 text-white py-8 mt-4 w-full">
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left px-6">
           <div>
@@ -331,6 +354,16 @@ const HomePage = () => {
           </div>
         </div>
       </footer>
+      <button
+        onClick={() => setIsChatbotOpen(true)}
+        className="fixed bottom-4 right-4 bg-blue-500 text-white px-6 py-3 text-lg rounded-full shadow-lg hover:bg-blue-600 transition duration-300"
+      >
+        Chat with us
+      </button>
+      <ChatbotModal
+        isOpen={isChatbotOpen}
+        onClose={() => setIsChatbotOpen(false)}
+      />{" "}
     </div>
   );
 };

@@ -32,6 +32,35 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(routes);
 
+// Import FAQ routes
+const faqRoutes = require("./src/routes/FaqRoutes");
+app.use("/api/faqs", faqRoutes);
+
+// WebSocket connection for real-time chatbot communication
+wss.on("connection", (ws) => {
+  console.log("New client connected");
+
+  ws.on("message", async (message) => {
+    const userInput = message.toString();
+    const faq = await prisma.fAQ.findFirst({
+      where: {
+        question: {
+          equals: userInput,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    const response = faq
+      ? faq.answer
+      : "I'm sorry, I don't have an answer for that.";
+    ws.send(response);
+  });
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
+
 // wss.on("connection", (ws) => {
 //   console.log("Client connected");
 
